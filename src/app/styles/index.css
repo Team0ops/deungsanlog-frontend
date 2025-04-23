@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "GmarketSans", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -65,4 +65,20 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+@font-face {
+  font-family: "GmarketSans";
+  src: url("./assets/fonts/GmarketSansTTFLight.ttf") format("truetype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "GmarketSans";
+  src: url("./assets/fonts/GmarketSansTTFMedium.ttf") format("truetype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: "GmarketSans";
+  src: url("./assets/fonts/GmarketSansTTFBold.ttf") format("truetype");
+  font-weight: 700;
 }
