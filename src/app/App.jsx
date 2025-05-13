@@ -1,32 +1,34 @@
-import { useState } from "react";
-import viteLogo from "/vite.svg";
-import "./styles/App.css";
+import { Routes, Route } from "react-router-dom";
+import Sidebar from "../widgets/sidebar";
+import Color from "./styles/color";
+import MountainInfoPage from "../pages/mountainInfoPage";
+import HikingLogPage from "../pages/hikingLogPage";
+import CommunityPage from "../pages/communityPage";
+import OrmiPage from "../pages/ormiPage";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank"></a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div
+      className="app-container"
+      style={{
+        display: "flex",
+        height: "100vh",
+      }}
+    >
+      <Sidebar />
+      <main
+        className="main-content"
+        style={{ flex: 1, padding: "2rem", backgroundColor: Color.primary }}
+      >
+        <Routes>
+          <Route path="/" element={<MountainInfoPage />} />
+          <Route path="/log" element={<HikingLogPage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/ormi" element={<OrmiPage />} />
+        </Routes>
+      </main>
+    </div>
   );
-}
+};
 
 export default App;
