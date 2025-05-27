@@ -3,6 +3,8 @@ import { useLocation, NavLink } from "react-router-dom";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
+import ListItem from "@mui/material/ListItem";
+import Box from "@mui/material/Box";
 
 import SoftBox from "shared/ui/SoftBox";
 import SoftTypography from "shared/ui/SoftTypography";
@@ -30,61 +32,69 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   }, [dispatch, location]);
 
   const renderRoutes = routes.map(
-    ({ type, name, icon, title, noCollapse, key, route, href }) => {
+    ({ type, name, icon, title, noCollapse, key, route, href }, index) => {
+      const itemKey = key || `route-${index}`; // fallback key
+
       if (type === "collapse") {
-        return href ? (
-          <Link
-            href={href}
-            key={key}
-            target="_blank"
-            rel="noreferrer"
-            sx={{ textDecoration: "none" }}
-          >
-            <SidenavCollapse
-              color={color}
-              name={name}
-              icon={icon}
-              active={key === collapseName}
-              noCollapse={noCollapse}
-            />
-          </Link>
-        ) : (
-          <NavLink to={route} key={key}>
-            <SidenavCollapse
-              color={color}
-              key={key}
-              name={name}
-              icon={icon}
-              active={key === collapseName}
-              noCollapse={noCollapse}
-            />
-          </NavLink>
-        );
-      } else if (type === "title") {
         return (
-          <SoftTypography
-            key={key}
-            display="block"
-            variant="caption"
-            fontWeight="bold"
-            textTransform="uppercase"
-            opacity={0.6}
-            pl={3}
-            mt={2}
-            mb={1}
-            ml={1}
-          >
-            {title}
-          </SoftTypography>
+          <Box key={itemKey} sx={{ display: "block", p: 0 }}>
+            {href ? (
+              <Link
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                sx={{ textDecoration: "none", display: "block" }}
+              >
+                <SidenavCollapse
+                  color={color}
+                  name={name}
+                  icon={icon}
+                  active={key === collapseName}
+                  noCollapse={noCollapse}
+                />
+              </Link>
+            ) : (
+              <NavLink to={route} style={{ textDecoration: "none" }}>
+                <SidenavCollapse
+                  color={color}
+                  name={name}
+                  icon={icon}
+                  active={key === collapseName}
+                  noCollapse={noCollapse}
+                />
+              </NavLink>
+            )}
+          </Box>
         );
-      } else if (type === "divider") {
-        return <Divider key={key} />;
+      }
+
+      if (type === "title") {
+        return (
+          <ListItem key={itemKey} disablePadding>
+            <SoftTypography
+              display="block"
+              variant="caption"
+              fontWeight="bold"
+              textTransform="uppercase"
+              opacity={0.6}
+              pl={3}
+              mt={2}
+              mb={1}
+              ml={1}
+            >
+              {title}
+            </SoftTypography>
+          </ListItem>
+        );
+      }
+
+      if (type === "divider") {
+        return <Divider key={itemKey} />;
       }
 
       return null;
     }
   );
-
   return (
     <SidenavRoot
       {...rest}
