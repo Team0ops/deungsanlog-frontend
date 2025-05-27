@@ -1,5 +1,6 @@
-// src/pages/MountainInfoPage.jsx
 import { useEffect } from "react";
+import SoftInput from "shared/ui/SoftInput";
+import SearchIcon from "@mui/icons-material/Search";
 import { loadKakaoMap } from "shared/lib/kakaoMap";
 
 const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
@@ -31,17 +32,41 @@ const MountainInfoPage = () => {
   }, []);
 
   return (
-    <div
-      id="map"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        zIndex: 0,
-      }}
-    />
+    <>
+      <div
+        id="map"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: "32px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+          width: "500px",
+        }}
+      >
+        <SoftInput
+          placeholder="산 이름을 검색하세요"
+          icon={{ component: <SearchIcon />, direction: "right" }}
+          size="large"
+          style={{
+            fontSize: "1.2rem",
+            py: 2,
+            px: 3,
+          }}
+          fullWidth
+        />
+      </div>
+    </>
   );
 };
 
