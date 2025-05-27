@@ -1,6 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+
+import theme from "./app/styles/theme"; // 커스텀 테마 경로
 import "./app/styles/index.css";
 import App from "./app/App.jsx";
 
@@ -20,7 +23,10 @@ const updateSW = registerSW({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   </StrictMode>
 );
