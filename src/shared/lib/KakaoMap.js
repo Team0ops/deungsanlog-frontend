@@ -20,9 +20,5 @@ export function loadKakaoMap({
   // 지형 정보 지도 타입 적용
   map.addOverlayMapTypeId(window.kakao.maps.MapTypeId.TERRAIN);
 
-  // 줌 컨트롤 추가
-  const zoomControl = new window.kakao.maps.ZoomControl();
-  map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
-
   return map;
 }
