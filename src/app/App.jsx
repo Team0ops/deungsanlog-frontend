@@ -31,7 +31,7 @@ import MountainInfoPage from "../pages/mountainInfoPage";
 import HikingLogPage from "../pages/hikingLogPage";
 import CommunityPage from "../pages/communityPage";
 import GroupPage from "../pages/groupPage";
-import OrmiPage from "../pages/ormiPage";
+import OrmiPage from "../pages/ormie/ormiPage";
 import NotificationPage from "../pages/notificationPage";
 import MyPage from "../pages/myPage";
 

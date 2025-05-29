@@ -40,6 +40,15 @@ export default defineConfig({
       shared: path.resolve(__dirname, "src/shared"),
       widgets: path.resolve(__dirname, "src/widgets"),
       context: path.resolve(__dirname, "src/shared/context"),
+      features: path.resolve(__dirname, "src/features"),
+    },
+  },
+  server: {
+    proxy: {
+      "/ormie-service": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
     },
   },
 });
