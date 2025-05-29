@@ -7,3 +7,5 @@ npm install @mui/icons-material
 npm install stylis-plugin-rtl
 
 npm install react-kakao-maps-sdk --legacy-peer-deps
+
+npm install axios --legacy-peer-deps
