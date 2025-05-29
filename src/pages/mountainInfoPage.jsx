@@ -1,16 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import SoftInput from "shared/ui/SoftInput";
 import SearchIcon from "@mui/icons-material/Search";
 import { loadKakaoMap } from "shared/lib/kakaoMap";
+import ZoomControl from "shared/ui/ZoomControl"; // 상대 경로에 맞게 조정 필요
 
 const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
 
 const MountainInfoPage = () => {
+  const mapRef = useRef(null); // 카카오맵 객체 저장용
+  const [mapLoaded, setMapLoaded] = useState(false);
+
   useEffect(() => {
     const initMap = () => {
       if (window.kakao?.maps) {
         window.kakao.maps.load(() => {
-          loadKakaoMap({ containerId: "map" });
+          const map = loadKakaoMap({ containerId: "map" });
+          mapRef.current = map;
+          setMapLoaded(true);
         });
       }
     };
@@ -30,6 +36,20 @@ const MountainInfoPage = () => {
       }
     }
   }, []);
+
+  const handleZoomIn = () => {
+    if (mapRef.current) {
+      const currentLevel = mapRef.current.getLevel();
+      mapRef.current.setLevel(currentLevel - 1);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (mapRef.current) {
+      const currentLevel = mapRef.current.getLevel();
+      mapRef.current.setLevel(currentLevel + 1);
+    }
+  };
 
   return (
     <>
@@ -66,6 +86,9 @@ const MountainInfoPage = () => {
           fullWidth
         />
       </div>
+      {mapLoaded && (
+        <ZoomControl onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
+      )}
     </>
   );
 };
