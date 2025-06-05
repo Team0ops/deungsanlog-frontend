@@ -3,3 +3,17 @@
   padding: 2rem;
   background-color: white;
 }
+
+/* 기본 감추기 */
+::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: transparent; /* thumb도 감춤 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(76, 117, 89, 0.3);
+}
