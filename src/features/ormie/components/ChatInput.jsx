@@ -20,14 +20,16 @@ const ChatInput = ({ onSend }) => {
   };
 
   return (
-    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-      <GreenInput
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="오르미에게 질문하세요..."
-        style={{ flex: 1 }}
-      />
+    <div style={{ display: "flex", gap: "0.5rem", width: "100%" }}>
+      <div style={{ flexGrow: 1 }}>
+        <GreenInput
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="오르미에게 질문하세요 !"
+          style={{ width: "100%" }}
+        />
+      </div>
       <GreenButton onClick={handleSend}>전송</GreenButton>
     </div>
   );
