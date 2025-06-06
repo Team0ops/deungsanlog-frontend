@@ -50,15 +50,29 @@ const OnboardingChat = ({ onComplete }) => {
           style={{ textAlign: "center", maxWidth: "400px", padding: "1rem" }}
         >
           <p
+            className="wave-text"
             style={{
               fontSize: "1.3rem",
               fontWeight: "bold",
               marginBottom: "1rem",
+              textAlign: "center",
             }}
           >
-            안녕하세요! 저는 <span style={{ color: "#4b8161" }}>오르미</span>
+            안녕하세요! 저는{" "}
+            <span className="wave-group">
+              <span className="wave-char" style={{ animationDelay: "0s" }}>
+                오
+              </span>
+              <span className="wave-char" style={{ animationDelay: "0.15s" }}>
+                르
+              </span>
+              <span className="wave-char" style={{ animationDelay: "0.3s" }}>
+                미
+              </span>
+            </span>
             예요 🤖
           </p>
+
           <p style={{ fontSize: "1rem", marginBottom: "0.75rem" }}>
             등산을 사랑하는 여러분을 위한
             <br />
