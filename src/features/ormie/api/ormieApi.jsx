@@ -6,7 +6,7 @@ export const sendChatToOrmie = async (message, profile) => {
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/ormie/chat", // gateway 기준 주소
+      "http://localhost:8080/ormie-service/chat", // gateway 기준 주소
       {
         message,
         age: profile.age,

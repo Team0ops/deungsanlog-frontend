@@ -41,6 +41,8 @@ function AppContent() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
 
+  const isOrmiPage = pathname === "/ormi";
+
   useEffect(() => {
     document.body.setAttribute("dir", direction);
   }, [direction]);
@@ -64,38 +66,57 @@ function AppContent() {
     }
   };
   return (
-    <>
-      <Sidenav
-        color={sidenavColor}
-        brand={brand}
-        brandName="등산 이야기"
-        routes={routes}
-        onMouseEnter={handleOnMouseEnter}
-        onMouseLeave={handleOnMouseLeave}
-      />
-      <SidenavToggleButton
-        miniSidenav={miniSidenav}
-        onClick={() => setMiniSidenav(dispatch, !miniSidenav)}
-      />
-      <main
-        style={{
-          flex: 1,
-          padding: "2rem",
-          marginLeft: miniSidenav ? "150px" : "300px",
-        }}
-      >
-        <Routes>
-          <Route path="/" element={<Navigate to="/mountain" replace />} />
-          <Route path="/mountain" element={<MountainInfoPage />} />
-          <Route path="/log" element={<HikingLogPage />} />
-          <Route path="/community" element={<CommunityPage />} />
-          <Route path="/group" element={<GroupPage />} />
-          <Route path="/ormi" element={<OrmiPage />} />
-          <Route path="/notification" element={<NotificationPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-        </Routes>
-      </main>
-    </>
+    <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
+      {isOrmiPage && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/images/back_green.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            zIndex: 0,
+          }}
+        />
+      )}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <Sidenav
+          color={sidenavColor}
+          brand={brand}
+          brandName="등산 이야기"
+          routes={routes}
+          onMouseEnter={handleOnMouseEnter}
+          onMouseLeave={handleOnMouseLeave}
+        />
+        <SidenavToggleButton
+          miniSidenav={miniSidenav}
+          onClick={() => setMiniSidenav(dispatch, !miniSidenav)}
+        />
+        <main
+          style={{
+            flex: 1,
+            padding: "2rem",
+            marginLeft: miniSidenav ? "150px" : "300px",
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<Navigate to="/mountain" replace />} />
+            <Route path="/mountain" element={<MountainInfoPage />} />
+            <Route path="/log" element={<HikingLogPage />} />
+            <Route path="/community" element={<CommunityPage />} />
+            <Route path="/group" element={<GroupPage />} />
+            <Route path="/ormi" element={<OrmiPage />} />
+            <Route path="/notification" element={<NotificationPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+          </Routes>
+        </main>
+      </div>
+    </div>
   );
 }
 

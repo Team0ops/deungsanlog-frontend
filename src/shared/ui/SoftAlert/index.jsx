@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import Fade from "@mui/material/Fade";
 
 // Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
+import SoftBox from "shared/ui/SoftBox";
 
 // Custom styles for the SoftAlert
 import SoftAlertRoot from "shared/ui/SoftAlert/SoftAlertRoot";
