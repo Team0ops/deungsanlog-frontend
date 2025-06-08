@@ -98,7 +98,6 @@ function AppContent() {
           miniSidenav={miniSidenav}
           transparentSidenav={transparentSidenav}
           onClick={() => setMiniSidenav(dispatch, !miniSidenav)}
-          color={sidenavColor}
         />
         <main
           style={{
