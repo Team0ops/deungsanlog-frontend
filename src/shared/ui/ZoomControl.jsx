@@ -34,7 +34,10 @@ const ZoomControl = ({ onZoomIn, onZoomOut, onZoomChange, currentZoom }) => {
       <SoftButton
         variant="contained"
         size="large"
-        onClick={handleZoomInClick}
+        onClick={(e) => {
+          handleZoomInClick();
+          e.currentTarget.blur();
+        }}
         style={{
           backgroundColor: "#ffffffcc",
           color: "#111",
@@ -49,7 +52,10 @@ const ZoomControl = ({ onZoomIn, onZoomOut, onZoomChange, currentZoom }) => {
       <SoftButton
         variant="contained"
         size="large"
-        onClick={handleZoomOutClick}
+        onClick={(e) => {
+          handleZoomOutClick();
+          e.currentTarget.blur(); // 버튼 포커스 제거
+        }}
         style={{
           backgroundColor: "#ffffffcc",
           color: "#000000",
