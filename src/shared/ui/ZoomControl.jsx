@@ -38,17 +38,29 @@ const ZoomControl = ({ onZoomIn, onZoomOut, onZoomChange, currentZoom }) => {
           handleZoomInClick();
           e.currentTarget.blur();
         }}
-        style={{
-          backgroundColor: "#ffffffcc",
-          color: "#111",
+        sx={{
+          backgroundColor: "#ffffffcc", // 기본 연둣빛
+          color: "#000000",
           fontWeight: "bold",
           border: "1px solid #ccc",
           borderRadius: "8px",
           boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
+          "&:focus": {
+            outline: "none",
+          },
+          "&:hover": {
+            backgroundColor: "#c4dabec5", // 마우스 올렸을 때
+            border: "1px solid #ccc",
+          },
+          "&:active": {
+            backgroundColor: "#afc2a9c6",
+            border: "1px solid #ccc", // 누를 때 (더 진한 연둣빛)
+          },
         }}
       >
         +
       </SoftButton>
+
       <SoftButton
         variant="contained"
         size="large"
@@ -56,12 +68,24 @@ const ZoomControl = ({ onZoomIn, onZoomOut, onZoomChange, currentZoom }) => {
           handleZoomOutClick();
           e.currentTarget.blur(); // 버튼 포커스 제거
         }}
-        style={{
-          backgroundColor: "#ffffffcc",
+        sx={{
+          backgroundColor: "#ffffffcc", // 기본 연둣빛
           color: "#000000",
           fontWeight: "bold",
-          border: "1px solid #ddd",
+          border: "1px solid #ccc",
           borderRadius: "8px",
+          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
+          "&:focus": {
+            outline: "none",
+          },
+          "&:hover": {
+            backgroundColor: "#c4dabec5", // 마우스 올렸을 때
+            border: "1px solid #ccc",
+          },
+          "&:active": {
+            backgroundColor: "#afc2a9c6",
+            border: "1px solid #ccc", // 누를 때 (더 진한 연둣빛)
+          },
         }}
       >
         −
