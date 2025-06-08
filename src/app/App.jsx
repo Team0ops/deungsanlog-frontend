@@ -37,8 +37,7 @@ import MyPage from "../pages/myPage";
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
-  const { miniSidenav, direction, sidenavColor, transparentSidenav } =
-    controller;
+  const { miniSidenav, direction, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
 
@@ -96,7 +95,6 @@ function AppContent() {
         />
         <SidenavToggleButton
           miniSidenav={miniSidenav}
-          transparentSidenav={transparentSidenav}
           onClick={() => setMiniSidenav(dispatch, !miniSidenav)}
         />
         <main
