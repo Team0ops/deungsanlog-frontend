@@ -115,8 +115,8 @@ const colors = {
     },
 
     success: {
-      main: "#17ad37",
-      state: "#98ec2d",
+      main: "#094115",
+      state: "#3b9450",
     },
 
     warning: {
