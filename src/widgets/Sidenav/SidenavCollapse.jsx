@@ -27,7 +27,6 @@ function SidenavCollapse({
   name,
   children,
   active,
-  noCollapse,
   open,
   ...rest
 }) {
