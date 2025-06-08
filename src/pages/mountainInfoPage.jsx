@@ -87,7 +87,16 @@ const MountainInfoPage = () => {
         />
       </div>
       {mapLoaded && (
-        <ZoomControl onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
+        <div
+          style={{
+            position: "fixed", // 화면 기준으로 고정
+            bottom: "10px", // 하단 여백
+            right: "32px", // 우측 여백
+            zIndex: 10, // 맵보다 위에 뜨도록
+          }}
+        >
+          <ZoomControl onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
+        </div>
       )}
     </>
   );
