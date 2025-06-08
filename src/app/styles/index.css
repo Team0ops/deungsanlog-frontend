@@ -53,6 +53,14 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* ✅ 페이지 전체 스크롤 방지 */
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -64,20 +72,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
-
-@font-face {
-  font-family: "GmarketSans";
-  src: url("./assets/fonts/GmarketSansTTFLight.ttf") format("truetype");
-  font-weight: 300;
-}
-@font-face {
-  font-family: "GmarketSans";
-  src: url("./assets/fonts/GmarketSansTTFMedium.ttf") format("truetype");
-  font-weight: 500;
-}
-@font-face {
-  font-family: "GmarketSans";
-  src: url("./assets/fonts/GmarketSansTTFBold.ttf") format("truetype");
-  font-weight: 700;
 }

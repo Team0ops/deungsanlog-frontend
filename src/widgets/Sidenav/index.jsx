@@ -100,7 +100,12 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       {...rest}
       variant="permanent"
       ownerState={{ transparentSidenav, miniSidenav }}
-      sx={{ position: "relative" }}
+      sx={{
+        position: "relative",
+        height: "100vh", // 전체 높이 설정
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
       <SoftBox pt={3} pb={1} px={3}>
         <SoftBox component={NavLink} to="/" display="flex" alignItems="center">
@@ -124,7 +129,15 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         </SoftBox>
       </SoftBox>
       <Divider />
-      <List>{renderRoutes}</List>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+        }}
+      >
+        <List>{renderRoutes}</List>
+      </Box>
     </SidenavRoot>
   );
 }
