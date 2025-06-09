@@ -85,7 +85,7 @@ function AppContent() {
           }}
         />
       )}
-      <div style={{ position: "relative", zIndex: 1 }}>
+      <div style={{ display: "flex", position: "relative", zIndex: 1 }}>
         <Sidenav
           color={sidenavColor}
           brand={brand}
