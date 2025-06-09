@@ -21,7 +21,7 @@ import theme from "theme";
 import themeRTL from "theme/theme-rtl";
 
 // 이미지
-import brand from "shared/assets/images/logo_trans.png";
+import brand from "shared/assets/images/logo_mountain.png";
 
 // 라우터
 import routes from "shared/config/routes";
