@@ -21,14 +21,15 @@ import theme from "theme";
 import themeRTL from "theme/theme-rtl";
 
 // 이미지
-import brand from "shared/assets/images/logo_trans.png";
+import brand from "shared/assets/images/logo_mountain.png";
 
 // 라우터
 import routes from "shared/config/routes";
 
 // 페이지
 import MountainInfoPage from "../pages/mountainInfoPage";
-import HikingLogPage from "../pages/hikingLogPage";
+import LogViewPage from "../pages/record/LogViewPage";
+import LogWritePage from "../pages/record/LogWritePage";
 import CommunityPage from "../pages/communityPage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
@@ -84,7 +85,7 @@ function AppContent() {
           }}
         />
       )}
-      <div style={{ position: "relative", zIndex: 1 }}>
+      <div style={{ display: "flex", position: "relative", zIndex: 1 }}>
         <Sidenav
           color={sidenavColor}
           brand={brand}
@@ -107,7 +108,8 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Navigate to="/mountain" replace />} />
             <Route path="/mountain" element={<MountainInfoPage />} />
-            <Route path="/log" element={<HikingLogPage />} />
+            <Route path="/log" element={<LogViewPage />} />
+            <Route path="/log/write" element={<LogWritePage />} />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
