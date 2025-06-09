@@ -122,7 +122,7 @@ const LogHeader = ({ userId }) => {
         <GreenButton
           onClick={() => navigate("/log/write")}
           style={{
-            height: "60px",
+            height: "65px",
             width: "100%",
             color: "#4c7559",
             background: "#f5f5f5",
@@ -134,7 +134,7 @@ const LogHeader = ({ userId }) => {
         <Box height="20%"></Box>
         <select
           style={{
-            height: "60px",
+            height: "65px",
             width: "100%",
             padding: "0 1rem",
             borderRadius: "12px",
