@@ -43,6 +43,7 @@ function AppContent() {
   const { pathname } = useLocation();
 
   const isOrmiPage = pathname === "/ormi";
+  const isRecordPage = pathname === "/log"; // 등산 기록 페이지 여부
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -68,7 +69,7 @@ function AppContent() {
   };
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
-      {isOrmiPage && (
+      {(isOrmiPage || isRecordPage) && (
         <div
           style={{
             position: "absolute",
@@ -76,7 +77,9 @@ function AppContent() {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundImage: "url('/images/back_green.jpg')",
+            backgroundImage: isOrmiPage
+              ? "url('/images/back_green.jpg')"
+              : "url('/images/back_paper.jpg')", // record 전용 배경
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
