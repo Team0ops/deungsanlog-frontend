@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material";
 import mountainMessages from "shared/constants/mountainMessages";
 import GreenButton from "shared/ui/GreenButton";
 
-const LogHeader = ({ userId }) => {
+const LogHeader = ({ userId, sortOption, setSortOption }) => {
   const [badgeInfo, setBadgeInfo] = useState(null);
   const randomMessage =
     mountainMessages[Math.floor(Math.random() * mountainMessages.length)];
@@ -38,7 +38,7 @@ const LogHeader = ({ userId }) => {
       mx="auto"
       mt={4}
       px={2}
-      ml={-6}
+      ml={-1}
     >
       {/* 기존 헤더 박스 */}
       <Box
@@ -58,9 +58,17 @@ const LogHeader = ({ userId }) => {
           <>
             <Typography
               variant="h5"
-              fontWeight="bold"
+              fontWeight={900}
               mb={2}
-              sx={{ color: "#4c7559" }}
+              sx={{
+                color: "#4b8161",
+                background: "linear-gradient(transparent 60%, #fff7c9 60%)",
+                borderRadius: 0,
+                display: "inline",
+                px: 0,
+                py: 0,
+                boxDecorationBreak: "clone",
+              }}
             >
               {randomMessage}
             </Typography>
@@ -118,6 +126,7 @@ const LogHeader = ({ userId }) => {
         borderRadius={3}
         height="100%"
         width="20%"
+        mt={-1}
       >
         <GreenButton
           onClick={() => navigate("/log/write")}
@@ -133,6 +142,8 @@ const LogHeader = ({ userId }) => {
         </GreenButton>
         <Box height="20%"></Box>
         <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
           style={{
             height: "65px",
             width: "100%",
