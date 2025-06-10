@@ -1,12 +1,13 @@
 import { useState } from "react";
-import GreenInput from "shared/ui/greenInput";
-import { Box, Button, TextareaAutosize } from "@mui/material";
+import MountainInputWidget from "../../../widgets/mountain/MountainInputWidget";
+import { Box, TextareaAutosize } from "@mui/material";
 import DatePickerWidget from "widgets/DatePick/DatePickerWidget";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import PhotoUploadWidget from "widgets/PhotoUpload/PhotoUploadWidget";
 import dayjs from "dayjs";
 import axios from "axios";
+import GreenButton from "shared/ui/greenButton";
 
 const shakeKeyframes = `
 @keyframes shake {
@@ -21,6 +22,7 @@ const shakeKeyframes = `
 
 const LogWriteForm = ({ userId = 11 }) => {
   const [mountain, setMountain] = useState("");
+  const [mountainError, setMountainError] = useState(false); // 추가
   const [recordDate, setRecordDate] = useState(null);
   const [content, setContent] = useState("");
   const [photo, setPhoto] = useState(null);
@@ -47,11 +49,23 @@ const LogWriteForm = ({ userId = 11 }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let hasError = false;
+
+    if (!mountain.trim()) {
+      setMountainError(true);
+      hasError = true;
+    } else {
+      setMountainError(false);
+    }
+
     if (!photo) {
       setPhotoError(true);
       setTimeout(() => setPhotoError(false), 600); // 흔들림 후 원복
-      return;
+      hasError = true;
     }
+
+    if (hasError) return;
+
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("mountainId", mountain);
@@ -71,15 +85,24 @@ const LogWriteForm = ({ userId = 11 }) => {
 
   return (
     <Box
-      maxWidth={700}
+      maxWidth="100vw"
       width="100%"
-      p={5}
+      p={{ xs: "1rem", md: "2rem" }}
       boxShadow={2}
       borderRadius={3}
       bgcolor="#ffffff"
+      sx={{
+        maxWidth: { xs: "100vw", md: "700px" },
+        minHeight: "60vh",
+        maxHeight: "90vh",
+        margin: "0 auto",
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
     >
       <form onSubmit={handleSubmit}>
-        {/* 사진 미리보기 박스 */}
         <PhotoUploadWidget
           photoPreview={photoPreview}
           photoError={photoError}
@@ -91,12 +114,14 @@ const LogWriteForm = ({ userId = 11 }) => {
           }}
           shakeKeyframes={shakeKeyframes}
         />
-        {/* 나머지 입력란 */}
-        <GreenInput
+        <MountainInputWidget
           value={mountain}
-          onChange={(e) => setMountain(e.target.value)}
-          placeholder="산 이름을 입력하세요. 예) 한라산"
-          style={{ width: "100%", marginBottom: "1.0rem" }}
+          onChange={(e) => {
+            setMountain(e.target.value);
+            setMountainError(false);
+          }}
+          error={mountainError}
+          errorMessage="산 이름을 입력해주세요."
         />
         <Box mt={3} />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -104,7 +129,11 @@ const LogWriteForm = ({ userId = 11 }) => {
             label="등산 일자를 선택하세요"
             value={recordDate}
             onChange={setRecordDate}
-            sx={{ fontFamily: "'Noto Sans KR', 'Roboto', 'Arial', sans-serif" }}
+            sx={{
+              fontFamily: "'Noto Sans KR', 'Roboto', 'Arial', sans-serif",
+              width: "100%",
+              fontSize: "1.1rem",
+            }}
           />
         </LocalizationProvider>
         <Box mt={3} />
@@ -124,22 +153,19 @@ const LogWriteForm = ({ userId = 11 }) => {
             resize: "vertical",
           }}
         />
-        <Button
+        <GreenButton
           type="submit"
-          variant="contained"
-          color="success"
-          fullWidth
-          sx={{
-            py: 2,
+          style={{
+            background: "#4b8161",
+            color: "#ffffff",
+            width: "100%",
             fontSize: "1.1rem",
-            background: "#4caf50",
-            "&:hover": {
-              background: "#388e3c",
-            },
+            padding: "1rem 0",
+            marginTop: "1rem",
           }}
         >
           기록 저장
-        </Button>
+        </GreenButton>
       </form>
     </Box>
   );
