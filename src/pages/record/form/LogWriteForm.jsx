@@ -21,9 +21,11 @@ const shakeKeyframes = `
 
 const LogWriteForm = ({ userId = 11 }) => {
   const [mountain, setMountain] = useState("");
-  const [mountainError, setMountainError] = useState(false); // 추가
+  const [mountainError, setMountainError] = useState(false);
   const [date, setDate] = useState("");
+  const [dateError, setDateError] = useState(false); // 추가
   const [content, setContent] = useState("");
+  const [contentError, setContentError] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState(false);
@@ -57,9 +59,23 @@ const LogWriteForm = ({ userId = 11 }) => {
       setMountainError(false);
     }
 
+    if (!date) {
+      setDateError(true); // 날짜 에러 처리
+      hasError = true;
+    } else {
+      setDateError(false);
+    }
+
     if (!photo) {
       setPhotoError(true);
       hasError = true;
+    }
+
+    if (!content.trim()) {
+      setContentError(true);
+      hasError = true;
+    } else {
+      setContentError(false);
     }
 
     if (hasError) return;
@@ -124,7 +140,12 @@ const LogWriteForm = ({ userId = 11 }) => {
         <Box mt={3} />
         <DatePickerWidget
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(e) => {
+            setDate(e.target.value);
+            setDateError(false); // 날짜 입력 시 에러 해제
+          }}
+          error={dateError}
+          errorMessage="등산 일자를 입력해주세요."
           sx={{
             width: "100%",
             fontSize: "1.1rem",
@@ -134,11 +155,17 @@ const LogWriteForm = ({ userId = 11 }) => {
         <GreenInput
           as="textarea"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => {
+            setContent(e.target.value);
+            setContentError(false);
+          }}
+          maxLength={100}
+          error={contentError}
+          errorMessage="글 내용을 작성해주세요."
           placeholder="내용을 입력하세요. (100자 이내)"
           style={{
             width: "100%",
-            border: "2px solid #70a784",
+            border: contentError ? "2px solid #dc3545" : "2px solid #70a784",
             fontFamily: "inherit",
             marginBottom: "1.5rem",
             background: "#f8fff9",
