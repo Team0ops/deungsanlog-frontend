@@ -23,7 +23,7 @@ const shakeKeyframes = `
 const LogWriteForm = ({ userId = 11 }) => {
   const [mountain, setMountain] = useState("");
   const [mountainError, setMountainError] = useState(false); // 추가
-  const [recordDate, setRecordDate] = useState(null);
+  const [date, setDate] = useState("");
   const [content, setContent] = useState("");
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -69,7 +69,7 @@ const LogWriteForm = ({ userId = 11 }) => {
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("mountainId", mountain);
-    formData.append("recordDate", dayjs(recordDate).format("YYYY-MM-DD"));
+    formData.append("recordDate", dayjs(date).format("YYYY-MM-DD"));
     formData.append("content", content);
     formData.append("photo", photo);
 
@@ -126,11 +126,9 @@ const LogWriteForm = ({ userId = 11 }) => {
         <Box mt={3} />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePickerWidget
-            label="등산 일자를 선택하세요"
-            value={recordDate}
-            onChange={setRecordDate}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
             sx={{
-              fontFamily: "'Noto Sans KR', 'Roboto', 'Arial', sans-serif",
               width: "100%",
               fontSize: "1.1rem",
             }}
