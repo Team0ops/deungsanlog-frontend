@@ -21,14 +21,15 @@ import theme from "theme";
 import themeRTL from "theme/theme-rtl";
 
 // 이미지
-import brand from "shared/assets/images/logo_trans.png";
+import brand from "shared/assets/images/logo_mountain.png";
 
 // 라우터
 import routes from "shared/config/routes";
 
 // 페이지
 import MountainInfoPage from "../pages/mountainInfoPage";
-import HikingLogPage from "../pages/hikingLogPage";
+import LogViewPage from "../pages/record/LogViewPage";
+import LogWritePage from "../pages/record/LogWritePage";
 import CommunityPage from "../pages/communityPage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
@@ -39,12 +40,12 @@ import KakaoCallback from "../pages/oauth/KakaoCallback";
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
-  const { miniSidenav, direction, sidenavColor, transparentSidenav } =
-    controller;
+  const { miniSidenav, direction, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
 
   const isOrmiPage = pathname === "/ormi";
+  const isRecordPage = pathname === "/log" || pathname === "/log/write"; // 등산 기록 페이지 여부
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -70,7 +71,7 @@ function AppContent() {
   };
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
-      {isOrmiPage && (
+      {(isOrmiPage || isRecordPage) && (
         <div
           style={{
             position: "absolute",
@@ -78,7 +79,9 @@ function AppContent() {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundImage: "url('/images/back_green.jpg')",
+            backgroundImage: isOrmiPage
+              ? "url('/images/back_green.jpg')"
+              : "url('/images/back_paper.jpg')", // record 전용 배경
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -87,7 +90,7 @@ function AppContent() {
           }}
         />
       )}
-      <div style={{ position: "relative", zIndex: 1 }}>
+      <div style={{ display: "flex", position: "relative", zIndex: 1 }}>
         <Sidenav
           color={sidenavColor}
           brand={brand}
@@ -98,21 +101,24 @@ function AppContent() {
         />
         <SidenavToggleButton
           miniSidenav={miniSidenav}
-          transparentSidenav={transparentSidenav}
           onClick={() => setMiniSidenav(dispatch, !miniSidenav)}
-          color={sidenavColor}
         />
         <main
           style={{
             flex: 1,
             padding: "2rem",
             marginLeft: miniSidenav ? "150px" : "300px",
+            display: "flex", // 추가
+            justifyContent: "center", // 추가
+            alignItems: "center", // 추가 (세로 중앙)
+            minHeight: "100vh", // 추가 (세로 중앙)
           }}
         >
           <Routes>
             <Route path="/" element={<Navigate to="/mountain" replace />} />
             <Route path="/mountain" element={<MountainInfoPage />} />
-            <Route path="/log" element={<HikingLogPage />} />
+            <Route path="/log" element={<LogViewPage />} />
+            <Route path="/log/write" element={<LogWritePage />} />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/ormi" element={<OrmiPage />} />

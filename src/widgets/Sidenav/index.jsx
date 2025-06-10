@@ -10,7 +10,6 @@ import SoftBox from "shared/ui/SoftBox";
 import SoftTypography from "shared/ui/SoftTypography";
 import SidenavCollapse from "widgets/Sidenav/SidenavCollapse";
 import SidenavRoot from "widgets/Sidenav/SidenavRoot";
-import sidenavLogoLabel from "widgets/Sidenav/styles/sidenav";
 
 import { useSoftUIController, setMiniSidenav } from "context";
 
@@ -118,14 +117,25 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
               mr={1}
             />
           )}
-          <SoftTypography
-            component="h6"
-            variant="button"
-            fontWeight="medium"
-            sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
-          >
-            {brandName}
-          </SoftTypography>
+          {!miniSidenav && (
+            <SoftTypography
+              component="h6"
+              variant="button"
+              fontWeight="medium"
+              sx={{
+                background:
+                  "linear-gradient(-45deg, #000000, #11746b, #1d743d, #17352c)",
+                backgroundSize: "400% 400%",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                animation: "waveGradient 5s ease infinite",
+                display: "inline-block",
+                fontWeight: "bold",
+              }}
+            >
+              {brandName}
+            </SoftTypography>
+          )}
         </SoftBox>
       </SoftBox>
       <Divider />

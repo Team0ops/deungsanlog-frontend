@@ -28,6 +28,7 @@ function SidenavCollapse({
   children,
   active,
   open,
+  noCollapse,
   ...rest
 }) {
   const [controller] = useSoftUIController();
