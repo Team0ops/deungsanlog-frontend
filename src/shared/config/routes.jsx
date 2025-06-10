@@ -5,6 +5,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import OrmiIcon from "@mui/icons-material/SmartToy";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LoginIcon from "@mui/icons-material/Login";
 
 const routes = [
   // Title: 메인 서비스
@@ -67,6 +68,13 @@ const routes = [
     key: "mypage",
     route: "/mypage",
     icon: <AccountCircleIcon />,
+  },
+  {
+    type: "collapse",
+    name: "로그인",
+    key: "login",
+    route: "/login",
+    icon: <LoginIcon />,
   },
 ];
 
