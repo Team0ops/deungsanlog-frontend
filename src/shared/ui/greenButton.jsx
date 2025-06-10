@@ -1,6 +1,13 @@
-const GreenButton = ({ children, onClick, style = {}, ...props }) => {
+const GreenButton = ({
+  children,
+  onClick,
+  style = {},
+  component = "button",
+  ...props
+}) => {
+  const Comp = component;
   return (
-    <button
+    <Comp
       onClick={onClick}
       style={{
         padding: "0.75rem 1.5rem",
@@ -27,7 +34,7 @@ const GreenButton = ({ children, onClick, style = {}, ...props }) => {
       {...props}
     >
       {children}
-    </button>
+    </Comp>
   );
 };
 
