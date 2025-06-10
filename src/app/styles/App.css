@@ -6,16 +6,20 @@
 
 /* 기본 감추기 */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 7px;
   background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background-color: transparent; /* thumb도 감춤 */
-  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: rgba(76, 117, 89, 0.3);
+  border-radius: 999px; /* 완전 둥글게 */
+  min-height: 30px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0; /* 위아래 여백 추가 */
 }
 
 @keyframes waveText {
