@@ -43,7 +43,7 @@ function AppContent() {
   const { pathname } = useLocation();
 
   const isOrmiPage = pathname === "/ormi";
-  const isRecordPage = pathname === "/log"; // 등산 기록 페이지 여부
+  const isRecordPage = pathname === "/log" || pathname === "/log/write"; // 등산 기록 페이지 여부
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -106,6 +106,10 @@ function AppContent() {
             flex: 1,
             padding: "2rem",
             marginLeft: miniSidenav ? "150px" : "300px",
+            display: "flex", // 추가
+            justifyContent: "center", // 추가
+            alignItems: "center", // 추가 (세로 중앙)
+            minHeight: "100vh", // 추가 (세로 중앙)
           }}
         >
           <Routes>
