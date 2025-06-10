@@ -26,7 +26,7 @@ const PhotoUploadWidget = ({
           height: { xs: "60vw", sm: "300px" },
           maxWidth: "300px",
           maxHeight: "300px",
-          border: photoError ? "2px dashed #dc3545" : "2px dashed #bdbdbd",
+          border: photoError ? "2px solid #dc3545" : "2px dashed #bdbdbd",
           borderRadius: "12px",
           background: "#f8fff9",
           display: "flex",
@@ -68,7 +68,7 @@ const PhotoUploadWidget = ({
         ) : (
           <span
             style={{
-              color: photoError ? "#b1403e" : "#bdbdbd",
+              color: photoError ? "#dc3545" : "#bdbdbd",
               fontWeight: 500,
               textAlign: "center",
               fontSize: "1rem",
