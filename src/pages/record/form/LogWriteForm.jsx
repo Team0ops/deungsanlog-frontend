@@ -58,7 +58,6 @@ const LogWriteForm = ({ userId = 11 }) => {
 
     if (!photo) {
       setPhotoError(true);
-      setTimeout(() => setPhotoError(false), 600); // 흔들림 후 원복
       hasError = true;
     }
 

@@ -22,7 +22,7 @@ const DatePickerWidget = ({
       fontSize: "1.0rem",
       fontFamily: "inherit",
       flex: 1,
-      border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
+      border: `2px solid ${error ? "#b1403e" : "#70a784"}`,
       color: value ? "#222" : "#6e6e6e",
     }}
     required={required}
