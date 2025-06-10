@@ -58,7 +58,8 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  overflow: hidden; /* ✅ 페이지 전체 스크롤 방지 */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 @media (prefers-color-scheme: light) {
