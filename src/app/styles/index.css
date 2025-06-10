@@ -52,6 +52,15 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+html {
+  font-size: calc(100vw / 1440 * 16); /* 기준 너비 1440px일 때 1rem = 16px */
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: calc(100vw / 375 * 16); /* 모바일 기준 375px */
+  }
+}
 
 html,
 body,
