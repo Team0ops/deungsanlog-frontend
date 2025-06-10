@@ -86,6 +86,8 @@ const PhotoUploadWidget = ({
       <GreenButton
         component="label"
         style={{
+          background: "#70a784",
+          color: "#ffffff",
           width: "min(90vw, 160px)",
           height: "3.0rem",
           borderRadius: "12px",
