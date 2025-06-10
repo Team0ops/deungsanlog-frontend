@@ -25,7 +25,7 @@ const MountainInputWidget = ({
         border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
       }}
     />
-    <Box width="2.5rem" /> {/* Placeholder for spacing */}
+    <Box width="2.5rem" />
     <GreenButton
       type="button"
       style={{

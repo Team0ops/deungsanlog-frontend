@@ -1,4 +1,3 @@
-import { colors } from "@mui/material";
 import GreenInput from "shared/ui/greenInput";
 
 const DatePickerWidget = ({
