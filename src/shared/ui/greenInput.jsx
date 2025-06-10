@@ -29,7 +29,7 @@ const GreenInput = ({
     borderRadius: "12px",
     border: `2px solid ${error ? "#dc3545" : focused ? "#2c5c46" : "#4b8161"}`,
     outline: "none",
-    color: "#000000",
+    colors: "#1f1f1f",
     background: "#f8fff9",
     boxShadow: focused
       ? "0 6px 12px rgba(0, 0, 0, 0.15)"
