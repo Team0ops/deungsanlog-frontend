@@ -2,8 +2,6 @@ import { useState } from "react";
 import MountainInputWidget from "../../../widgets/mountain/MountainInputWidget";
 import { Box, TextareaAutosize } from "@mui/material";
 import DatePickerWidget from "widgets/DatePick/DatePickerWidget";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import PhotoUploadWidget from "widgets/PhotoUpload/PhotoUploadWidget";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -124,16 +122,14 @@ const LogWriteForm = ({ userId = 11 }) => {
           errorMessage="산 이름을 입력해주세요."
         />
         <Box mt={3} />
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePickerWidget
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            sx={{
-              width: "100%",
-              fontSize: "1.1rem",
-            }}
-          />
-        </LocalizationProvider>
+        <DatePickerWidget
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          sx={{
+            width: "100%",
+            fontSize: "1.1rem",
+          }}
+        />
         <Box mt={3} />
         <TextareaAutosize
           minRows={6}
