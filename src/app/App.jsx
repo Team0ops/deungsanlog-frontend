@@ -34,7 +34,8 @@ import CommunityPage from "../pages/communityPage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
 import NotificationPage from "../pages/notificationPage";
-import MyPage from "../pages/myPage";
+import MyPage from "../pages/user/MyPage";
+import LoginPage from "../pages/user/LoginPage";
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
@@ -122,6 +123,7 @@ function AppContent() {
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </main>
       </div>
