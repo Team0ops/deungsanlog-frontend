@@ -89,7 +89,7 @@ const PhotoUploadWidget = ({
           background: "#70a784",
           color: "#ffffff",
           width: "min(90vw, 160px)",
-          height: "3.0rem",
+          height: "2.7rem",
           borderRadius: "12px",
           fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)", // 반응형 폰트 크기
           textAlign: "center",
