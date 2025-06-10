@@ -1,11 +1,12 @@
 import { useState } from "react";
 import MountainInputWidget from "../../../widgets/mountain/MountainInputWidget";
-import { Box, TextareaAutosize } from "@mui/material";
+import { Box } from "@mui/material";
 import DatePickerWidget from "widgets/DatePick/DatePickerWidget";
 import PhotoUploadWidget from "widgets/PhotoUpload/PhotoUploadWidget";
 import dayjs from "dayjs";
 import axios from "axios";
 import GreenButton from "shared/ui/greenButton";
+import GreenInput from "shared/ui/greenInput";
 
 const shakeKeyframes = `
 @keyframes shake {
@@ -130,17 +131,15 @@ const LogWriteForm = ({ userId = 11 }) => {
           }}
         />
         <Box mt={3} />
-        <TextareaAutosize
-          minRows={6}
-          placeholder="내용을 입력하세요"
+        <GreenInput
+          as="textarea"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          placeholder="내용을 입력하세요. (100자 이내)"
           style={{
             width: "100%",
-            borderRadius: "12px",
-            border: "2px solid #4b8161",
-            padding: "1.2rem",
-            fontSize: "1.1rem",
+            border: "2px solid #70a784",
+            fontFamily: "inherit",
             marginBottom: "1.5rem",
             background: "#f8fff9",
             resize: "vertical",
