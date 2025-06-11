@@ -37,6 +37,7 @@ import OrmiPage from "../pages/ormie/ormiPage";
 import NotificationPage from "../pages/notificationPage";
 import MyPage from "../pages/user/MyPage";
 import LoginPage from "../pages/user/LoginPage";
+import LogEditPage from "../pages/record/LogEditPage";
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
@@ -48,6 +49,7 @@ function AppContent() {
   const isRecordPage =
     pathname === "/log" ||
     pathname === "/log/write" ||
+    pathname === "/log/edit" ||
     pathname === "/log/write/mountain-search";
 
   useEffect(() => {
@@ -122,6 +124,7 @@ function AppContent() {
             <Route path="/mountain" element={<MountainInfoPage />} />
             <Route path="/log" element={<LogViewPage />} />
             <Route path="/log/write" element={<LogWritePage />} />
+            <Route path="/log/edit/:recordId" element={<LogEditPage />} />
             <Route
               path="/log/write/mountain-search"
               element={<LogMountainSearchPage />}

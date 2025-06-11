@@ -4,7 +4,7 @@ import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 
 const MountainInputWidget = ({
-  value,
+  value = "",
   onChange,
   onSearchClick,
   error,
@@ -36,6 +36,7 @@ const MountainInputWidget = ({
       <GreenInput
         value={directInput ? tempValue : value}
         onChange={directInput ? (e) => setTempValue(e.target.value) : onChange}
+        readOnly={!directInput} // ✅ 여기로 변경
         error={error}
         errorMessage={errorMessage}
         placeholder="산 이름을 입력하세요."
@@ -47,7 +48,6 @@ const MountainInputWidget = ({
           flex: 1,
           border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
         }}
-        disabled={!directInput}
       />
       <Box width="1.5rem" />
       {!directInput ? (

@@ -4,10 +4,12 @@ import { Box } from "@mui/material";
 import axios from "axios";
 import RecordCard from "widgets/record/RecordCard";
 import Grid from "@mui/material/Grid";
+import { useNavigate } from "react-router-dom";
 
 const LogViewPage = () => {
   const [sortOption, setSortOption] = useState("latest");
   const userId = 11;
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -60,7 +62,7 @@ const LogViewPage = () => {
               title={record.mountainName}
               date={record.recordDate}
               content={record.content}
-              onEdit={() => console.log("수정", record.id)}
+              onEdit={() => navigate(`/log/edit/${record.id}`)}
               onDeleted={() => {
                 setRecords((prev) => prev.filter((r) => r.id !== record.id));
               }}

@@ -20,14 +20,23 @@ const shakeKeyframes = `
 }
 `;
 
-const LogWriteForm = ({ userId = 11 }) => {
-  const [mountain, setMountain] = useState("");
+const LogWriteForm = ({
+  userId = 11,
+  initialMountain = "",
+  initialDate = "",
+  initialContent = "",
+  initialPhoto = null,
+  onSubmit, // 등록/수정 분기용
+  recordId, // 추가
+  isEdit = false,
+}) => {
+  const [mountain, setMountain] = useState(initialMountain);
   const [mountainError, setMountainError] = useState(false);
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(initialDate);
   const [dateError, setDateError] = useState(false); // 추가
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(initialContent);
   const [contentError, setContentError] = useState(false);
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState(initialPhoto);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState(false);
   const navigate = useNavigate();
@@ -42,6 +51,22 @@ const LogWriteForm = ({ userId = 11 }) => {
       // photo, photoPreview 등도 필요하면 복원
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof initialMountain === "object" && initialMountain !== null) {
+      setMountain(initialMountain.name);
+    } else {
+      setMountain(initialMountain);
+    }
+
+    setDate(initialDate);
+    setContent(initialContent);
+    setPhoto(initialPhoto);
+
+    if (initialPhoto && typeof initialPhoto === "string") {
+      setPhotoPreview(initialPhoto);
+    }
+  }, [initialMountain, initialDate, initialContent, initialPhoto]);
 
   const handlePhotoChange = (e) => {
     setPhotoError(false);
@@ -110,6 +135,7 @@ const LogWriteForm = ({ userId = 11 }) => {
       mountainName = mountain;
     }
 
+    // formData 생성
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("mountainId", mountainId);
@@ -118,19 +144,37 @@ const LogWriteForm = ({ userId = 11 }) => {
     formData.append("content", content);
     formData.append("photo", photo);
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/record-service/post",
-        formData,
-        {
+    if (isEdit && onSubmit) {
+      // 수정 모드: 부모에서 처리
+      formData.append("recordId", recordId); // 반드시 추가!
+      try {
+        await axios.put("http://localhost:8080/record-service/edit", formData, {
           headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      alert(response.data);
-      localStorage.removeItem("logWriteForm");
-      navigate("/log"); // 저장 성공 시 log 페이지로 이동
-    } catch (error) {
-      console.error("There was an error!", error);
+        });
+        alert("기록 수정 완료!");
+        localStorage.removeItem("logWriteForm");
+        navigate("/log"); // 수정 완료 후 log 페이지로 이동
+      } catch (error) {
+        console.error("수정 실패", error);
+        alert("수정에 실패했습니다. 다시 시도해주세요.");
+        navigate(-1); // 실패 시 이전 페이지로 이동
+      }
+    } else {
+      // 등록 모드: 직접 POST
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/record-service/post",
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        alert(response.data);
+        localStorage.removeItem("logWriteForm");
+        navigate("/log");
+      } catch (error) {
+        console.error("There was an error!", error);
+      }
     }
   };
 
@@ -239,7 +283,21 @@ const LogWriteForm = ({ userId = 11 }) => {
             marginTop: "1rem",
           }}
         >
-          기록 저장
+          {isEdit ? "수정 완료" : "기록 저장"}
+        </GreenButton>
+        <GreenButton
+          type="button"
+          style={{
+            background: "#72927f",
+            color: "#ffffff",
+            width: "100%",
+            fontSize: "1.05rem",
+            padding: "0.8rem 0",
+            marginTop: "0.7rem",
+          }}
+          onClick={() => navigate(-1)}
+        >
+          뒤로가기
         </GreenButton>
       </form>
     </Box>
