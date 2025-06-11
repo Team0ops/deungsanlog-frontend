@@ -73,7 +73,7 @@ const RecordCard = ({
         minHeight: 330,
         borderRadius: "16px",
         overflow: "hidden",
-        backgroundColor: "transparent",
+        backgroundColor: "#f8f8f8",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
         mb: 4,
         position: "relative",
