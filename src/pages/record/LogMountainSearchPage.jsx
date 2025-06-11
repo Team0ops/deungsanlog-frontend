@@ -11,6 +11,7 @@ const LogMountainSearchPage = () => {
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [mountainList, setMountainList] = useState([]);
+  const [selectedMountain, setSelectedMountain] = useState(null);
 
   // 산 검색 API 호출
   const fetchMountainList = async (keyword) => {
@@ -44,24 +45,31 @@ const LogMountainSearchPage = () => {
       setError("산 이름을 입력하거나 선택해주세요.");
       return;
     }
+
     const saved = localStorage.getItem("logWriteForm");
     let form = saved ? JSON.parse(saved) : {};
-    form.mountain = search;
+
+    if (selectedMountain) {
+      // ✅ 선택한 산이 있으면 full object 저장
+      form.mountain = {
+        id: selectedMountain.id,
+        name: selectedMountain.name,
+        location: selectedMountain.location,
+      };
+    } else {
+      // ✅ 직접 입력한 경우 텍스트만
+      form.mountain = search.trim();
+    }
+
     localStorage.setItem("logWriteForm", JSON.stringify(form));
     navigate(-1);
   };
 
   // 리스트에서 산 선택
   const handleSelectMountain = (mountain) => {
-    const saved = localStorage.getItem("logWriteForm");
-    let form = saved ? JSON.parse(saved) : {};
-    form.mountain = {
-      id: mountain.id,
-      name: mountain.name,
-      location: mountain.location,
-    };
-    localStorage.setItem("logWriteForm", JSON.stringify(form));
-    navigate(-1);
+    setSearch(mountain.name); // 인풋에 보여줌
+    setSelectedMountain(mountain); // 선택된 산 저장
+    setMountainList([]); // ✅ 리스트 닫기
   };
 
   // 뒤로가기
