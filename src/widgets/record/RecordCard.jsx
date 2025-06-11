@@ -50,7 +50,7 @@ const RecordCard = ({
       }}
     >
       {/* 이미지 영역 */}
-      <Box sx={{ position: "relative", width: "100%", height: 170 }}>
+      <Box sx={{ position: "relative", width: "100%", height: 250 }}>
         <Box
           component="img"
           src={image}
@@ -62,12 +62,10 @@ const RecordCard = ({
           sx={{
             width: "100%",
             height: "100%",
-            minHeight: 170,
-            maxHeight: 170,
-            minWidth: 250,
-            maxWidth: 250,
-            objectFit: "cover",
+            objectFit: "cover", // 또는 "contain"
             display: "block",
+            borderRadius: 2,
+            background: "#eee",
           }}
         />
         {/* 아이콘 버튼 (이미지 오른쪽 위) */}
