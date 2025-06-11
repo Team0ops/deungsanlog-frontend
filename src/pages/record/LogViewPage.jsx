@@ -51,12 +51,19 @@ const LogViewPage = () => {
         {records.map((record) => (
           <Grid item key={record.id}>
             <RecordCard
-              image={`http://localhost:8080/api/records${record.photoUrl}`}
+              recordId={record.id} // recordId prop 추가
+              image={
+                record.photoUrl
+                  ? `http://localhost:8080/record-service${record.photoUrl}`
+                  : "/default-image.png"
+              }
               title={record.mountainName}
               date={record.recordDate}
               content={record.content}
               onEdit={() => console.log("수정", record.id)}
-              onDelete={() => console.log("삭제", record.id)}
+              onDeleted={() => {
+                setRecords((prev) => prev.filter((r) => r.id !== record.id));
+              }}
             />
           </Grid>
         ))}

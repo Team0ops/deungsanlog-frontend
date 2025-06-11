@@ -2,6 +2,7 @@ import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import defaultImage from "shared/assets/images/logo_mountain.png";
+import axios from "axios";
 
 const RecordCard = ({
   image,
@@ -9,12 +10,28 @@ const RecordCard = ({
   date,
   content,
   onEdit,
-  onDelete,
+  recordId,
+  onDeleted, // 삭제 후 콜백 prop 추가 (optional)
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
+  const handleDelete = async () => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      console.log("삭제 요청 recordId:", recordId); // 추가
+      await axios.delete(
+        `http://localhost:8080/record-service/delete?recordId=${recordId}`
+      );
+      alert("삭제되었습니다.");
+      if (onDeleted) onDeleted();
+    } catch (e) {
+      alert("삭제에 실패했습니다.");
+      console.error(e); // 에러 로그 확인
+    }
+  };
 
   return (
     <Box
@@ -78,7 +95,7 @@ const RecordCard = ({
           <MenuItem
             onClick={() => {
               handleClose();
-              onDelete?.();
+              handleDelete(); // 삭제 함수 연동
             }}
           >
             삭제
