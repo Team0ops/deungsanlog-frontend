@@ -3,6 +3,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import defaultImage from "shared/assets/images/logo_mountain.png";
 import axios from "axios";
+import html2canvas from "html2canvas";
 
 const RecordCard = ({
   image,
@@ -33,15 +34,47 @@ const RecordCard = ({
     }
   };
 
+  const handleImageDownload = async () => {
+    const cardElement = document.getElementById(`record-card-${recordId}`);
+    const menuButton = document.getElementById(`menu-button-${recordId}`);
+    if (!cardElement) return;
+
+    // 1. 메뉴 버튼 잠깐 숨기기
+    if (menuButton) menuButton.style.display = "none";
+
+    try {
+      const canvas = await html2canvas(cardElement, {
+        useCORS: true,
+        scale: 2,
+      });
+
+      const dataUrl = canvas.toDataURL("image/jpeg", 1.0);
+      const link = document.createElement("a");
+      const now = new Date().toISOString().split("T")[0];
+      link.href = dataUrl;
+      link.download = `Deungsanlog_${now}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("이미지 저장 실패", err);
+      alert("이미지 저장에 실패했습니다.");
+    } finally {
+      // 2. 캡처 후 다시 보이게 하기
+      if (menuButton) menuButton.style.display = "block";
+    }
+  };
+
   return (
     <Box
+      id={`record-card-${recordId}`}
       sx={{
         width: 250,
         minHeight: 330,
-        borderRadius: 3,
+        borderRadius: "16px",
         overflow: "hidden",
+        backgroundColor: "transparent",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        bgcolor: "#f8f8f8",
         mb: 4,
         position: "relative",
         display: "flex",
@@ -72,6 +105,7 @@ const RecordCard = ({
         />
         {/* 아이콘 버튼 (이미지 오른쪽 위) */}
         <IconButton
+          id={`menu-button-${recordId}`}
           onClick={handleClick}
           sx={{
             position: "absolute",
@@ -79,6 +113,12 @@ const RecordCard = ({
             right: 8,
             bgcolor: "rgba(255,255,255,0.7)",
             zIndex: 2,
+            outline: "none", // ✅ 포커스 테두리 제거
+            boxShadow: "none", // ✅ 일부 브라우저 그림자 제거
+            "&:focus": {
+              outline: "none",
+              boxShadow: "none",
+            },
           }}
         >
           <MoreVertIcon />
@@ -92,13 +132,23 @@ const RecordCard = ({
           >
             수정
           </MenuItem>
+
           <MenuItem
             onClick={() => {
               handleClose();
-              handleDelete(); // 삭제 함수 연동
+              handleDelete();
             }}
           >
             삭제
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleImageDownload?.();
+            }}
+          >
+            이미지 저장
           </MenuItem>
         </Menu>
       </Box>
