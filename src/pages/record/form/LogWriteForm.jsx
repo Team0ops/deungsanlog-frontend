@@ -79,7 +79,7 @@ const LogWriteForm = ({ userId = 11 }) => {
     }
 
     if (!date) {
-      setDateError(true); // 날짜 에러 처리
+      setDateError(true);
       hasError = true;
     } else {
       setDateError(false);
@@ -99,19 +99,36 @@ const LogWriteForm = ({ userId = 11 }) => {
 
     if (hasError) return;
 
+    // mountainId, mountainName 분리
+    let mountainId = "";
+    let mountainName = "";
+    if (typeof mountain === "object" && mountain !== null) {
+      mountainId = mountain.id;
+      mountainName = mountain.name;
+    } else {
+      mountainId = "";
+      mountainName = mountain;
+    }
+
     const formData = new FormData();
     formData.append("userId", userId);
-    formData.append("mountainId", mountain);
+    formData.append("mountainId", mountainId);
+    formData.append("mountainName", mountainName);
     formData.append("recordDate", dayjs(date).format("YYYY-MM-DD"));
     formData.append("content", content);
     formData.append("photo", photo);
 
     try {
-      const response = await axios.post("/api/records/post", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+        "http://localhost:8080/record-service/post",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       alert(response.data);
       localStorage.removeItem("logWriteForm");
+      navigate("/log"); // 저장 성공 시 log 페이지로 이동
     } catch (error) {
       console.error("There was an error!", error);
     }
