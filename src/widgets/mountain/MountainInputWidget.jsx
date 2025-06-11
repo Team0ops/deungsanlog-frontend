@@ -27,15 +27,29 @@ const MountainInputWidget = ({
 
   // 직접입력 적용
   const handleApply = () => {
-    onChange({ target: { value: tempValue } });
+    onChange({
+      target: {
+        value: { id: null, name: tempValue, location: "" },
+      },
+    });
     setDirectInput(false);
   };
 
   return (
     <Box display="flex" alignItems="center" width="100%">
       <GreenInput
-        value={directInput ? tempValue : value}
-        onChange={directInput ? (e) => setTempValue(e.target.value) : onChange}
+        value={
+          directInput
+            ? tempValue
+            : typeof value === "object"
+            ? value?.name
+            : value
+        }
+        onChange={
+          directInput
+            ? (e) => setTempValue(e.target.value)
+            : onChange?.({ target: { value } })
+        }
         readOnly={!directInput} // ✅ 여기로 변경
         error={error}
         errorMessage={errorMessage}

@@ -43,30 +43,43 @@ const LogWriteForm = ({
 
   useEffect(() => {
     const saved = localStorage.getItem("logWriteForm");
+
     if (saved) {
       const { mountain, date, content } = JSON.parse(saved);
       if (mountain) setMountain(mountain);
       if (date) setDate(date);
       if (content) setContent(content);
-      // photo, photoPreview 등도 필요하면 복원
+    } else {
+      // ⬅️ 저장된 값 없을 때만 초기값 적용 (edit용)
+      setMountain(initialMountain);
+      setDate(initialDate);
+      setContent(initialContent);
+      setPhoto(initialPhoto);
+      if (initialPhoto && typeof initialPhoto === "string") {
+        setPhotoPreview(initialPhoto);
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (typeof initialMountain === "object" && initialMountain !== null) {
-      setMountain(initialMountain.name);
+    const saved = localStorage.getItem("logWriteForm");
+
+    if (saved) {
+      const { mountain, date, content } = JSON.parse(saved);
+      if (mountain) setMountain(mountain); // ✅ 객체 그대로
+      if (date) setDate(date);
+      if (content) setContent(content);
     } else {
-      setMountain(initialMountain);
+      // ✅ edit 시 초기값 사용
+      setMountain(initialMountain); // ✅ 객체 그대로 유지!
+      setDate(initialDate);
+      setContent(initialContent);
+      setPhoto(initialPhoto);
+      if (initialPhoto && typeof initialPhoto === "string") {
+        setPhotoPreview(initialPhoto);
+      }
     }
-
-    setDate(initialDate);
-    setContent(initialContent);
-    setPhoto(initialPhoto);
-
-    if (initialPhoto && typeof initialPhoto === "string") {
-      setPhotoPreview(initialPhoto);
-    }
-  }, [initialMountain, initialDate, initialContent, initialPhoto]);
+  }, []);
 
   const handlePhotoChange = (e) => {
     setPhotoError(false);
@@ -224,11 +237,7 @@ const LogWriteForm = ({
           shakeKeyframes={shakeKeyframes}
         />
         <MountainInputWidget
-          value={
-            typeof mountain === "object" && mountain !== null
-              ? mountain.name
-              : mountain
-          }
+          value={mountain}
           onChange={(e) => {
             setMountain(e.target.value);
             setMountainError(false);
