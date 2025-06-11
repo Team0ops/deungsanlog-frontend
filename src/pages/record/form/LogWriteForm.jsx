@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MountainInputWidget from "../../../widgets/mountain/MountainInputWidget";
 import { Box } from "@mui/material";
 import DatePickerWidget from "widgets/DatePick/DatePickerWidget";
@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
+import { useNavigate } from "react-router-dom";
 
 const shakeKeyframes = `
 @keyframes shake {
@@ -29,6 +30,18 @@ const LogWriteForm = ({ userId = 11 }) => {
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const saved = localStorage.getItem("logWriteForm");
+    if (saved) {
+      const { mountain, date, content } = JSON.parse(saved);
+      if (mountain) setMountain(mountain);
+      if (date) setDate(date);
+      if (content) setContent(content);
+      // photo, photoPreview 등도 필요하면 복원
+    }
+  }, []);
 
   const handlePhotoChange = (e) => {
     setPhotoError(false);
@@ -52,7 +65,13 @@ const LogWriteForm = ({ userId = 11 }) => {
     e.preventDefault();
     let hasError = false;
 
-    if (!mountain.trim()) {
+    // 산 이름 검증
+    if (
+      !mountain ||
+      (typeof mountain === "string" && !mountain.trim()) ||
+      (typeof mountain === "object" &&
+        (!mountain.name || !mountain.name.trim()))
+    ) {
       setMountainError(true);
       hasError = true;
     } else {
@@ -92,9 +111,24 @@ const LogWriteForm = ({ userId = 11 }) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert(response.data);
+      localStorage.removeItem("logWriteForm");
     } catch (error) {
       console.error("There was an error!", error);
     }
+  };
+
+  // 산 검색 버튼 클릭 시
+  const handleMountainSearch = () => {
+    localStorage.setItem(
+      "logWriteForm",
+      JSON.stringify({
+        mountain,
+        date,
+        content,
+        // photo, photoPreview 등도 필요하면 추가
+      })
+    );
+    navigate("/log/write/mountain-search");
   };
 
   return (
@@ -129,13 +163,18 @@ const LogWriteForm = ({ userId = 11 }) => {
           shakeKeyframes={shakeKeyframes}
         />
         <MountainInputWidget
-          value={mountain}
+          value={
+            typeof mountain === "object" && mountain !== null
+              ? mountain.name
+              : mountain
+          }
           onChange={(e) => {
             setMountain(e.target.value);
             setMountainError(false);
           }}
           error={mountainError}
           errorMessage="산 이름을 입력해주세요."
+          onSearchClick={handleMountainSearch} // 이렇게!
         />
         <Box mt={3} />
         <DatePickerWidget
