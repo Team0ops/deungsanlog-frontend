@@ -11,3 +11,5 @@ npm install react-kakao-maps-sdk --legacy-peer-deps
 npm install axios --legacy-peer-deps
 
 npm install @mui/x-date-pickers @mui/material @mui/lab dayjs
+
+npm install html2canvas

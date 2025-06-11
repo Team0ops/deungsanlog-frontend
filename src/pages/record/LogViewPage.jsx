@@ -4,10 +4,12 @@ import { Box } from "@mui/material";
 import axios from "axios";
 import RecordCard from "widgets/record/RecordCard";
 import Grid from "@mui/material/Grid";
+import { useNavigate } from "react-router-dom";
 
 const LogViewPage = () => {
   const [sortOption, setSortOption] = useState("latest");
   const userId = 11;
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -51,12 +53,19 @@ const LogViewPage = () => {
         {records.map((record) => (
           <Grid item key={record.id}>
             <RecordCard
-              image={`http://localhost:8080/api/records${record.photoUrl}`}
-              title={record.mountainName}
+              recordId={record.id} // recordId prop 추가
+              image={
+                record.photoUrl
+                  ? `http://localhost:8080/record-service${record.photoUrl}`
+                  : "/default-image.png"
+              }
+              mountainName={record.mountainName}
               date={record.recordDate}
               content={record.content}
-              onEdit={() => console.log("수정", record.id)}
-              onDelete={() => console.log("삭제", record.id)}
+              onEdit={() => navigate(`/log/edit/${record.id}`)}
+              onDeleted={() => {
+                setRecords((prev) => prev.filter((r) => r.id !== record.id));
+              }}
             />
           </Grid>
         ))}

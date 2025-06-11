@@ -13,12 +13,20 @@ const PhotoUploadWidget = ({
 }) => (
   <>
     <style>{shakeKeyframes}</style>
-    <Box mb={2} display="flex" justifyContent="center">
+    <Box
+      mt={{ xs: "6vw", md: "15rem" }} // 위쪽 여백 추가
+      mb={{ xs: "4vw", md: "2rem" }}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
       <Box
         sx={{
-          width: 250,
-          height: 250,
-          border: photoError ? "2px dashed #b1403e" : "2px dashed #bdbdbd",
+          width: { xs: "60vw", sm: "300px" },
+          height: { xs: "60vw", sm: "300px" },
+          maxWidth: "300px",
+          maxHeight: "300px",
+          border: photoError ? "2px solid #dc3545" : "2px dashed #bdbdbd",
           borderRadius: "12px",
           background: "#f8fff9",
           display: "flex",
@@ -60,7 +68,7 @@ const PhotoUploadWidget = ({
         ) : (
           <span
             style={{
-              color: photoError ? "#b1403e" : "#bdbdbd",
+              color: photoError ? "#dc3545" : "#bdbdbd",
               fontWeight: 500,
               textAlign: "center",
               fontSize: "1rem",
@@ -73,20 +81,30 @@ const PhotoUploadWidget = ({
           </span>
         )}
       </Box>
+      {/* 버튼과 사진 박스 사이 간격 추가 */}
+      <Box height={{ xs: "4vw", md: "1.2rem" }} />
+      <GreenButton
+        component="label"
+        style={{
+          background: "#70a784",
+          color: "#ffffff",
+          width: "min(90vw, 160px)",
+          height: "2.7rem",
+          borderRadius: "12px",
+          fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)", // 반응형 폰트 크기
+          textAlign: "center",
+          padding: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: 600,
+        }}
+        onClick={() => setPhotoError(false)}
+      >
+        사진 선택
+        <input type="file" accept="image/*" hidden onChange={onPhotoChange} />
+      </GreenButton>
     </Box>
-    <GreenButton
-      component="label"
-      style={{
-        width: "100%",
-        margin: "16px 0",
-        fontSize: "1.1rem",
-        padding: "1rem 0",
-      }}
-      onClick={() => setPhotoError(false)}
-    >
-      사진 업로드
-      <input type="file" accept="image/*" hidden onChange={onPhotoChange} />
-    </GreenButton>
   </>
 );
 

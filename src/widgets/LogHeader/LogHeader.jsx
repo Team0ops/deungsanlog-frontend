@@ -129,7 +129,10 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
         mt={-1}
       >
         <GreenButton
-          onClick={() => navigate("/log/write")}
+          onClick={() => {
+            localStorage.removeItem("logWriteForm"); // 작성 중 임시 저장 내용 초기화
+            navigate("/log/write");
+          }}
           style={{
             height: "65px",
             width: "100%",

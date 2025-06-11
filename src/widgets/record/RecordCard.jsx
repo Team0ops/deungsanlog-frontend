@@ -2,6 +2,8 @@ import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import defaultImage from "shared/assets/images/logo_mountain.png";
+import axios from "axios";
+import html2canvas from "html2canvas";
 
 const RecordCard = ({
   image,
@@ -9,22 +11,70 @@ const RecordCard = ({
   date,
   content,
   onEdit,
-  onDelete,
+  recordId,
+  onDeleted, // 삭제 후 콜백 prop 추가 (optional)
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
+  const handleDelete = async () => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      console.log("삭제 요청 recordId:", recordId); // 추가
+      await axios.delete(
+        `http://localhost:8080/record-service/delete?recordId=${recordId}`
+      );
+      alert("삭제되었습니다.");
+      if (onDeleted) onDeleted();
+    } catch (e) {
+      alert("삭제에 실패했습니다.");
+      console.error(e); // 에러 로그 확인
+    }
+  };
+
+  const handleImageDownload = async () => {
+    const cardElement = document.getElementById(`record-card-${recordId}`);
+    const menuButton = document.getElementById(`menu-button-${recordId}`);
+    if (!cardElement) return;
+
+    // 1. 메뉴 버튼 잠깐 숨기기
+    if (menuButton) menuButton.style.display = "none";
+
+    try {
+      const canvas = await html2canvas(cardElement, {
+        useCORS: true,
+        scale: 2,
+      });
+
+      const dataUrl = canvas.toDataURL("image/jpeg", 1.0);
+      const link = document.createElement("a");
+      const now = new Date().toISOString().split("T")[0];
+      link.href = dataUrl;
+      link.download = `Deungsanlog_${now}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("이미지 저장 실패", err);
+      alert("이미지 저장에 실패했습니다.");
+    } finally {
+      // 2. 캡처 후 다시 보이게 하기
+      if (menuButton) menuButton.style.display = "block";
+    }
+  };
+
   return (
     <Box
+      id={`record-card-${recordId}`}
       sx={{
         width: 250,
-        height: 330,
-        borderRadius: 3,
+        minHeight: 330,
+        borderRadius: "16px",
         overflow: "hidden",
+        backgroundColor: "#f8f8f8",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        bgcolor: "#f8f8f8",
         mb: 4,
         position: "relative",
         display: "flex",
@@ -33,7 +83,9 @@ const RecordCard = ({
       }}
     >
       {/* 이미지 영역 */}
-      <Box sx={{ position: "relative", width: "100%", height: 170 }}>
+      <Box sx={{ position: "relative", width: "100%", height: 200 }}>
+        {" "}
+        {/* 이미지 높이 고정 */}
         <Box
           component="img"
           src={image}
@@ -45,16 +97,15 @@ const RecordCard = ({
           sx={{
             width: "100%",
             height: "100%",
-            minHeight: 170,
-            maxHeight: 170,
-            minWidth: 250,
-            maxWidth: 250,
-            objectFit: "cover",
+            objectFit: "cover", // 이미지를 영역에 맞게 채움
             display: "block",
+            borderRadius: 2,
+            background: "#eee",
           }}
         />
         {/* 아이콘 버튼 (이미지 오른쪽 위) */}
         <IconButton
+          id={`menu-button-${recordId}`}
           onClick={handleClick}
           sx={{
             position: "absolute",
@@ -62,6 +113,12 @@ const RecordCard = ({
             right: 8,
             bgcolor: "rgba(255,255,255,0.7)",
             zIndex: 2,
+            outline: "none", // ✅ 포커스 테두리 제거
+            boxShadow: "none", // ✅ 일부 브라우저 그림자 제거
+            "&:focus": {
+              outline: "none",
+              boxShadow: "none",
+            },
           }}
         >
           <MoreVertIcon />
@@ -75,45 +132,63 @@ const RecordCard = ({
           >
             수정
           </MenuItem>
+
           <MenuItem
             onClick={() => {
               handleClose();
-              onDelete?.();
+              handleDelete();
             }}
           >
             삭제
           </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleImageDownload?.();
+            }}
+          >
+            이미지 저장
+          </MenuItem>
         </Menu>
-      </Box>
-      {/* 날짜 영역 */}
-      <Box px={2} pt={1}>
-        <Typography variant="caption" color="gray" noWrap>
-          {date}
-        </Typography>
       </Box>
       {/* 글 영역 */}
       <Box
-        px={2}
-        pb={2}
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+        pt={2}
+        pb={1}
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+        }}
       >
-        <Typography
-          fontWeight="bold"
-          noWrap
+        {/* 마운틴 네임을 content 위에 배치 */}
+        <Box
           sx={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            width: "100%",
-            display: "block",
+            display: "block", // flex 안에서 강제로 inline context로
           }}
         >
-          {mountainName}
-        </Typography>
+          <Typography
+            fontSize="0.9rem"
+            fontWeight="bold"
+            sx={{
+              display: "inline",
+              color: "#000",
+              background: "#acd8b35e",
+              borderRadius: "10px",
+              padding: "0 2px",
+            }}
+          >
+            {mountainName}
+          </Typography>
+        </Box>
+
         <Typography
+          fontSize="0.8rem"
+          fontWeight="semibold"
           mt={1}
           sx={{
-            fontSize: "0.9rem",
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "-webkit-box",
@@ -124,6 +199,26 @@ const RecordCard = ({
           }}
         >
           {content}
+        </Typography>
+      </Box>
+      {/* 날짜 영역 - 오른쪽 아래 */}
+      <Box
+        px={2}
+        pb={2}
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <Typography
+          variant="caption"
+          color="gray"
+          noWrap
+          fontSize="0.8rem"
+          fontWeight="semibold"
+        >
+          {date}
         </Typography>
       </Box>
     </Box>

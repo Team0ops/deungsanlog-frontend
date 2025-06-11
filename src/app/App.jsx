@@ -30,12 +30,14 @@ import routes from "shared/config/routes";
 import MountainInfoPage from "../pages/mountainInfoPage";
 import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
+import LogMountainSearchPage from "../pages/record/LogMountainSearchPage";
 import CommunityPage from "../pages/communityPage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
 import NotificationPage from "../pages/notificationPage";
 import MyPage from "../pages/user/MyPage";
 import LoginPage from "../pages/user/LoginPage";
+import LogEditPage from "../pages/record/LogEditPage";
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
@@ -44,7 +46,11 @@ function AppContent() {
   const { pathname } = useLocation();
 
   const isOrmiPage = pathname === "/ormi";
-  const isRecordPage = pathname === "/log" || pathname === "/log/write"; // 등산 기록 페이지 여부
+  const isRecordPage =
+    pathname === "/log" ||
+    pathname === "/log/write" ||
+    pathname === "/log/edit" ||
+    pathname === "/log/write/mountain-search";
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -118,6 +124,11 @@ function AppContent() {
             <Route path="/mountain" element={<MountainInfoPage />} />
             <Route path="/log" element={<LogViewPage />} />
             <Route path="/log/write" element={<LogWritePage />} />
+            <Route path="/log/edit/:recordId" element={<LogEditPage />} />
+            <Route
+              path="/log/write/mountain-search"
+              element={<LogMountainSearchPage />}
+            />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
