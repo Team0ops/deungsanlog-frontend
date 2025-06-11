@@ -59,7 +59,7 @@ const LogViewPage = () => {
                   ? `http://localhost:8080/record-service${record.photoUrl}`
                   : "/default-image.png"
               }
-              title={record.mountainName}
+              mountainName={record.mountainName}
               date={record.recordDate}
               content={record.content}
               onEdit={() => navigate(`/log/edit/${record.id}`)}
