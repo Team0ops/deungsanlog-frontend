@@ -8,6 +8,7 @@ import axios from "axios";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 import { useNavigate } from "react-router-dom";
+import LogMountainSearchModal from "../LogMountainSearchModal";
 
 const shakeKeyframes = `
 @keyframes shake {
@@ -39,6 +40,7 @@ const LogWriteForm = ({
   const [photo, setPhoto] = useState(initialPhoto);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState(false);
+  const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -169,20 +171,6 @@ const LogWriteForm = ({
     }
   };
 
-  // 산 검색 버튼 클릭 시
-  const handleMountainSearch = () => {
-    localStorage.setItem(
-      "logWriteForm",
-      JSON.stringify({
-        mountain,
-        date,
-        content,
-        // photo, photoPreview 등도 필요하면 추가
-      })
-    );
-    navigate("/log/write/mountain-search");
-  };
-
   return (
     <Box
       maxWidth="100vw"
@@ -217,17 +205,22 @@ const LogWriteForm = ({
         <MountainInputWidget
           value={mountain}
           onChange={(e) => {
-            const val = e.target.value;
-            if (typeof val === "object") {
-              setMountain(val);
+            // e.target.value가 객체인지 문자열인지 체크
+            if (typeof e.target.value === "object") {
+              setMountain(e.target.value);
             } else {
-              setMountain({ id: null, name: val, location: "" });
+              setMountain({ id: null, name: e.target.value, location: "" });
             }
             setMountainError(false);
           }}
           error={mountainError}
           errorMessage="산 이름을 입력해주세요."
-          onSearchClick={handleMountainSearch} // 이렇게!
+          onSearchClick={() => setMountainModalOpen(true)}
+        />
+        <LogMountainSearchModal
+          open={mountainModalOpen}
+          onClose={() => setMountainModalOpen(false)}
+          onSelect={(mountainObj) => setMountain(mountainObj)}
         />
         <Box mt={3} />
         <DatePickerWidget

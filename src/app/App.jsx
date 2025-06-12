@@ -30,7 +30,7 @@ import routes from "shared/config/routes";
 import MountainInfoPage from "../pages/mountainInfoPage";
 import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
-import LogMountainSearchPage from "../pages/record/LogMountainSearchPage";
+import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
 import CommunityPage from "../pages/communityPage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
