@@ -46,11 +46,12 @@ function AppContent() {
   const { pathname } = useLocation();
 
   const isOrmiPage = pathname === "/ormi";
-  const isRecordPage =
-    pathname === "/log" ||
-    pathname === "/log/write" ||
-    pathname === "/log/edit" ||
+  const isRecordPage = 
+    pathname === "/log" || 
+    pathname === "/log/write" || 
+    pathname === "/log/edit" || 
     pathname === "/log/write/mountain-search";
+    const isLoginPage = pathname === "/login";
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -74,6 +75,94 @@ function AppContent() {
       setOnMouseEnter(false);
     }
   };
+
+  // 로그인 페이지일 때는 전체 화면 레이아웃
+  if (isLoginPage) {
+    return (
+      <div style={{ 
+        position: "relative", 
+        minHeight: "100vh", 
+        width: "100vw",
+        overflow: "hidden"
+      }}>
+        {/* 로그인 페이지 배경 */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/images/back_green.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            zIndex: 0,
+          }}
+        />
+        {/* 로그인 페이지 컨텐츠 */}
+        <div style={{ 
+          position: "relative", 
+          zIndex: 1, 
+          width: "100%", 
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </div>
+      </div>
+    );
+  }
+
+
+  // 로그인 페이지일 때는 전체 화면 레이아웃
+  if (isLoginPage) {
+    return (
+      <div style={{ 
+        position: "relative", 
+        minHeight: "100vh", 
+        width: "100vw",
+        overflow: "hidden"
+      }}>
+        {/* 로그인 페이지 배경 */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/images/back_green.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.4,
+            zIndex: 0,
+          }}
+        />
+        {/* 로그인 페이지 컨텐츠 */}
+        <div style={{ 
+          position: "relative", 
+          zIndex: 1, 
+          width: "100%", 
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
       {(isOrmiPage || isRecordPage) && (
@@ -111,12 +200,13 @@ function AppContent() {
         <main
           style={{
             flex: 1,
-            padding: "2rem",
-            marginLeft: miniSidenav ? "150px" : "300px",
-            display: "flex", // 추가
-            justifyContent: "center", // 추가
-            alignItems: "center", // 추가 (세로 중앙)
-            minHeight: "100vh", // 추가 (세로 중앙)
+            padding: "clamp(1rem, 3vw, 2rem)",
+            marginLeft: miniSidenav ? "clamp(8rem, 15vw, 10rem)" : "clamp(15rem, 25vw, 20rem)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+            transition: "margin-left 0.3s ease",
           }}
         >
           <Routes>
@@ -134,7 +224,6 @@ function AppContent() {
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/mypage" element={<MyPage />} />
-            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </main>
       </div>
