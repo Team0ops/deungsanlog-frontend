@@ -8,6 +8,7 @@ import axios from "axios";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 import { useNavigate } from "react-router-dom";
+import LogMountainSearchModal from "../LogMountainSearchModal";
 
 const shakeKeyframes = `
 @keyframes shake {
@@ -39,18 +40,17 @@ const LogWriteForm = ({
   const [photo, setPhoto] = useState(initialPhoto);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState(false);
+  const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const saved = localStorage.getItem("logWriteForm");
-
     if (saved) {
       const { mountain, date, content } = JSON.parse(saved);
       if (mountain) setMountain(mountain);
       if (date) setDate(date);
       if (content) setContent(content);
     } else {
-      // ⬅️ 저장된 값 없을 때만 초기값 적용 (edit용)
       setMountain(initialMountain);
       setDate(initialDate);
       setContent(initialContent);
@@ -59,27 +59,7 @@ const LogWriteForm = ({
         setPhotoPreview(initialPhoto);
       }
     }
-  }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("logWriteForm");
-
-    if (saved) {
-      const { mountain, date, content } = JSON.parse(saved);
-      if (mountain) setMountain(mountain); // ✅ 객체 그대로
-      if (date) setDate(date);
-      if (content) setContent(content);
-    } else {
-      // ✅ edit 시 초기값 사용
-      setMountain(initialMountain); // ✅ 객체 그대로 유지!
-      setDate(initialDate);
-      setContent(initialContent);
-      setPhoto(initialPhoto);
-      if (initialPhoto && typeof initialPhoto === "string") {
-        setPhotoPreview(initialPhoto);
-      }
-    }
-  }, []);
+  }, [initialMountain, initialDate, initialContent, initialPhoto]);
 
   const handlePhotoChange = (e) => {
     setPhotoError(false);
@@ -191,20 +171,6 @@ const LogWriteForm = ({
     }
   };
 
-  // 산 검색 버튼 클릭 시
-  const handleMountainSearch = () => {
-    localStorage.setItem(
-      "logWriteForm",
-      JSON.stringify({
-        mountain,
-        date,
-        content,
-        // photo, photoPreview 등도 필요하면 추가
-      })
-    );
-    navigate("/log/write/mountain-search");
-  };
-
   return (
     <Box
       maxWidth="100vw"
@@ -239,12 +205,22 @@ const LogWriteForm = ({
         <MountainInputWidget
           value={mountain}
           onChange={(e) => {
-            setMountain(e.target.value);
+            // e.target.value가 객체인지 문자열인지 체크
+            if (typeof e.target.value === "object") {
+              setMountain(e.target.value);
+            } else {
+              setMountain({ id: null, name: e.target.value, location: "" });
+            }
             setMountainError(false);
           }}
           error={mountainError}
           errorMessage="산 이름을 입력해주세요."
-          onSearchClick={handleMountainSearch} // 이렇게!
+          onSearchClick={() => setMountainModalOpen(true)}
+        />
+        <LogMountainSearchModal
+          open={mountainModalOpen}
+          onClose={() => setMountainModalOpen(false)}
+          onSelect={(mountainObj) => setMountain(mountainObj)}
         />
         <Box mt={3} />
         <DatePickerWidget

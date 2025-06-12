@@ -1,13 +1,11 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Modal } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SoftInput from "shared/ui/SoftInput";
 import GreenButton from "shared/ui/greenButton";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
-const LogMountainSearchPage = () => {
-  const navigate = useNavigate();
+const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [mountainList, setMountainList] = useState([]);
@@ -20,7 +18,6 @@ const LogMountainSearchPage = () => {
         `http://localhost:8080/mountain-service/record/search`,
         { params: { keyword } }
       );
-      // 배열이 아니면 빈 배열로 처리
       setMountainList(Array.isArray(res.data) ? res.data : []);
     } catch {
       setMountainList([]);
@@ -41,57 +38,31 @@ const LogMountainSearchPage = () => {
 
   // 직접 입력 적용
   const handleApply = () => {
-    if (!search.trim()) {
+    if (!search.trim() && !selectedMountain) {
       setError("산 이름을 입력하거나 선택해주세요.");
       return;
     }
-
-    const saved = localStorage.getItem("logWriteForm");
-    let form = saved ? JSON.parse(saved) : {};
-
     if (selectedMountain) {
-      // ✅ 선택한 산이 있으면 full object 저장
-      form.mountain = {
+      onSelect({
         id: selectedMountain.id,
         name: selectedMountain.name,
         location: selectedMountain.location,
-      };
+      });
     } else {
-      // ✅ 직접 입력한 경우 텍스트만
-      form.mountain = search.trim();
+      onSelect({ id: null, name: search.trim(), location: "" });
     }
-
-    localStorage.setItem("logWriteForm", JSON.stringify(form));
-    navigate(-1);
+    onClose();
   };
 
   // 리스트에서 산 선택
   const handleSelectMountain = (mountain) => {
-    setSearch(mountain.name); // 인풋에 보여줌
-    setSelectedMountain(mountain); // 선택된 산 저장
-    setMountainList([]); // ✅ 리스트 닫기
-  };
-
-  // 뒤로가기
-  const handleBack = () => {
-    navigate(-1);
+    setSearch(mountain.name);
+    setSelectedMountain(mountain);
+    setMountainList([]);
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: "100vw",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 10,
-        background: "transparent",
-      }}
-    >
+    <Modal open={open} onClose={onClose}>
       <Box
         maxWidth="100vw"
         width="100%"
@@ -103,10 +74,11 @@ const LogMountainSearchPage = () => {
           maxWidth: { xs: "100vw", md: "700px" },
           minHeight: "60vh",
           maxHeight: "90vh",
-          margin: "0 auto",
+          margin: "5vh auto",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
+          outline: "none",
         }}
       >
         <Typography
@@ -116,7 +88,6 @@ const LogMountainSearchPage = () => {
           mb={3}
           sx={{ textAlign: "center", fontSize: "1.05rem" }}
         >
-          {" "}
           등산 이야기에서는 우리나라 100대 산과 국립공원의 정보만 제공합니다.
           <br />
           검색 후 나오지 않는다면, 직접 입력해주시길 바랍니다 :)
@@ -161,7 +132,7 @@ const LogMountainSearchPage = () => {
                 borderRadius: "8px",
                 backgroundColor: "#f0f9f3",
                 marginTop: "0.5rem",
-                fontSize: "0.97rem", // 글씨체 작게
+                fontSize: "0.97rem",
                 lineHeight: 1.5,
                 color: "#35523d",
                 "&:hover": {
@@ -217,13 +188,13 @@ const LogMountainSearchPage = () => {
             borderRadius: "12px",
           }}
           fullWidth
-          onClick={handleBack}
+          onClick={onClose}
         >
           뒤로가기
         </GreenButton>
       </Box>
-    </div>
+    </Modal>
   );
 };
 
-export default LogMountainSearchPage;
+export default LogMountainSearchModal;
