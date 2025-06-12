@@ -15,27 +15,26 @@ const OrmiePage = () => {
   return (
     <div
       style={{
-        position: "fixed", // 전체 화면 기준
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: "100vw",
+        width: "100%",
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        padding: "2rem 0 2rem 8vw",
+        minHeight: "70vh",
+        boxSizing: "border-box",
       }}
     >
       <div
         style={{
           width: "100%",
           maxWidth: "600px",
-          height: "90vh",
+          minHeight: "80vh",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          justifyContent: "center",
           backgroundColor: "rgba(255, 255, 255, 0.95)",
           borderRadius: "20px",
-          padding: "1.5rem",
+          padding: "clamp(1rem, 4vw, 1.5rem)",
           boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
         }}
       >
@@ -49,6 +48,7 @@ const OrmiePage = () => {
                 overflowY: "auto",
                 marginTop: "1rem",
                 marginBottom: "1rem",
+                minHeight: 0,
               }}
             >
               <ChatMessageList messages={messages} />
