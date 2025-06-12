@@ -43,14 +43,12 @@ const LogWriteForm = ({
 
   useEffect(() => {
     const saved = localStorage.getItem("logWriteForm");
-
     if (saved) {
       const { mountain, date, content } = JSON.parse(saved);
       if (mountain) setMountain(mountain);
       if (date) setDate(date);
       if (content) setContent(content);
     } else {
-      // ⬅️ 저장된 값 없을 때만 초기값 적용 (edit용)
       setMountain(initialMountain);
       setDate(initialDate);
       setContent(initialContent);
@@ -59,27 +57,7 @@ const LogWriteForm = ({
         setPhotoPreview(initialPhoto);
       }
     }
-  }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("logWriteForm");
-
-    if (saved) {
-      const { mountain, date, content } = JSON.parse(saved);
-      if (mountain) setMountain(mountain); // ✅ 객체 그대로
-      if (date) setDate(date);
-      if (content) setContent(content);
-    } else {
-      // ✅ edit 시 초기값 사용
-      setMountain(initialMountain); // ✅ 객체 그대로 유지!
-      setDate(initialDate);
-      setContent(initialContent);
-      setPhoto(initialPhoto);
-      if (initialPhoto && typeof initialPhoto === "string") {
-        setPhotoPreview(initialPhoto);
-      }
-    }
-  }, []);
+  }, [initialMountain, initialDate, initialContent, initialPhoto]);
 
   const handlePhotoChange = (e) => {
     setPhotoError(false);
@@ -239,7 +217,12 @@ const LogWriteForm = ({
         <MountainInputWidget
           value={mountain}
           onChange={(e) => {
-            setMountain(e.target.value);
+            const val = e.target.value;
+            if (typeof val === "object") {
+              setMountain(val);
+            } else {
+              setMountain({ id: null, name: val, location: "" });
+            }
             setMountainError(false);
           }}
           error={mountainError}
