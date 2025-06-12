@@ -23,7 +23,7 @@ const LogEditPage = () => {
   const handleEditSubmit = async (formData) => {
     try {
       await axios.put(
-        `http://localhost:8080/record-service/record/${recordId}`,
+        `http://localhost:8080/record-service/records/${recordId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
