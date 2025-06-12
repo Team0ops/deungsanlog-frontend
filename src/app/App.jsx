@@ -206,14 +206,7 @@ function AppContent() {
             justifyContent: "center",
             alignItems: "center",
             minHeight: "100vh",
-            transition: "margin-left 0.3s ease"
-            padding: "clamp(1rem, 3vw, 2rem)",
-            marginLeft: miniSidenav ? "clamp(8rem, 15vw, 10rem)" : "clamp(15rem, 25vw, 20rem)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100vh",
-            transition: "margin-left 0.3s ease"
+            transition: "margin-left 0.3s ease",
           }}
         >
           <Routes>
