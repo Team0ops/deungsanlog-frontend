@@ -11,8 +11,8 @@ const KingOfMountainWidget = ({ userId }) => {
     <div
       style={{
         width: "100%",
-        maxWidth: "600px",
-        minHeight: "80vh",
+        maxWidth: "500px",
+        minHeight: "60vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
