@@ -44,7 +44,7 @@ const LogViewPage = () => {
       <Grid
         container
         spacing={3}
-        justifyContent="left"
+        justifyContent="center"
         width="100%"
         alignItems="flex-start"
         mt={2}
