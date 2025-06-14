@@ -20,17 +20,14 @@ const Header = ({ onRefresh }) => (
         alignItems: "center",
       }}
     >
-      <h2
+      <h3
         style={{
-          margin: 0,
-          color: "#3a3a3a",
-          fontWeight: 800,
-          fontSize: "2rem",
-          letterSpacing: "-1px",
+          fontWeight: "bold",
+          fontSize: "1.5rem",
         }}
       >
         🏆 등산왕
-      </h2>
+      </h3>
       <button
         onClick={onRefresh}
         style={{
@@ -58,7 +55,6 @@ const Header = ({ onRefresh }) => (
     <p
       style={{
         marginTop: "0.4rem",
-        marginBottom: "1rem",
         color: "#6c757d",
         fontSize: "1rem",
         fontWeight: 500,
