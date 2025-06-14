@@ -1,21 +1,16 @@
+import styles from "./CommunityLayout.module.css";
 import KingOfMountainWidget from "widgets/community/Rank/KingOfMountainWidget";
+import HotMountainList from "widgets/community/HotMountain/HotMountainList";
 
 const userId = null;
+
 const CommunityPage = () => {
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        padding: "2rem 0 2rem",
-        minHeight: "70vh",
-        boxSizing: "border-box",
-      }}
-    >
+    <div className={styles.container}>
       <KingOfMountainWidget userId={userId} />
+      <HotMountainList />
     </div>
   );
 };
+
 export default CommunityPage;
