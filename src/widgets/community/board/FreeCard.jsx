@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const [mountainName, setMountainName] = useState(null);
@@ -131,7 +133,6 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
             marginBottom: "0.8rem",
             borderRadius: "10px",
             overflow: "hidden",
-            // 세로 길이 더 길게: clamp로 최소 440px, 최대 520px, 65vw까지
             height: "clamp(440px, 65vw, 520px)",
             background: "#f4f8f4",
             display: "flex",
@@ -151,8 +152,6 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
               display: "block",
             }}
           />
-
-          {/* 좌우 버튼 */}
           {totalPhotos > 1 && (
             <>
               <button
@@ -160,49 +159,68 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                 style={{
                   position: "absolute",
                   top: "50%",
-                  left: "10px",
+                  left: "16px",
                   transform: "translateY(-50%)",
-                  background: "rgba(0, 0, 0, 0.4)",
+                  background: "none",
                   border: "none",
-                  borderRadius: "50%",
-                  width: "36px",
-                  height: "36px",
-                  fontSize: "1.5rem",
-                  color: "#fff",
+                  fontSize: "2.2rem",
+                  color: "rgba(255,255,255,0.55)",
+                  outline: "none",
                   cursor: "pointer",
-                  zIndex: 3,
+                  zIndex: 5,
+                  padding: 0,
+                  lineHeight: 1,
+                  transition: "color 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
                 aria-label="이전 사진"
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.85)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.55)")
+                }
               >
-                ‹
+                <ChevronLeftIcon fontSize="inherit" />
               </button>
               <button
                 onClick={handleNext}
                 style={{
                   position: "absolute",
                   top: "50%",
-                  right: "10px",
+                  right: "16px",
                   transform: "translateY(-50%)",
-                  background: "rgba(0, 0, 0, 0.4)",
+                  background: "none",
                   border: "none",
-                  borderRadius: "50%",
-                  width: "36px",
-                  height: "36px",
-                  fontSize: "1.5rem",
-                  color: "#fff",
+                  fontSize: "2.2rem",
+                  color: "rgba(255,255,255,0.55)",
+                  outline: "none",
                   cursor: "pointer",
-                  zIndex: 3,
+                  zIndex: 5,
+                  padding: 0,
+                  lineHeight: 1,
+                  transition: "color 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
                 aria-label="다음 사진"
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.85)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.55)")
+                }
               >
-                ›
+                <ChevronRightIcon fontSize="inherit" />
               </button>
-
               {/* 하단 인디케이터 */}
               <div
                 style={{
                   position: "absolute",
-                  bottom: "10px",
+                  bottom: "14px",
                   left: "50%",
                   transform: "translateX(-50%)",
                   display: "flex",
@@ -214,8 +232,8 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                   <div
                     key={idx}
                     style={{
-                      width: "8px",
-                      height: "8px",
+                      width: "9px",
+                      height: "9px",
                       borderRadius: "50%",
                       background:
                         idx === photoIdx ? "#fff" : "rgba(255, 255, 255, 0.5)",
