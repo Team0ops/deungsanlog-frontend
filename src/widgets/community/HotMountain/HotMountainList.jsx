@@ -22,7 +22,6 @@ const HotMountainList = () => {
         minHeight: "20vh",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
         backgroundColor: "rgba(255, 255, 255, 0.95)",
         borderRadius: "20px",
         padding: "clamp(1rem, 4vw, 1.5rem)",
