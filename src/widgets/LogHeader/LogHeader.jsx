@@ -104,7 +104,7 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
                 >
                   {badgeInfo.title}
                 </Box>
-                이 되었어요!
+                가 되었어요!
               </Typography>
             </Box>
             <Typography variant="body1">
