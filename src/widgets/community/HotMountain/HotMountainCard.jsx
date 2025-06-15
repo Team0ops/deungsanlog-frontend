@@ -5,7 +5,7 @@ const HotMountainCard = ({ mountain }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/mountain/${mountain.mountainName}`);
+    navigate(`/mountain/detail/${mountain.mountainName}`);
   };
 
   return (
