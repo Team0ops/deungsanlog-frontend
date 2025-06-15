@@ -33,6 +33,8 @@ import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
 import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
 import CommunityPage from "../pages/community/communityPage";
+import FreeBoardPage from "../pages/community/freeBoardPage";
+import FreeBoardWritePage from "../pages/community/freeBoardWritePage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
 import NotificationPage from "../pages/notificationPage";
@@ -130,7 +132,10 @@ function AppContent() {
             <Route path="/" element={<Navigate to="/mountain" replace />} />
             <Route path="/mountain" element={<MountainInfoPage />} />
             {/* 산 상세 페이지 라우팅 추가 */}
-            <Route path="/mountain/detail/:mountainName" element={<MountainDetailPage />} />
+            <Route
+              path="/mountain/detail/:mountainName"
+              element={<MountainDetailPage />}
+            />
             <Route path="/log" element={<LogViewPage />} />
             <Route path="/log/write" element={<LogWritePage />} />
             <Route path="/log/edit/:recordId" element={<LogEditPage />} />
@@ -139,6 +144,11 @@ function AppContent() {
               element={<LogMountainSearchPage />}
             />
             <Route path="/community" element={<CommunityPage />} />
+            <Route path="/community/free" element={<FreeBoardPage />} />
+            <Route
+              path="/community/free/write"
+              element={<FreeBoardWritePage />}
+            />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
