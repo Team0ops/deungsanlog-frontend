@@ -28,6 +28,7 @@ import routes from "shared/config/routes";
 
 // 페이지
 import MountainInfoPage from "../pages/mountainInfoPage";
+import MountainDetailPage from "../pages/mountain/mountainDetailPage"; // 새로 추가
 import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
 import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
@@ -128,6 +129,8 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Navigate to="/mountain" replace />} />
             <Route path="/mountain" element={<MountainInfoPage />} />
+            {/* 산 상세 페이지 라우팅 추가 */}
+            <Route path="/mountain/detail/:mountainName" element={<MountainDetailPage />} />
             <Route path="/log" element={<LogViewPage />} />
             <Route path="/log/write" element={<LogWritePage />} />
             <Route path="/log/edit/:recordId" element={<LogEditPage />} />
