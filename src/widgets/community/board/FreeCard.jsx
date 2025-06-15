@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const [mountainName, setMountainName] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [photoIdx, setPhotoIdx] = useState(0);
 
   useEffect(() => {
     if (post.mountainId) {
@@ -16,6 +17,24 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   }, [post.mountainId]);
 
   const isMine = myUserId === post.userId;
+
+  // 여러 장 사진 처리
+  const hasPhotos =
+    post.hasImage && post.imageUrls && post.imageUrls.length > 0;
+  const totalPhotos = hasPhotos ? post.imageUrls.length : 0;
+  const getPhotoUrl = (idx) =>
+    post.imageUrls[idx].startsWith("http")
+      ? post.imageUrls[idx]
+      : `http://localhost:8080${post.imageUrls[idx]}`;
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    setPhotoIdx((prev) => (prev - 1 + totalPhotos) % totalPhotos);
+  };
+  const handleNext = (e) => {
+    e.stopPropagation();
+    setPhotoIdx((prev) => (prev + 1) % totalPhotos);
+  };
 
   return (
     <div
@@ -103,22 +122,111 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         </div>
       )}
 
-      {/* 사진 */}
-      {post.hasImage && post.imageUrls && post.imageUrls.length > 0 && (
-        <img
-          src={
-            post.imageUrls[0].startsWith("http")
-              ? post.imageUrls[0]
-              : `http://localhost:8080${post.imageUrls[0]}`
-          }
-          alt="피드 이미지"
+      {/* 여러 장 사진 캐러셀 */}
+      {hasPhotos && (
+        <div
           style={{
+            position: "relative",
             width: "100%",
+            marginBottom: "0.8rem",
             borderRadius: "10px",
-            objectFit: "cover",
-            marginBottom: "0.5rem",
+            overflow: "hidden",
+            // 세로 길이 더 길게: clamp로 최소 440px, 최대 520px, 65vw까지
+            height: "clamp(440px, 65vw, 520px)",
+            background: "#f4f8f4",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            maxHeight: "70vw",
+            minHeight: "440px",
           }}
-        />
+        >
+          <img
+            src={getPhotoUrl(photoIdx)}
+            alt={`피드 이미지 ${photoIdx + 1}`}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+
+          {/* 좌우 버튼 */}
+          {totalPhotos > 1 && (
+            <>
+              <button
+                onClick={handlePrev}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "10px",
+                  transform: "translateY(-50%)",
+                  background: "rgba(0, 0, 0, 0.4)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "36px",
+                  height: "36px",
+                  fontSize: "1.5rem",
+                  color: "#fff",
+                  cursor: "pointer",
+                  zIndex: 3,
+                }}
+                aria-label="이전 사진"
+              >
+                ‹
+              </button>
+              <button
+                onClick={handleNext}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  background: "rgba(0, 0, 0, 0.4)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "36px",
+                  height: "36px",
+                  fontSize: "1.5rem",
+                  color: "#fff",
+                  cursor: "pointer",
+                  zIndex: 3,
+                }}
+                aria-label="다음 사진"
+              >
+                ›
+              </button>
+
+              {/* 하단 인디케이터 */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  display: "flex",
+                  gap: "6px",
+                  zIndex: 3,
+                }}
+              >
+                {post.imageUrls.map((_, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      background:
+                        idx === photoIdx ? "#fff" : "rgba(255, 255, 255, 0.5)",
+                      transition: "background 0.3s",
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       )}
 
       {/* 제목 */}
