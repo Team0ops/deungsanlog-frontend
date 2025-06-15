@@ -28,6 +28,7 @@ import routes from "shared/config/routes";
 
 // 페이지
 import MountainInfoPage from "../pages/mountainInfoPage";
+import MountainDetailPage from "../pages/mountain/mountainDetailPage"; // 새로 추가
 import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
 import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
@@ -46,12 +47,12 @@ function AppContent() {
   const { pathname } = useLocation();
 
   const isOrmiPage = pathname === "/ormi";
-  const isRecordPage = 
-    pathname === "/log" || 
-    pathname === "/log/write" || 
-    pathname === "/log/edit" || 
+  const isRecordPage =
+    pathname === "/log" ||
+    pathname === "/log/write" ||
+    pathname === "/log/edit" ||
     pathname === "/log/write/mountain-search";
-    const isLoginPage = pathname === "/login";
+  const isLoginPage = pathname === "/login";
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -76,96 +77,9 @@ function AppContent() {
     }
   };
 
-  // 로그인 페이지일 때는 전체 화면 레이아웃
-  if (isLoginPage) {
-    return (
-      <div style={{ 
-        position: "relative", 
-        minHeight: "100vh", 
-        width: "100vw",
-        overflow: "hidden"
-      }}>
-        {/* 로그인 페이지 배경 */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: "url('/images/back_green.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            zIndex: 0,
-          }}
-        />
-        {/* 로그인 페이지 컨텐츠 */}
-        <div style={{ 
-          position: "relative", 
-          zIndex: 1, 
-          width: "100%", 
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
-        </div>
-      </div>
-    );
-  }
-
-
-  // 로그인 페이지일 때는 전체 화면 레이아웃
-  if (isLoginPage) {
-    return (
-      <div style={{ 
-        position: "relative", 
-        minHeight: "100vh", 
-        width: "100vw",
-        overflow: "hidden"
-      }}>
-        {/* 로그인 페이지 배경 */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: "url('/images/back_green.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
-            zIndex: 0,
-          }}
-        />
-        {/* 로그인 페이지 컨텐츠 */}
-        <div style={{ 
-          position: "relative", 
-          zIndex: 1, 
-          width: "100%", 
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
-      {(isOrmiPage || isRecordPage) && (
+      {(isOrmiPage || isRecordPage || isLoginPage) && (
         <div
           style={{
             position: "absolute",
@@ -175,7 +89,9 @@ function AppContent() {
             height: "100%",
             backgroundImage: isOrmiPage
               ? "url('/images/back_green.jpg')"
-              : "url('/images/back_paper.jpg')", // record 전용 배경
+              : isLoginPage
+              ? "url('/images/back_green.jpg')"
+              : "url('/images/back_paper.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -185,6 +101,7 @@ function AppContent() {
         />
       )}
       <div style={{ display: "flex", position: "relative", zIndex: 1 }}>
+        {/* Sidenav 항상 보이게 */}
         <Sidenav
           color={sidenavColor}
           brand={brand}
@@ -201,7 +118,7 @@ function AppContent() {
           style={{
             flex: 1,
             padding: "clamp(1rem, 3vw, 2rem)",
-            marginLeft: miniSidenav ? "clamp(8rem, 15vw, 10rem)" : "clamp(15rem, 25vw, 20rem)",
+            marginLeft: miniSidenav ? "2em" : "5rem",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -212,6 +129,8 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Navigate to="/mountain" replace />} />
             <Route path="/mountain" element={<MountainInfoPage />} />
+            {/* 산 상세 페이지 라우팅 추가 */}
+            <Route path="/mountain/detail/:mountainName" element={<MountainDetailPage />} />
             <Route path="/log" element={<LogViewPage />} />
             <Route path="/log/write" element={<LogWritePage />} />
             <Route path="/log/edit/:recordId" element={<LogEditPage />} />
@@ -224,6 +143,7 @@ function AppContent() {
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </main>
       </div>
