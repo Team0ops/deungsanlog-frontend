@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 import MountainInputWidget from "widgets/mountain/MountainInputWidget";
-import PhotoUploadWidget from "widgets/PhotoUpload/PhotoUploadWidget";
+import MultiPhotoUploadWidget from "widgets/PhotoUpload/MultiPhotoUploadWidget";
 import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -12,20 +12,34 @@ const FreeBoardWriteForm = () => {
   const [title, setTitle] = useState("");
   const [mountain, setMountain] = useState(null);
   const [content, setContent] = useState("");
-  const [photo, setPhoto] = useState(null);
-  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photos, setPhotos] = useState([]); // 여러 장 파일
+  const [photoPreviews, setPhotoPreviews] = useState([]); // 여러 장 미리보기
   const [mountainError, setMountainError] = useState(false);
   const [contentError, setContentError] = useState(false);
   const [titleError, setTitleError] = useState(false);
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    setPhoto(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setPhotoPreview(reader.result);
-    reader.readAsDataURL(file);
+  // 여러 장 파일 선택 핸들러
+  const handlePhotosChange = (newFiles) => {
+    setPhotos(newFiles);
+    const readers = newFiles.map(
+      (file) =>
+        new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        })
+    );
+    Promise.all(readers).then(setPhotoPreviews);
+  };
+
+  // 개별 사진 삭제
+  const handlePhotoRemove = (idx) => {
+    const newPhotos = photos.filter((_, i) => i !== idx);
+    const newPreviews = photoPreviews.filter((_, i) => i !== idx);
+    setPhotos(newPhotos);
+    setPhotoPreviews(newPreviews);
   };
 
   const handleSubmit = async (e) => {
@@ -33,10 +47,11 @@ const FreeBoardWriteForm = () => {
 
     let isValid = true;
 
-    if (!mountain || !mountain.name?.trim()) {
-      setMountainError(true);
-      isValid = false;
-    }
+    // 사진 필수 검사 제거
+    // if (!photos || photos.length === 0) {
+    //   setPhotoError(true);
+    //   isValid = false;
+    // }
 
     if (!content.trim()) {
       setContentError(true);
@@ -51,11 +66,11 @@ const FreeBoardWriteForm = () => {
     if (!isValid) return;
 
     try {
-      // 이미지 먼저 업로드
+      // 사진이 있을 때만 업로드
       let imageUrls = [];
-      if (photo) {
+      if (photos && photos.length > 0) {
         const formData = new FormData();
-        formData.append("images", photo);
+        photos.forEach((file) => formData.append("images", file));
         const res = await axios.post(
           "http://localhost:8080/community-service/posts/upload-image",
           formData,
@@ -107,15 +122,15 @@ const FreeBoardWriteForm = () => {
       }}
     >
       <form onSubmit={handleSubmit}>
-        <PhotoUploadWidget
-          photoPreview={photoPreview}
-          onPhotoChange={handlePhotoChange}
-          onPhotoRemove={() => {
-            setPhoto(null);
-            setPhotoPreview(null);
-          }}
+        <MultiPhotoUploadWidget
+          photos={photos}
+          photoPreviews={photoPreviews}
+          photoError={false}
+          onPhotosChange={handlePhotosChange}
+          onPhotoRemove={handlePhotoRemove}
           setPhotoError={() => {}}
           shakeKeyframes={""}
+          max={3}
         />
         <MountainInputWidget
           value={mountain}
@@ -127,6 +142,10 @@ const FreeBoardWriteForm = () => {
               setMountain({ id: null, name: e.target.value, location: "" });
             }
             setMountainError(false);
+          }}
+          onPhotoRemove={() => {
+            setPhotos([]);
+            setPhotoPreviews([]);
           }}
           error={mountainError}
           errorMessage="산 이름을 입력해주세요."
