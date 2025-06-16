@@ -15,15 +15,13 @@ const FreeBoardHeader = ({ sortOption, setSortOption }) => {
   return (
     <Box
       width="100%"
-      maxWidth="1000px"
+      maxWidth="100%"
       mx="auto"
       mt={4}
-      px={2}
       display="flex"
       justifyContent="center"
       alignItems="center"
     >
-      {/* 가장 큰 박스 안에 3개 박스 */}
       <Box
         width="100%"
         display="flex"
@@ -64,8 +62,7 @@ const FreeBoardHeader = ({ sortOption, setSortOption }) => {
             당신의 글이 다른 사람에게 힘이 될 수 있어요 ✨
           </Typography>
         </Box>
-
-        {/* 구분선(선택, 필요 없으면 삭제) */}
+        {/* 구분선 */}
         <Box
           width="2px"
           bgcolor="#e0e0e0"
@@ -73,7 +70,6 @@ const FreeBoardHeader = ({ sortOption, setSortOption }) => {
           borderRadius={1}
           display={{ xs: "none", md: "block" }}
         />
-
         {/* 버튼/셀렉트 박스 (오른쪽) */}
         <Box
           flex={1}
@@ -86,22 +82,20 @@ const FreeBoardHeader = ({ sortOption, setSortOption }) => {
           <GreenButton
             onClick={() => navigate("/community/free/write")}
             style={{
-              height: "50px",
+              height: "55px",
               width: "100%",
               color: "#4c7559",
-              fontWeight: "bold",
-              fontSize: "1.1rem",
-              background: "#f5f5f5",
+              background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
-            게시물 작성
+            ✏️ 글쓰기
           </GreenButton>
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
             style={{
-              height: "50px",
+              height: "48px",
               width: "100%",
               padding: "0 1rem",
               borderRadius: "12px",
@@ -122,7 +116,7 @@ const FreeBoardHeader = ({ sortOption, setSortOption }) => {
           >
             <option value="latest">최신순</option>
             <option value="oldest">오래된순</option>
-            <option value="likes">좋아요순</option>
+            <option value="likes">좋아요 많은 순</option>
           </select>
         </Box>
       </Box>

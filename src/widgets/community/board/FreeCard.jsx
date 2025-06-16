@@ -52,7 +52,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           padding: "1.2rem 2rem",
           marginBottom: "1.2rem",
           width: "100%",
-          maxWidth: "900px",
+          maxWidth: "100%", // ← 900px → 100%
           position: "relative",
           cursor: "pointer",
           display: "flex",
@@ -215,7 +215,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
     );
   }
 
-  // 사진 있는 카드(기존)
+  // 사진 있는 카드
   return (
     <div
       style={{
@@ -225,7 +225,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         padding: "1.2rem",
         marginBottom: "1.2rem",
         width: "100%",
-        maxWidth: "900px",
+        maxWidth: "100%", // ← 900px → 100%
         position: "relative",
         cursor: "pointer",
         display: "flex",
