@@ -153,6 +153,7 @@ const PreviewCard = ({ post }) => {
 
 // 전체 배너
 const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
+  const safePosts = Array.isArray(previewPosts) ? previewPosts : [];
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -281,7 +282,7 @@ const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
           </div>
         ) : (
           <>
-            {previewPosts.map((post) => (
+            {safePosts.map((post) => (
               <PreviewCard key={post.id} post={post} />
             ))}
             {/* 맨 오른쪽 동그란 버튼 */}

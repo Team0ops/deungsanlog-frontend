@@ -1,30 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import CommentSection from "features/community/CommentSection";
+import MoreVertIcon from "@mui/icons-material/MoreVert"; // MUI 아이콘 사용 (설치 필요)
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
-const PostDetailPage = ({ onLike, onComment }) => {
+const PostDetailPage = ({ onLike }) => {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const userId = 11; // 하드코딩 또는 location.state?.userId 등으로 받아올 수 있음
+  const userId = 11; // 실제 로그인 유저로 교체 필요
   const [post, setPost] = useState(null);
   const [mountainName, setMountainName] = useState(null);
   const [photoIdx, setPhotoIdx] = useState(0);
-  const [comment, setComment] = useState("");
   const [likeCount, setLikeCount] = useState(0);
   const [liked, setLiked] = useState(false);
+  const [comments, setComments] = useState([]); // 댓글 목록
+  const [anchorEl, setAnchorEl] = useState(null);
 
+  // 댓글 목록 새로고침 함수
+  const fetchComments = useCallback(() => {
+    fetch(`http://localhost:8080/community-service/comments?postId=${postId}`)
+      .then((res) => res.json())
+      .then((data) => setComments(Array.isArray(data) ? data : []))
+      .catch(() => setComments([]));
+  }, [postId]);
+
+  // 게시글, 댓글 불러오기
   useEffect(() => {
     fetch(`http://localhost:8080/community-service/posts/${postId}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("상세 데이터:", data); // 실제 데이터 구조 확인
         setPost(data);
         setLikeCount(data?.likeCount || 0);
         setLiked(false);
         setPhotoIdx(0);
-        setComment("");
         if (data?.mountainId) {
           fetch(
             `http://localhost:8080/mountain-service/name-by-id?mountainId=${data.mountainId}`
@@ -34,7 +46,9 @@ const PostDetailPage = ({ onLike, onComment }) => {
             .catch(() => setMountainName(null));
         }
       });
-  }, [postId]);
+
+    fetchComments();
+  }, [postId, fetchComments]);
 
   if (!post) return <div style={{ padding: "2rem" }}>로딩 중...</div>;
 
@@ -56,14 +70,12 @@ const PostDetailPage = ({ onLike, onComment }) => {
   const handleLike = async () => {
     try {
       if (!liked) {
-        // 좋아요
         await axios.post(
           `http://localhost:8080/community-service/posts/${postId}/like?userId=${userId}`
         );
         setLiked(true);
         setLikeCount((prev) => prev + 1);
       } else {
-        // 좋아요 취소
         await axios.delete(
           `http://localhost:8080/community-service/posts/${postId}/like?userId=${userId}`
         );
@@ -77,13 +89,29 @@ const PostDetailPage = ({ onLike, onComment }) => {
     }
   };
 
-  const handleComment = (e) => {
-    e.preventDefault();
-    if (comment.trim()) {
-      onComment?.(comment, post);
-      setComment("");
+  // 댓글 작성/삭제 후 댓글 목록 새로고침
+  const handleCommentsChanged = () => {
+    fetchComments();
+  };
+
+  // 게시글 삭제
+  const handleDeletePost = async () => {
+    if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
+    try {
+      await axios.delete(
+        `http://localhost:8080/community-service/posts/${postId}`
+      );
+      alert("게시글이 삭제되었습니다.");
+      navigate("/community/free");
+    } catch (err) {
+      console.error(err);
+      alert("게시글 삭제에 실패했습니다.");
     }
   };
+
+  // 메뉴 열기/닫기
+  const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   return (
     <div
@@ -97,22 +125,77 @@ const PostDetailPage = ({ onLike, onComment }) => {
         minHeight: "90vh",
       }}
     >
-      {/* 뒤로가기 */}
-      <button
-        onClick={() => navigate(-1)}
+      {/* 뒤로가기 + 본인 글일 때 메뉴버튼 */}
+      <div
         style={{
-          background: "none",
-          border: "none",
-          color: "#27ae60",
-          fontSize: "1.5rem",
-          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
           marginBottom: "1.2rem",
         }}
-        aria-label="뒤로가기"
       >
-        ← 뒤로가기
-      </button>
-
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#27ae60",
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            marginRight: "auto",
+          }}
+          aria-label="뒤로가기"
+        >
+          ← 뒤로가기
+        </button>
+        {/* 본인 글일 때만 메뉴버튼 노출 */}
+        {post && userId === post.userId && (
+          <>
+            <button
+              onClick={handleMenuOpen}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "0.3rem",
+                marginLeft: "0.5rem",
+                color: "#888",
+                fontSize: "1.7rem",
+                display: "flex",
+                alignItems: "center",
+              }}
+              aria-label="게시글 메뉴"
+            >
+              <MoreVertIcon />
+            </button>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                  // TODO: 수정 페이지로 이동
+                  alert("수정 기능은 구현 필요!");
+                }}
+              >
+                수정
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                  handleDeletePost();
+                }}
+                sx={{ color: "#e74c3c" }}
+              >
+                삭제
+              </MenuItem>
+            </Menu>
+          </>
+        )}
+      </div>
       {/* 사진 캐러셀 */}
       {hasPhotos && (
         <div
@@ -233,7 +316,6 @@ const PostDetailPage = ({ onLike, onComment }) => {
           )}
         </div>
       )}
-
       {/* 제목 */}
       <div
         style={{
@@ -244,7 +326,6 @@ const PostDetailPage = ({ onLike, onComment }) => {
       >
         {post.title}
       </div>
-
       {/* 글 */}
       <div
         style={{
@@ -255,7 +336,6 @@ const PostDetailPage = ({ onLike, onComment }) => {
       >
         {post.content}
       </div>
-
       {/* 작성자, 산, 날짜 */}
       <div
         style={{
@@ -274,7 +354,6 @@ const PostDetailPage = ({ onLike, onComment }) => {
           {new Date(post.createdAt).toLocaleString()}
         </span>
       </div>
-
       {/* 좋아요, 댓글 */}
       <div
         style={{
@@ -301,49 +380,15 @@ const PostDetailPage = ({ onLike, onComment }) => {
           ❤️ {likeCount}
         </button>
         <span style={{ color: "#888", fontSize: "1.08rem" }}>
-          💬 {post.commentCount}
+          💬 {comments.length}
         </span>
       </div>
-
-      {/* 댓글 입력 */}
-      <form
-        onSubmit={handleComment}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.7rem",
-        }}
-      >
-        <input
-          type="text"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="댓글을 입력하세요"
-          style={{
-            flex: 1,
-            border: "1px solid #e0e0e0",
-            borderRadius: "8px",
-            padding: "0.7rem 1rem",
-            fontSize: "1.05rem",
-            outline: "none",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            background: "#27ae60",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "0.7rem 1.2rem",
-            fontWeight: 600,
-            fontSize: "1.05rem",
-            cursor: "pointer",
-          }}
-        >
-          등록
-        </button>
-      </form>
+      <CommentSection
+        postId={postId}
+        userId={userId}
+        postUserId={post.userId}
+        onCommentsChanged={handleCommentsChanged} // 댓글 변경시 새로고침
+      />
     </div>
   );
 };
