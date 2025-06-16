@@ -36,8 +36,8 @@ const NotLoggedIn = () => (
         src={greenSpot}
         alt="로그인 안내"
         style={{
-          width: "80%",
-          maxWidth: "80%",
+          width: "60%",
+          maxWidth: "60%",
           height: "auto",
           objectFit: "contain",
           opacity: 0.9,
@@ -60,7 +60,7 @@ const NotLoggedIn = () => (
           sx={{
             color: "#f5f7f0",
             fontWeight: 400,
-            fontSize: "1.6rem",
+            fontSize: "1.3rem",
             textShadow: "0 2px 6px #000000",
             mb: 2,
             lineHeight: 1.6,
@@ -74,7 +74,7 @@ const NotLoggedIn = () => (
           onClick={() => (window.location.href = "/login")}
           style={{
             color: "#8cac7f",
-            fontSize: "1.4rem",
+            fontSize: "1.3rem",
             background: "#f5f5f5",
             padding: "0.7rem 2.2rem",
             marginTop: "1.1rem",
