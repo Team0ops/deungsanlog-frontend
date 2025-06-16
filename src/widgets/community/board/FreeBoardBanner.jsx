@@ -272,13 +272,17 @@ const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
         {previewPosts.length === 0 ? (
           <div
             style={{
-              color: "#bbb",
+              color: "#aaa",
               textAlign: "center",
               width: "100%",
-              padding: "1.5rem 0",
+              padding: "2rem 0",
+              fontSize: "1.1rem",
+              fontFamily: "'GmarketSansMedium', sans-serif",
+              lineHeight: "1.6",
             }}
           >
-            게시물이 없습니다.
+            <div style={{ fontSize: "2rem" }}>🗻✨</div>
+            <div>새로운 이야기를 기다리는 중이에요 ⏳</div>
           </div>
         ) : (
           <>

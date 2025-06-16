@@ -66,13 +66,32 @@ const FreeBoardPage = () => {
       <FreeBoardHeader />
       {loading ? (
         <div
-          style={{ color: "#27ae60", textAlign: "center", marginTop: "2rem" }}
+          style={{
+            color: "#aaa",
+            textAlign: "center",
+            width: "100%",
+            padding: "2rem 0",
+            fontSize: "1.1rem",
+            fontFamily: "'GmarketSansMedium', sans-serif",
+            lineHeight: "1.6",
+          }}
         >
-          게시글을 불러오는 중입니다...
+          🐿️ 게시글을 열심히 줍줍(!) 중입니다...
         </div>
       ) : posts.length === 0 ? (
-        <div style={{ color: "#888", textAlign: "center", marginTop: "2rem" }}>
-          아직 게시글이 없습니다.
+        <div
+          style={{
+            color: "#aaa",
+            textAlign: "center",
+            width: "100%",
+            padding: "2rem 0",
+            fontSize: "1.1rem",
+            fontFamily: "'GmarketSansMedium', sans-serif",
+            lineHeight: "1.6",
+          }}
+        >
+          🐿️ 아직 다람쥐가 도토리를 숨기지 않았어요!
+          <br />첫 번째 이야기를 남겨주세요 🌰
         </div>
       ) : (
         posts.map((post) => (
