@@ -223,12 +223,12 @@ const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
           onClick={onClick}
           style={{
             fontSize: "1.08rem",
-            background: "#4b8161",
+            background: "#769b85",
             padding: "0.6rem 1.5rem",
             borderRadius: "0.7rem",
           }}
         >
-          전체 글 보기 ↗
+          광장 입장하기 ↗
         </GreenButton>
       </div>
 
