@@ -1,24 +1,30 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GreenButton from "shared/ui/greenButton";
-import FeedCard from "../../widgets/community/board/FreeCard";
+import FeedCard from "widgets/community/board/FreeCard";
+import FreeBoardHeader from "widgets/community/board/FreeBoardHeader";
+import { getUserInfo } from "shared/lib/auth";
 
 const FreeBoardPage = () => {
-  const userId = 11;
+  const [userId, setUserId] = useState(null); // 로그인 유저 정보 저장
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handleWriteClick = () => {
-    navigate("/community/free/write");
-  };
+  // 로그인 여부만 체크해서 userId만 저장
+  useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      setUserId(null); // 비로그인 시 null
+    }
+  }, []);
 
   const handleEdit = (post) => {
-    // 수정 페이지로 이동
     navigate(`/community/free/edit/${post.id}`);
   };
 
-  // 게시글 삭제 함수 예시
   const handleDelete = async (post) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
       try {
@@ -28,7 +34,6 @@ const FreeBoardPage = () => {
             method: "DELETE",
           }
         );
-        // 삭제 후 목록 갱신
         setPosts((prev) => prev.filter((p) => p.id !== post.id));
       } catch {
         alert("삭제에 실패했습니다.");
@@ -52,35 +57,13 @@ const FreeBoardPage = () => {
         minHeight: "40vh",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "none",
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        backgroundColor: "transparent",
         borderRadius: "20px",
         padding: "clamp(1rem, 4vw, 1.5rem)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
         position: "relative",
       }}
     >
-      <h2
-        style={{ fontSize: "1.5rem", color: "#2ecc71", marginBottom: "1rem" }}
-      >
-        📝 자유게시판
-      </h2>
-
-      {/* 글 작성 버튼 */}
-      <GreenButton
-        onClick={handleWriteClick}
-        style={{
-          fontSize: "1.08rem",
-          background: "#4b8161",
-          padding: "0.6rem 1.5rem",
-          borderRadius: "0.7rem",
-          marginBottom: "1.5rem",
-          alignSelf: "flex-end",
-        }}
-      >
-        ✏️ 글 작성하기
-      </GreenButton>
-
+      <FreeBoardHeader />
       {loading ? (
         <div
           style={{ color: "#27ae60", textAlign: "center", marginTop: "2rem" }}
@@ -97,7 +80,7 @@ const FreeBoardPage = () => {
             key={post.id}
             post={post}
             myUserId={userId}
-            onEdit={handleEdit} // post 객체 전체 전달
+            onEdit={handleEdit}
             onDelete={handleDelete}
           />
         ))

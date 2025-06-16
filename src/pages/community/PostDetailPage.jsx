@@ -7,11 +7,12 @@ import CommentSection from "features/community/CommentSection";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; // MUI 아이콘 사용 (설치 필요)
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { getUserInfo } from "shared/lib/auth";
 
 const PostDetailPage = ({ onLike }) => {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const userId = 11; // 실제 로그인 유저로 교체 필요
+  const [userId, setUserId] = useState(null); // 로그인 유저 정보 저장
   const [post, setPost] = useState(null);
   const [mountainName, setMountainName] = useState(null);
   const [photoIdx, setPhotoIdx] = useState(0);
@@ -28,7 +29,7 @@ const PostDetailPage = ({ onLike }) => {
       .catch(() => setComments([]));
   }, [postId]);
 
-  // 게시글, 댓글 불러오기
+  // 게시글, 댓글, 로그인 유저 정보 불러오기
   useEffect(() => {
     // 게시글 + 댓글 + 좋아요 여부 동시 처리
     const fetchPost = async () => {
@@ -63,7 +64,17 @@ const PostDetailPage = ({ onLike }) => {
 
     fetchPost();
     fetchComments();
-  }, [postId, fetchComments]);
+  }, [postId, fetchComments, userId]);
+
+  // 로그인 여부만 체크해서 userId만 저장
+  useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      setUserId(null); // 비로그인 시 null
+    }
+  }, []);
 
   if (!post) return <div style={{ padding: "2rem" }}>로딩 중...</div>;
 
