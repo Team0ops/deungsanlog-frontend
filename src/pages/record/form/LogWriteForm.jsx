@@ -131,7 +131,7 @@ const LogWriteForm = ({
     // formData 생성
     const formData = new FormData();
     formData.append("userId", userId);
-    formData.append("mountainId", mountainId);
+    formData.append("mountainId", mountainId ? mountainId : "");
     formData.append("mountainName", mountainName);
     formData.append("recordDate", dayjs(date).format("YYYY-MM-DD"));
     formData.append("content", content);
