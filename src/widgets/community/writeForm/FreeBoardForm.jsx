@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 import MountainInputWidget from "widgets/mountain/MountainInputWidget";
 import MultiPhotoUploadWidget from "widgets/PhotoUpload/MultiPhotoUploadWidget";
 import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const FreeBoardWriteForm = () => {
@@ -19,6 +19,8 @@ const FreeBoardWriteForm = () => {
   const [titleError, setTitleError] = useState(false);
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const userId = 11;
 
   // 여러 장 파일 선택 핸들러
   const handlePhotosChange = (newFiles) => {
@@ -46,12 +48,6 @@ const FreeBoardWriteForm = () => {
     e.preventDefault();
 
     let isValid = true;
-
-    // 사진 필수 검사 제거
-    // if (!photos || photos.length === 0) {
-    //   setPhotoError(true);
-    //   isValid = false;
-    // }
 
     if (!content.trim()) {
       setContentError(true);
@@ -82,8 +78,8 @@ const FreeBoardWriteForm = () => {
       }
 
       const payload = {
-        userId: 11,
-        type: 0, // 자유게시판
+        userId, // 쿼리스트링에서 추출한 userId 사용
+        type: 0,
         mountainId: mountain?.id || null,
         title,
         content,

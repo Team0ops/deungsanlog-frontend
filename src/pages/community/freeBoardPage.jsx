@@ -4,10 +4,10 @@ import GreenButton from "shared/ui/greenButton";
 import FeedCard from "../../widgets/community/board/FreeCard";
 
 const FreeBoardPage = () => {
+  const userId = 11;
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const userId = 11; // 예시로 1을 할당, 실제론 로그인한 유저의 id를 가져와야 함
 
   const handleWriteClick = () => {
     navigate("/community/free/write");

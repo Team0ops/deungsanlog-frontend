@@ -1,91 +1,76 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import KingOfMountainWidget from "widgets/community/Rank/KingOfMountainWidget";
 import HotMountainList from "widgets/community/HotMountain/HotMountainList";
-import GreenButton from "shared/ui/greenButton";
-
-const userId = 11;
+import FreeBoardBanner from "widgets/community/board/FreeBoardBanner";
 
 const CommunityPage = () => {
+  const [previewPosts, setPreviewPosts] = useState([]);
+  const userId = 11;
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate("/community/free");
+    navigate("/community/free", { state: { userId } });
   };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/community-service/posts/preview")
+      .then((res) => setPreviewPosts(res.data))
+      .catch(() => setPreviewPosts([]));
+  }, []);
 
   return (
     <div
       style={{
-        display: "flex",
-        gap: "2rem",
         width: "100%",
-        alignItems: "flex-start",
-        flexWrap: "wrap",
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "1.5rem",
+        boxSizing: "border-box",
       }}
     >
+      {/* 자유게시판 배너 - 상단 한 줄 전체 */}
+      <div style={{ marginBottom: "2rem" }}>
+        <FreeBoardBanner onClick={handleNavigate} previewPosts={previewPosts} />
+      </div>
+
+      {/* 랭킹 / Hot 산 - 가로 배치 (작아지면 세로) */}
       <div
+        className="community-bottom-widgets"
         style={{
-          minWidth: "90%",
-          maxWidth: "100%",
-          minHeight: "40vh",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "none",
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-          borderRadius: "20px",
-          padding: "clamp(1rem, 4vw, 1.5rem)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-          position: "relative",
+          flexWrap: "wrap",
+          gap: "1.5rem",
+          justifyContent: "space-between",
         }}
       >
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flex: "1 1 300px",
+            minWidth: "280px",
           }}
         >
-          <h3
-            style={{
-              fontWeight: "bold",
-              fontSize: "1.5rem",
-            }}
-          >
-            📢 자유게시판입니다!
-          </h3>
-
-          <GreenButton
-            onClick={handleNavigate}
-            style={{
-              fontSize: "1.08rem",
-              background: "#4b8161",
-              padding: "0.6rem 1.5rem",
-              borderRadius: "0.7rem",
-            }}
-          >
-            전체 글 보기 ↗
-          </GreenButton>
+          <KingOfMountainWidget userId={userId} />
         </div>
-        <p
+
+        <div
           style={{
-            color: "#555",
-            fontSize: "0.95rem",
-            lineHeight: 1.5,
-            marginTop: "0.4rem",
+            flex: "1 1 300px",
+            minWidth: "280px",
           }}
         >
-          최신 게시글과 등산러들의 다양한 산 이야기를 구경하세요 !
-        </p>
+          <HotMountainList />
+        </div>
       </div>
-
-      <KingOfMountainWidget userId={userId} />
-      <HotMountainList />
 
       <style>
         {`
-        @media (max-width: 900px) {
-          .community-main, .community-side {
-            max-width: 100% !important;
-            flex-basis: 100% !important;
+        @media (max-width: 768px) {
+          .community-bottom-widgets {
+            flex-direction: column;
+            align-items: stretch;
           }
         }
       `}
