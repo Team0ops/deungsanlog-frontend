@@ -132,16 +132,31 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Navigate to="/mountain" replace />} />
             <Route path="/mountain" element={<MountainInfoPage />} />
-            <Route path="/mountain/detail/:mountainName" element={<MountainDetailPage />} />
+            <Route
+              path="/mountain/detail/:mountainName"
+              element={<MountainDetailPage />}
+            />
             <Route path="/log" element={<LogViewPage />} />
             <Route path="/log/write" element={<LogWritePage />} />
             <Route path="/log/edit/:recordId" element={<LogEditPage />} />
-            <Route path="/log/write/mountain-search" element={<LogMountainSearchPage />} />
+            <Route
+              path="/log/write/mountain-search"
+              element={<LogMountainSearchPage />}
+            />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/community/free" element={<FreeBoardPage />} />
-            <Route path="/community/free/write" element={<FreeBoardWritePage />} />
-            <Route path="/community/free/edit/:postId" element={<FreeBoardWritePage />} />
-            <Route path="/community/post/:postId" element={<PostDetailPage />} />
+            <Route
+              path="/community/free/write"
+              element={<FreeBoardWritePage />}
+            />
+            <Route
+              path="/community/free/edit/:postId"
+              element={<FreeBoardWritePage />}
+            />
+            <Route
+              path="/community/post/:postId"
+              element={<PostDetailPage />}
+            />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
@@ -160,7 +175,9 @@ const App = () => {
 
   return (
     <SoftUIControllerProvider>
-      <CacheProvider value={createCache({ key: direction === "rtl" ? "rtl" : "css" })}>
+      <CacheProvider
+        value={createCache({ key: direction === "rtl" ? "rtl" : "css" })}
+      >
         <ThemeProvider theme={selectedTheme}>
           <CssBaseline />
           <AppContent />
