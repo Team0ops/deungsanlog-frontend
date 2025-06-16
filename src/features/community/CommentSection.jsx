@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
+import GreenInput from "shared/ui/greenInput";
+import GreenButton from "shared/ui/greenButton";
 
 const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [comments, setComments] = useState([]);
@@ -275,53 +277,67 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   return (
     <>
       <div style={{ marginBottom: "1.2rem" }}>
-        {comments.length === 0 ? (
-          <div style={{ color: "#aaa" }}>댓글이 없습니다.</div>
-        ) : (
-          <div
-            style={{
-              borderTop: "1px solid #e0e0e0",
-              paddingTop: "1.2rem",
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.8rem",
-            }}
-          >
-            {renderComments()}
-          </div>
-        )}
+        {/* 항상 구분선 표시 */}
+        <div
+          style={{
+            borderTop: "1px solid #e0e0e0",
+            paddingTop: "1.2rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.8rem",
+          }}
+        >
+          {comments.length === 0 ? (
+            <div
+              style={{
+                color: "#888",
+                textAlign: "center",
+                marginTop: "1.2rem",
+                fontSize: "1rem",
+                lineHeight: 1.6,
+              }}
+            >
+              🐿️ 아직 댓글이 없어요! <br />첫 도토리를 남겨볼까요? 🌰
+            </div>
+          ) : (
+            renderComments()
+          )}
+        </div>
       </div>
 
-      <form onSubmit={handleComment} style={{ display: "flex", gap: "0.7rem" }}>
-        <input
-          type="text"
+      <form
+        onSubmit={handleComment}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.6rem",
+          width: "100%",
+          marginTop: "1.5rem",
+        }}
+      >
+        <GreenInput
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="댓글을 입력하세요"
+          placeholder="댓글로 마음을 나눠보세요!"
           style={{
-            flex: 1,
-            border: "1px solid #e0e0e0",
-            borderRadius: "8px",
-            padding: "0.7rem 1rem",
             fontSize: "1.05rem",
-            outline: "none",
+            flex: 1, // 👈 핵심
+            marginBottom: 0,
           }}
+          maxLength={200}
         />
-        <button
+        <GreenButton
           type="submit"
           style={{
-            background: "#27ae60",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "0.7rem 1.2rem",
+            padding: "0.7rem 1.5rem",
             fontWeight: 600,
             fontSize: "1.05rem",
-            cursor: "pointer",
+            borderRadius: "8px",
+            whiteSpace: "nowrap",
           }}
         >
           등록
-        </button>
+        </GreenButton>
       </form>
     </>
   );
