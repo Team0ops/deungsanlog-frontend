@@ -44,8 +44,8 @@ const MultiPhotoUploadWidget = ({
             <Box
               key={i}
               sx={{
-                width: { xs: "45vw", sm: "170px" }, // 기존 26vw, 100px → 38vw, 140px로 확대
-                height: { xs: "45vw", sm: "170px" }, // 기존 26vw, 100px → 38vw, 140px로 확대
+                width: { xs: "45vw", sm: "170px" },
+                height: { xs: "45vw", sm: "170px" },
                 border:
                   photoError && photoPreviews.length === 0
                     ? "2px solid #dc3545"
@@ -59,7 +59,7 @@ const MultiPhotoUploadWidget = ({
                 overflow: "hidden",
               }}
             >
-              {photoPreviews[i] ? (
+              {photoPreviews[i] && (
                 <>
                   <img
                     src={photoPreviews[i]}
@@ -86,25 +86,24 @@ const MultiPhotoUploadWidget = ({
                     <CloseIcon fontSize="small" />
                   </IconButton>
                 </>
-              ) : (
-                i === 0 &&
-                photoPreviews.length === 0 && (
-                  <span
-                    style={{
-                      color: "#bdbdbd",
-                      fontWeight: 500,
-                      textAlign: "center",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    사진 1장은
-                    <br />
-                    필수입니다 :)
-                  </span>
-                )
               )}
             </Box>
           ))}
+        </Box>
+
+        {/* ✅ 안내 문구를 여기에 위치시킴 */}
+        <Box mt="1.6rem" mb="0rem">
+          <span
+            style={{
+              color: "#12411c",
+              fontWeight: 500,
+              fontSize: "0.92rem",
+              textAlign: "center",
+              display: "block",
+            }}
+          >
+            사진은 최대 {max}장까지 첨부 가능합니다 :)
+          </span>
         </Box>
 
         <Box height={{ xs: "4vw", md: "1.2rem" }} />
