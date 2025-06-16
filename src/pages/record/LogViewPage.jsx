@@ -1,17 +1,37 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUserInfo, requireAuth } from "shared/lib/auth"; // 인증 관련
 import LogHeader from "widgets/LogHeader/LogHeader";
-import { Box } from "@mui/material";
 import axios from "axios";
 import RecordCard from "widgets/record/RecordCard";
 import Grid from "@mui/material/Grid";
-import { useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
 
 const LogViewPage = () => {
   const [sortOption, setSortOption] = useState("latest");
-  const userId = 11;
+  const [records, setRecords] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [isBlocked, setIsBlocked] = useState(false); // ✅ 렌더링 차단용
   const navigate = useNavigate();
 
   useEffect(() => {
+    const ok = requireAuth("기록 조회를 위해 로그인이 필요합니다. 로그인하시겠습니까?");
+    if (!ok) {
+      setIsBlocked(true); // ✅ 인증 실패시 차단
+      return;
+    }
+
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      alert("사용자 정보를 불러올 수 없습니다.");
+      navigate("/login");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
     axios
       .get(`http://localhost:8080/record-service/get?userId=${userId}`)
       .then((res) => {
@@ -25,16 +45,11 @@ const LogViewPage = () => {
       .catch((err) => console.error("기록 불러오기 실패", err));
   }, [userId, sortOption]);
 
-  const [records, setRecords] = useState([]);
+  // ✅ 인증 실패 시 아무 것도 렌더링하지 않음
+  if (isBlocked) return null;
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      width="100%"
-      ml="{-20}"
-    >
+    <Box display="flex" flexDirection="column" alignItems="center" width="100%">
       <LogHeader
         userId={userId}
         sortOption={sortOption}
@@ -53,7 +68,7 @@ const LogViewPage = () => {
         {records.map((record) => (
           <Grid item key={record.id}>
             <RecordCard
-              recordId={record.id} // recordId prop 추가
+              recordId={record.id}
               image={
                 record.photoUrl
                   ? `http://localhost:8080/record-service${record.photoUrl}`

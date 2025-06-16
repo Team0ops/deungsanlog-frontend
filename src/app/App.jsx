@@ -23,12 +23,12 @@ import themeRTL from "theme/theme-rtl";
 // 이미지
 import brand from "shared/assets/images/logo_mountain.png";
 
-// 라우터
-import routes from "shared/config/routes";
+// ✅ 라우터 (getRoutes 함수 사용)
+import getRoutes from "shared/config/routes";
 
 // 페이지
 import MountainInfoPage from "../pages/mountainInfoPage";
-import MountainDetailPage from "../pages/mountain/mountainDetailPage"; // 새로 추가
+import MountainDetailPage from "../pages/mountain/mountainDetailPage";
 import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
 import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
@@ -39,7 +39,7 @@ import PostDetailPage from "../pages/community/PostDetailPage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
 import NotificationPage from "../pages/notificationPage";
-import MyPage from "../pages/user/MyPage";
+import MyPage from "../pages/mypage/mypage"; // ✅ 너가 원하는 경로
 import LoginPage from "../pages/user/LoginPage";
 import LogEditPage from "../pages/record/LogEditPage";
 
@@ -104,12 +104,12 @@ function AppContent() {
         />
       )}
       <div style={{ display: "flex", position: "relative", zIndex: 1 }}>
-        {/* Sidenav 항상 보이게 */}
+        {/* ✅ Sidenav에 getRoutes 함수 사용 */}
         <Sidenav
           color={sidenavColor}
           brand={brand}
           brandName="등산 이야기"
-          routes={routes}
+          routes={getRoutes()}
           onMouseEnter={handleOnMouseEnter}
           onMouseLeave={handleOnMouseLeave}
         />
@@ -132,32 +132,16 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Navigate to="/mountain" replace />} />
             <Route path="/mountain" element={<MountainInfoPage />} />
-            {/* 산 상세 페이지 라우팅 추가 */}
-            <Route
-              path="/mountain/detail/:mountainName"
-              element={<MountainDetailPage />}
-            />
+            <Route path="/mountain/detail/:mountainName" element={<MountainDetailPage />} />
             <Route path="/log" element={<LogViewPage />} />
             <Route path="/log/write" element={<LogWritePage />} />
             <Route path="/log/edit/:recordId" element={<LogEditPage />} />
-            <Route
-              path="/log/write/mountain-search"
-              element={<LogMountainSearchPage />}
-            />
+            <Route path="/log/write/mountain-search" element={<LogMountainSearchPage />} />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/community/free" element={<FreeBoardPage />} />
-            <Route
-              path="/community/free/write"
-              element={<FreeBoardWritePage />}
-            />
-            <Route
-              path="/community/free/edit/:postId"
-              element={<FreeBoardWritePage />}
-            />
-            <Route
-              path="/community/post/:postId"
-              element={<PostDetailPage />}
-            />
+            <Route path="/community/free/write" element={<FreeBoardWritePage />} />
+            <Route path="/community/free/edit/:postId" element={<FreeBoardWritePage />} />
+            <Route path="/community/post/:postId" element={<PostDetailPage />} />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
@@ -176,9 +160,7 @@ const App = () => {
 
   return (
     <SoftUIControllerProvider>
-      <CacheProvider
-        value={createCache({ key: direction === "rtl" ? "rtl" : "css" })}
-      >
+      <CacheProvider value={createCache({ key: direction === "rtl" ? "rtl" : "css" })}>
         <ThemeProvider theme={selectedTheme}>
           <CssBaseline />
           <AppContent />
