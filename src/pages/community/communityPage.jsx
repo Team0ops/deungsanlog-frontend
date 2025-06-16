@@ -1,14 +1,80 @@
-import styles from "./CommunityLayout.module.css";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import KingOfMountainWidget from "widgets/community/Rank/KingOfMountainWidget";
 import HotMountainList from "widgets/community/HotMountain/HotMountainList";
-
-const userId = null;
+import FreeBoardBanner from "widgets/community/board/FreeBoardBanner";
 
 const CommunityPage = () => {
+  const [previewPosts, setPreviewPosts] = useState([]);
+  const userId = 11;
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate("/community/free", { state: { userId } });
+  };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/community-service/posts/preview")
+      .then((res) => setPreviewPosts(res.data))
+      .catch(() => setPreviewPosts([]));
+  }, []);
+
   return (
-    <div className={styles.container}>
-      <KingOfMountainWidget userId={userId} />
-      <HotMountainList />
+    <div
+      style={{
+        width: "100%",
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "1.5rem",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* 자유게시판 배너 - 상단 한 줄 전체 */}
+      <div style={{ marginBottom: "2rem" }}>
+        <FreeBoardBanner onClick={handleNavigate} previewPosts={previewPosts} />
+      </div>
+
+      {/* 랭킹 / Hot 산 - 가로 배치 (작아지면 세로) */}
+      <div
+        className="community-bottom-widgets"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "1.5rem",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            flex: "1 1 300px",
+            minWidth: "280px",
+          }}
+        >
+          <KingOfMountainWidget userId={userId} />
+        </div>
+
+        <div
+          style={{
+            flex: "1 1 300px",
+            minWidth: "280px",
+          }}
+        >
+          <HotMountainList />
+        </div>
+      </div>
+
+      <style>
+        {`
+        @media (max-width: 768px) {
+          .community-bottom-widgets {
+            flex-direction: column;
+            align-items: stretch;
+          }
+        }
+      `}
+      </style>
     </div>
   );
 };

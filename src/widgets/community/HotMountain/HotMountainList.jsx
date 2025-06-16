@@ -22,7 +22,6 @@ const HotMountainList = () => {
         minHeight: "20vh",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
         backgroundColor: "rgba(255, 255, 255, 0.95)",
         borderRadius: "20px",
         padding: "clamp(1rem, 4vw, 1.5rem)",
@@ -47,7 +46,7 @@ const HotMountainList = () => {
           fontWeight: 500,
         }}
       >
-        궁금한 산을 클릭해서 등산 정보와 기록을 확인해보세요!
+        궁금한 산을 클릭해서 등산 정보를 확인해보세요!
       </p>
       <div
         style={{

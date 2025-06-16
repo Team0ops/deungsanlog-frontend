@@ -45,11 +45,7 @@ const MountainInputWidget = ({
             ? value?.name
             : value
         }
-        onChange={
-          directInput
-            ? (e) => setTempValue(e.target.value)
-            : onChange?.({ target: { value } })
-        }
+        onChange={directInput ? (e) => setTempValue(e.target.value) : undefined}
         readOnly={!directInput} // ✅ 여기로 변경
         error={error}
         errorMessage={errorMessage}

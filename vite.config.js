@@ -29,6 +29,7 @@ export default defineConfig({
       widgets: path.resolve(__dirname, "src/widgets"),
       context: path.resolve(__dirname, "src/shared/context"),
       features: path.resolve(__dirname, "src/features"),
+      pages: path.resolve(__dirname, "src/pages"),
     },
   },
   server: {
