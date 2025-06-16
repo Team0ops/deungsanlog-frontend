@@ -32,9 +32,10 @@ import MountainDetailPage from "../pages/mountain/mountainDetailPage"; // 새로
 import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
 import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
-import CommunityPage from "../pages/community/communityPage";
-import FreeBoardPage from "../pages/community/freeBoardPage";
+import CommunityPage from "pages/community/communityPage";
+import FreeBoardPage from "pages/community/freeBoardPage";
 import FreeBoardWritePage from "../pages/community/freeBoardWritePage";
+import PostDetailPage from "../pages/community/PostDetailPage";
 import GroupPage from "../pages/groupPage";
 import OrmiPage from "../pages/ormie/ormiPage";
 import NotificationPage from "../pages/notificationPage";
@@ -148,6 +149,10 @@ function AppContent() {
             <Route
               path="/community/free/write"
               element={<FreeBoardWritePage />}
+            />
+            <Route
+              path="/community/post/:postId"
+              element={<PostDetailPage />}
             />
             <Route path="/group" element={<GroupPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
