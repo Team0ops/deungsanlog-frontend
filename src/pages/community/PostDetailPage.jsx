@@ -30,23 +30,38 @@ const PostDetailPage = ({ onLike }) => {
 
   // 게시글, 댓글 불러오기
   useEffect(() => {
-    fetch(`http://localhost:8080/community-service/posts/${postId}`)
-      .then((res) => res.json())
-      .then((data) => {
+    // 게시글 + 댓글 + 좋아요 여부 동시 처리
+    const fetchPost = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/community-service/posts/${postId}`
+        );
+        const data = await res.json();
         setPost(data);
         setLikeCount(data?.likeCount || 0);
-        setLiked(false);
         setPhotoIdx(0);
-        if (data?.mountainId) {
-          fetch(
-            `http://localhost:8080/mountain-service/name-by-id?mountainId=${data.mountainId}`
-          )
-            .then((res) => res.json())
-            .then((mountain) => setMountainName(mountain.name))
-            .catch(() => setMountainName(null));
-        }
-      });
 
+        // 🟢 좋아요 여부 상태 요청
+        const likeStatusRes = await fetch(
+          `http://localhost:8080/community-service/posts/${postId}/like/status?userId=${userId}`
+        );
+        const isLiked = await likeStatusRes.json();
+        setLiked(isLiked);
+
+        // 🏔️ 산 이름 요청
+        if (data?.mountainId) {
+          const mountainRes = await fetch(
+            `http://localhost:8080/mountain-service/name-by-id?mountainId=${data.mountainId}`
+          );
+          const mountain = await mountainRes.json();
+          setMountainName(mountain.name);
+        }
+      } catch (err) {
+        console.error("데이터 로딩 실패", err);
+      }
+    };
+
+    fetchPost();
     fetchComments();
   }, [postId, fetchComments]);
 
