@@ -95,7 +95,7 @@ const MultiPhotoUploadWidget = ({
         <Box mt="1.6rem" mb="0rem">
           <span
             style={{
-              color: "#12411c",
+              color: "#828a84",
               fontWeight: 500,
               fontSize: "0.92rem",
               textAlign: "center",
