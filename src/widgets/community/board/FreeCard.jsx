@@ -115,7 +115,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                   onClick={(e) => {
                     e.stopPropagation();
                     setMenuOpen(false);
-                    onEdit?.(post);
+                    onEdit?.(post); // onEdit prop 활용
                   }}
                   style={{
                     width: "100%",

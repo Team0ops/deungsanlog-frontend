@@ -13,9 +13,9 @@ const FreeBoardPage = () => {
     navigate("/community/free/write");
   };
 
-  const handleEdit = (postId) => {
-    // 수정 로직
-    console.log("Edit post with id:", postId);
+  const handleEdit = (post) => {
+    // 수정 페이지로 이동
+    navigate(`/community/free/edit/${post.id}`);
   };
 
   // 게시글 삭제 함수 예시
@@ -97,7 +97,7 @@ const FreeBoardPage = () => {
             key={post.id}
             post={post}
             myUserId={userId}
-            onEdit={handleEdit}
+            onEdit={handleEdit} // post 객체 전체 전달
             onDelete={handleDelete}
           />
         ))

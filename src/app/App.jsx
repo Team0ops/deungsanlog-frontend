@@ -151,6 +151,10 @@ function AppContent() {
               element={<FreeBoardWritePage />}
             />
             <Route
+              path="/community/free/edit/:postId"
+              element={<FreeBoardWritePage />}
+            />
+            <Route
               path="/community/post/:postId"
               element={<PostDetailPage />}
             />

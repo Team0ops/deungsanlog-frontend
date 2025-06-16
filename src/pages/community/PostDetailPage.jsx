@@ -177,8 +177,7 @@ const PostDetailPage = ({ onLike }) => {
               <MenuItem
                 onClick={() => {
                   handleMenuClose();
-                  // TODO: 수정 페이지로 이동
-                  alert("수정 기능은 구현 필요!");
+                  navigate(`/community/free/edit/${post.id}`);
                 }}
               >
                 수정

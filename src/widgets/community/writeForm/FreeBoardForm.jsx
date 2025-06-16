@@ -1,28 +1,73 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
-import MountainInputWidget from "widgets/mountain/MountainInputWidget";
 import MultiPhotoUploadWidget from "widgets/PhotoUpload/MultiPhotoUploadWidget";
 import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
+import MountainSearchOnlyWidget from "widgets/mountain/MountainSearchOnlyWidget";
 import axios from "axios";
 
 const FreeBoardWriteForm = () => {
+  const { postId } = useParams();
   const [title, setTitle] = useState("");
   const [mountain, setMountain] = useState(null);
   const [content, setContent] = useState("");
-  const [photos, setPhotos] = useState([]); // 여러 장 파일
-  const [photoPreviews, setPhotoPreviews] = useState([]); // 여러 장 미리보기
+  const [photos, setPhotos] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
   const [mountainError, setMountainError] = useState(false);
   const [contentError, setContentError] = useState(false);
   const [titleError, setTitleError] = useState(false);
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const navigate = useNavigate();
-
   const userId = 11;
 
-  // 여러 장 파일 선택 핸들러
+  useEffect(() => {
+    if (!postId) return;
+    const fetchPost = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/community-service/posts/${postId}`
+        );
+        const data = res.data;
+        setTitle(data.title);
+        setContent(data.content);
+
+        // 산 정보 처리
+        if (data.mountainId && data.mountainName) {
+          setMountain({
+            id: data.mountainId,
+            name: data.mountainName,
+            location: "",
+          });
+        } else if (data.mountainId) {
+          // mountainName이 없으면 fetch
+          const res2 = await axios.get(
+            `http://localhost:8080/mountain-service/name-by-id?mountainId=${data.mountainId}`
+          );
+          setMountain({
+            id: data.mountainId,
+            name: res2.data.name,
+            location: "",
+          });
+        } else {
+          setMountain(null);
+        }
+
+        // 사진 미리보기 처리
+        setPhotoPreviews(
+          (data.imageUrls || []).map((url) =>
+            url.startsWith("http") ? url : `http://localhost:8080${url}`
+          )
+        );
+      } catch (err) {
+        console.error("게시글 불러오기 실패", err);
+        alert("게시글을 불러오지 못했습니다.");
+      }
+    };
+    fetchPost();
+  }, [postId]);
+
   const handlePhotosChange = (newFiles) => {
     setPhotos(newFiles);
     const readers = newFiles.map(
@@ -36,7 +81,6 @@ const FreeBoardWriteForm = () => {
     Promise.all(readers).then(setPhotoPreviews);
   };
 
-  // 개별 사진 삭제
   const handlePhotoRemove = (idx) => {
     const newPhotos = photos.filter((_, i) => i !== idx);
     const newPreviews = photoPreviews.filter((_, i) => i !== idx);
@@ -46,25 +90,20 @@ const FreeBoardWriteForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     let isValid = true;
-
     if (!content.trim()) {
       setContentError(true);
       isValid = false;
     }
-
     if (!title.trim()) {
       setTitleError(true);
       isValid = false;
     }
-
     if (!isValid) return;
 
     try {
-      // 사진이 있을 때만 업로드
-      let imageUrls = [];
-      if (photos && photos.length > 0) {
+      let imageUrls = photoPreviews;
+      if (photos.length > 0) {
         const formData = new FormData();
         photos.forEach((file) => formData.append("images", file));
         const res = await axios.post(
@@ -76,25 +115,31 @@ const FreeBoardWriteForm = () => {
         );
         imageUrls = res.data;
       }
-
       const payload = {
-        userId, // 쿼리스트링에서 추출한 userId 사용
+        userId,
         type: 0,
         mountainId: mountain?.id || null,
         title,
         content,
         imageUrls,
       };
-
-      await axios.post(
-        "http://localhost:8080/community-service/posts",
-        payload
-      );
-      alert("게시글 등록 완료!");
+      if (postId) {
+        await axios.put(
+          `http://localhost:8080/community-service/posts/${postId}`,
+          payload
+        );
+        alert("게시글이 수정되었습니다.");
+      } else {
+        await axios.post(
+          "http://localhost:8080/community-service/posts",
+          payload
+        );
+        alert("게시글이 등록되었습니다.");
+      }
       navigate("/community/free");
     } catch (error) {
-      console.error("게시글 등록 실패", error);
-      alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
+      console.error("실패", error);
+      alert("처리에 실패했습니다.");
     }
   };
 
@@ -128,29 +173,23 @@ const FreeBoardWriteForm = () => {
           shakeKeyframes={""}
           max={3}
         />
-        <MountainInputWidget
+
+        {/* 산 검색 위젯 추가 */}
+        <MountainSearchOnlyWidget
           value={mountain}
-          onChange={(e) => {
-            // e.target.value가 객체인지 문자열인지 체크
-            if (typeof e.target.value === "object") {
-              setMountain(e.target.value);
-            } else {
-              setMountain({ id: null, name: e.target.value, location: "" });
-            }
-            setMountainError(false);
-          }}
-          onPhotoRemove={() => {
-            setPhotos([]);
-            setPhotoPreviews([]);
-          }}
-          error={mountainError}
-          errorMessage="산 이름을 입력해주세요."
+          onChange={setMountain}
           onSearchClick={() => setMountainModalOpen(true)}
+          error={mountainError}
+          errorMessage="산을 선택해주세요."
         />
+
         <LogMountainSearchModal
           open={mountainModalOpen}
           onClose={() => setMountainModalOpen(false)}
-          onSelect={(mountainObj) => setMountain(mountainObj)}
+          onSelect={(mountainObj) => {
+            setMountain(mountainObj);
+            setMountainError(false);
+          }}
         />
         <GreenInput
           value={title}
@@ -191,7 +230,7 @@ const FreeBoardWriteForm = () => {
           type="submit"
           style={{ width: "100%", marginTop: "1.5rem" }}
         >
-          등록하기
+          {postId ? "수정하기" : "등록하기"}
         </GreenButton>
         <GreenButton
           type="button"
