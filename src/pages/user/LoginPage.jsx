@@ -14,7 +14,7 @@ const LoginPage = () => {
 
     if (token) {
       // 토큰이 있으면 저장하고 메인 페이지로 이동
-      localStorage.setItem("authToken", token);
+      localStorage.setItem("X-AUTH-TOKEN", token);
       console.log("로그인 성공! 토큰 저장됨");
       navigate("/mountain");
     } else if (error) {
