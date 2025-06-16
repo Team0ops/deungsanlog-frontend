@@ -4,11 +4,22 @@ import axios from "axios";
 import KingOfMountainWidget from "widgets/community/Rank/KingOfMountainWidget";
 import HotMountainList from "widgets/community/HotMountain/HotMountainList";
 import FreeBoardBanner from "widgets/community/board/FreeBoardBanner";
+import { getUserInfo } from "shared/lib/auth";
 
 const CommunityPage = () => {
   const [previewPosts, setPreviewPosts] = useState([]);
-  const userId = 11;
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
+
+  // 로그인 여부만 체크해서 userId만 저장
+  useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      setUserId(null); // 비로그인 시 null
+    }
+  }, []);
 
   const handleNavigate = () => {
     navigate("/community/free", { state: { userId } });
