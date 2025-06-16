@@ -9,6 +9,7 @@ import { getUserInfo } from "shared/lib/auth";
 const CommunityPage = () => {
   const [previewPosts, setPreviewPosts] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [refreshKing, setRefreshKing] = useState(false); // 추가
   const navigate = useNavigate();
 
   // 로그인 여부만 체크해서 userId만 저장
@@ -30,6 +31,13 @@ const CommunityPage = () => {
       .get("http://localhost:8080/community-service/posts/preview")
       .then((res) => setPreviewPosts(res.data))
       .catch(() => setPreviewPosts([]));
+  }, []);
+
+  // 등산왕 위젯 mount 시 강제 리프레시 트리거
+  useEffect(() => {
+    setRefreshKing(true);
+    const timer = setTimeout(() => setRefreshKing(false), 100); // 짧게 true였다가 false로
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -63,7 +71,11 @@ const CommunityPage = () => {
             minWidth: "280px",
           }}
         >
-          <KingOfMountainWidget userId={userId} />
+          {/* key에 refreshKing을 넣어 mount 트리거 */}
+          <KingOfMountainWidget
+            userId={userId}
+            key={refreshKing ? "refresh" : "normal"}
+          />
         </div>
 
         <div
