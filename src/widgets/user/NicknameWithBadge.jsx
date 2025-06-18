@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
+import axiosInstance from "shared/lib/axiosInstance";
 
 const NicknameWithBadge = ({ userId, nickname, style = {} }) => {
   const [badgeInfo, setBadgeInfo] = useState(null);
 
   useEffect(() => {
     if (userId) {
-      fetch(
-        `http://localhost:8080/record-service/users/${userId}/badge-profile`
-      )
-        .then((res) => res.json())
-        .then((data) => setBadgeInfo(data))
+      axiosInstance
+        .get(`/record-service/users/${userId}/badge-profile`)
+        .then((res) => setBadgeInfo(res.data))
         .catch(() => setBadgeInfo(null));
     }
   }, [userId]);

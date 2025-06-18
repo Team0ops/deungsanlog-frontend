@@ -5,6 +5,7 @@ import NicknameWithBadge from "widgets/user/NicknameWithBadge"; // 추가
 
 // 공통 미리보기 카드
 const PreviewCard = ({ post }) => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
 
   const isTextOnly =
@@ -47,7 +48,7 @@ const PreviewCard = ({ post }) => {
             src={
               post.imageUrls[0].startsWith("http")
                 ? post.imageUrls[0]
-                : `http://localhost:8080${post.imageUrls[0]}`
+                : `${baseUrl}${post.imageUrls[0]}`
             }
             alt="미리보기"
             style={{

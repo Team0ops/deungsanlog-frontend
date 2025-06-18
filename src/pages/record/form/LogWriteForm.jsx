@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import DatePickerWidget from "widgets/DatePick/DatePickerWidget";
 import PhotoUploadWidget from "widgets/PhotoUpload/PhotoUploadWidget";
 import dayjs from "dayjs";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 import { useNavigate } from "react-router-dom";
@@ -27,14 +27,14 @@ const LogWriteForm = ({
   initialDate = "",
   initialContent = "",
   initialPhoto = null,
-  onSubmit, // 등록/수정 분기용
-  recordId, // 추가
+  onSubmit,
+  recordId,
   isEdit = false,
 }) => {
   const [mountain, setMountain] = useState(initialMountain);
   const [mountainError, setMountainError] = useState(false);
   const [date, setDate] = useState(initialDate);
-  const [dateError, setDateError] = useState(false); // 추가
+  const [dateError, setDateError] = useState(false);
   const [content, setContent] = useState(initialContent);
   const [contentError, setContentError] = useState(false);
   const [photo, setPhoto] = useState(initialPhoto);
@@ -141,7 +141,7 @@ const LogWriteForm = ({
       // 수정 모드: 부모에서 처리
       formData.append("recordId", recordId); // 반드시 추가!
       try {
-        await axios.put("http://localhost:8080/record-service/edit", formData, {
+        await axiosInstance.put("/record-service/edit", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("기록 수정 완료!");
@@ -155,8 +155,8 @@ const LogWriteForm = ({
     } else {
       // 등록 모드: 직접 POST
       try {
-        const response = await axios.post(
-          "http://localhost:8080/record-service/post",
+        const response = await axiosInstance.post(
+          "/record-service/post",
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },

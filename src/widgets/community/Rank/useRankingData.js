@@ -1,6 +1,6 @@
 // useRankingData.js
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 
 const useRankingData = (userId) => {
   const [topRankers, setTopRankers] = useState([]);
@@ -10,12 +10,8 @@ const useRankingData = (userId) => {
 
   const fetchRanking = () => {
     setLoading(true);
-    axios
-      .get(
-        `http://localhost:8080/record-service/rankings${
-          userId ? `?userId=${userId}` : ""
-        }`
-      )
+    axiosInstance
+      .get(`/record-service/rankings${userId ? `?userId=${userId}` : ""}`)
       .then((res) => {
         setTopRankers(res.data.topRankers || []);
         setMyRank(res.data.myRank || null);

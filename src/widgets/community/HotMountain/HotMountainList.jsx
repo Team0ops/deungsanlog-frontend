@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 import HotMountainCard from "./HotMountainCard";
 
 const HotMountainList = () => {
@@ -7,8 +7,8 @@ const HotMountainList = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/record-service/hot-mountains")
+    axiosInstance
+      .get("/record-service/hot-mountains")
       .then((res) => setHotMountains(res.data || []))
       .catch(() => setHotMountains([]))
       .finally(() => setLoading(false));

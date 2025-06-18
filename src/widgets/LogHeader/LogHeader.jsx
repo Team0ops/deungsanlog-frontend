@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 import { Box, Typography } from "@mui/material";
 import mountainMessages from "shared/constants/mountainMessages";
 import GreenButton from "shared/ui/GreenButton";
@@ -14,8 +14,8 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
   useEffect(() => {
     const fetchBadgeInfo = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/record-service/users/${userId}/badge-profile`
+        const response = await axiosInstance.get(
+          `/record-service/users/${userId}/badge-profile`
         );
         setBadgeInfo(response.data);
       } catch (error) {

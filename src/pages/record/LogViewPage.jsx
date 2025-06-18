@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserInfo } from "shared/lib/auth";
 import LogHeader from "widgets/LogHeader/LogHeader";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 import RecordCard from "widgets/record/RecordCard";
 import Grid from "@mui/material/Grid";
 import { Box, Button } from "@mui/material";
 import greenSpot from "shared/assets/images/green_spot.png";
 import GreenButton from "shared/ui/greenButton";
+
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const NotLoggedIn = () => (
   <Box
@@ -102,8 +104,8 @@ const LogViewPage = () => {
 
   useEffect(() => {
     if (!userId) return;
-    axios
-      .get(`http://localhost:8080/record-service/get?userId=${userId}`)
+    axiosInstance
+      .get(`/record-service/get?userId=${userId}`)
       .then((res) => {
         const sorted = [...res.data].sort((a, b) => {
           return sortOption === "latest"
@@ -141,7 +143,7 @@ const LogViewPage = () => {
               recordId={record.id}
               image={
                 record.photoUrl
-                  ? `http://localhost:8080/record-service${record.photoUrl}`
+                  ? `${baseUrl}/record-service${record.photoUrl}`
                   : "/default-image.png"
               }
               mountainName={record.mountainName}

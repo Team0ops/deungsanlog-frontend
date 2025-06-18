@@ -3,7 +3,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import SoftInput from "shared/ui/SoftInput";
 import GreenButton from "shared/ui/greenButton";
 import { useState } from "react";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 
 const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
   const [search, setSearch] = useState("");
@@ -14,10 +14,9 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
   // 산 검색 API 호출
   const fetchMountainList = async (keyword) => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/mountain-service/record/search`,
-        { params: { keyword } }
-      );
+      const res = await axiosInstance.get("/mountain-service/record/search", {
+        params: { keyword },
+      });
       setMountainList(Array.isArray(res.data) ? res.data : []);
     } catch {
       setMountainList([]);

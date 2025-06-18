@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import GreenButton from "shared/ui/greenButton";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardHeader from "widgets/community/board/FreeBoardHeader";
 import { getUserInfo } from "shared/lib/auth";
+import { axiosInstance } from "shared/lib/axiosInstance";
 
 const FreeBoardPage = () => {
   const [userId, setUserId] = useState(null);
@@ -32,12 +32,7 @@ const FreeBoardPage = () => {
   const handleDelete = async (post) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
       try {
-        await fetch(
-          `http://localhost:8080/community-service/posts/${post.id}`,
-          {
-            method: "DELETE",
-          }
-        );
+        await axiosInstance.delete(`/community-service/posts/${post.id}`);
         setPosts((prev) => prev.filter((p) => p.id !== post.id));
       } catch {
         alert("삭제에 실패했습니다.");
@@ -47,9 +42,9 @@ const FreeBoardPage = () => {
 
   // 게시글 가져오기
   useEffect(() => {
-    fetch("http://localhost:8080/community-service/posts")
-      .then((res) => res.json())
-      .then((data) => setPosts(data))
+    axiosInstance
+      .get("/community-service/posts")
+      .then((res) => setPosts(res.data))
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
   }, []);

@@ -3,7 +3,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 import CommentSection from "features/community/CommentSection";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
@@ -12,6 +12,8 @@ import { getUserInfo } from "shared/lib/auth";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 
 const PostDetailPage = ({ onLike }) => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   const { postId } = useParams();
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
@@ -35,9 +37,9 @@ const PostDetailPage = ({ onLike }) => {
 
   // 댓글 목록 새로고침 함수
   const fetchComments = useCallback(() => {
-    fetch(`http://localhost:8080/community-service/comments?postId=${postId}`)
-      .then((res) => res.json())
-      .then((data) => setComments(Array.isArray(data) ? data : []))
+    axiosInstance
+      .get("/community-service/comments", { params: { postId } })
+      .then((res) => setComments(Array.isArray(res.data) ? res.data : []))
       .catch(() => setComments([]));
   }, [postId]);
 
@@ -45,32 +47,33 @@ const PostDetailPage = ({ onLike }) => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:8080/community-service/posts/${postId}`
+        // 게시글 가져오기
+        const res = await axiosInstance.get(
+          `/community-service/posts/${postId}`
         );
-        const data = await res.json();
+        const data = res.data;
         setPost(data);
         setLikeCount(data?.likeCount || 0);
         setPhotoIdx(0);
 
-        // 좋아요 여부
+        // 좋아요 여부 가져오기
         if (userId) {
-          const likeStatusRes = await fetch(
-            `http://localhost:8080/community-service/posts/${postId}/like/status?userId=${userId}`
+          const likeStatusRes = await axiosInstance.get(
+            `/community-service/posts/${postId}/like/status`,
+            { params: { userId } }
           );
-          const isLiked = await likeStatusRes.json();
-          setLiked(isLiked);
+          setLiked(likeStatusRes.data);
         } else {
           setLiked(false);
         }
 
-        // 산 이름
+        // 산 이름 가져오기
         if (data?.mountainId) {
-          const mountainRes = await fetch(
-            `http://localhost:8080/mountain-service/name-by-id?mountainId=${data.mountainId}`
+          const mountainRes = await axiosInstance.get(
+            `/mountain-service/name-by-id`,
+            { params: { mountainId: data.mountainId } }
           );
-          const mountain = await mountainRes.json();
-          setMountainName(mountain.name);
+          setMountainName(mountainRes.data.name);
         }
       } catch (err) {
         console.error("데이터 로딩 실패", err);
@@ -78,8 +81,7 @@ const PostDetailPage = ({ onLike }) => {
     };
 
     fetchPost();
-    fetchComments();
-  }, [postId, fetchComments, userId]);
+  }, [postId, userId]);
 
   if (!post) return <div style={{ padding: "2rem" }}>로딩 중...</div>;
 
@@ -89,7 +91,7 @@ const PostDetailPage = ({ onLike }) => {
   const getPhotoUrl = (idx) =>
     post.imageUrls[idx].startsWith("http")
       ? post.imageUrls[idx]
-      : `http://localhost:8080${post.imageUrls[idx]}`;
+      : `${baseUrl}${post.imageUrls[idx]}`;
 
   const handlePrev = () => {
     setPhotoIdx((prev) => (prev - 1 + totalPhotos) % totalPhotos);
@@ -105,14 +107,14 @@ const PostDetailPage = ({ onLike }) => {
         return;
       }
       if (!liked) {
-        await axios.post(
-          `http://localhost:8080/community-service/posts/${postId}/like?userId=${userId}`
+        await axiosInstance.post(
+          `/community-service/posts/${postId}/like?userId=${userId}`
         );
         setLiked(true);
         setLikeCount((prev) => prev + 1);
       } else {
-        await axios.delete(
-          `http://localhost:8080/community-service/posts/${postId}/like?userId=${userId}`
+        await axiosInstance.delete(
+          `/community-service/posts/${postId}/like?userId=${userId}`
         );
         setLiked(false);
         setLikeCount((prev) => prev - 1);
@@ -133,9 +135,7 @@ const PostDetailPage = ({ onLike }) => {
   const handleDeletePost = async () => {
     if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
     try {
-      await axios.delete(
-        `http://localhost:8080/community-service/posts/${postId}`
-      );
+      await axiosInstance.delete(`/community-service/posts/${postId}`);
       alert("게시글이 삭제되었습니다.");
       navigate("/community/free");
     } catch (err) {
