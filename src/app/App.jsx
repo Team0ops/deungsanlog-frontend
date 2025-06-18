@@ -27,7 +27,7 @@ import brand from "shared/assets/images/logo_mountain.png";
 import getRoutes from "shared/config/routes";
 
 // 페이지
-import MountainInfoPage from "../pages/mountainInfoPage";
+import MountainInfoPage from "../pages/mountainmapping/mountainInfoPage";
 import MountainDetailPage from "../pages/mountain/mountainDetailPage";
 import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
