@@ -8,8 +8,10 @@ import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
 import MountainSearchOnlyWidget from "widgets/mountain/MountainSearchOnlyWidget";
 import axios from "axios";
 
-const FreeBoardWriteForm = () => {
+const FreeBoardWriteForm = ({ userId: propUserId }) => {
   const { postId } = useParams();
+  // prop으로 받은 userId가 있으면 사용, 없으면 기본값(11)
+  const userId = propUserId ?? 11;
   const [title, setTitle] = useState("");
   const [mountain, setMountain] = useState(null);
   const [content, setContent] = useState("");
@@ -20,7 +22,6 @@ const FreeBoardWriteForm = () => {
   const [titleError, setTitleError] = useState(false);
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const navigate = useNavigate();
-  const userId = 11;
 
   useEffect(() => {
     if (!postId) return;

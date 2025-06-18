@@ -24,7 +24,7 @@ const KingOfMountainWidget = ({ userId }) => {
     >
       <Header onRefresh={handleManualRefresh} />
       <RankingList topRankers={topRankers} myRank={myRank} loading={loading} />
-      <MyRankingBox myRank={myRank} />
+      <MyRankingBox myRank={myRank} loading={loading} /> {/* loading 전달 */}
     </div>
   );
 };

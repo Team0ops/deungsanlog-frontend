@@ -51,7 +51,7 @@ const OrmiePage = () => {
                 minHeight: 0,
               }}
             >
-              <ChatMessageList messages={messages} />
+              <ChatMessageList messages={messages} onSend={handleSend} />
             </div>
             <ChatInput onSend={(text) => handleSend(text)} />
           </>

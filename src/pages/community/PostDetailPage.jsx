@@ -1,24 +1,37 @@
 import React, { useEffect, useState, useCallback } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CommentSection from "features/community/CommentSection";
-import MoreVertIcon from "@mui/icons-material/MoreVert"; // MUI 아이콘 사용 (설치 필요)
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { getUserInfo } from "shared/lib/auth";
+import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 
 const PostDetailPage = ({ onLike }) => {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const userId = 11; // 실제 로그인 유저로 교체 필요
+  const [userId, setUserId] = useState(null);
   const [post, setPost] = useState(null);
   const [mountainName, setMountainName] = useState(null);
   const [photoIdx, setPhotoIdx] = useState(0);
   const [likeCount, setLikeCount] = useState(0);
   const [liked, setLiked] = useState(false);
-  const [comments, setComments] = useState([]); // 댓글 목록
+  const [comments, setComments] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  // 로그인 여부만 체크해서 userId만 저장
+  useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      setUserId(null);
+    }
+  }, []);
 
   // 댓글 목록 새로고침 함수
   const fetchComments = useCallback(() => {
@@ -28,9 +41,8 @@ const PostDetailPage = ({ onLike }) => {
       .catch(() => setComments([]));
   }, [postId]);
 
-  // 게시글, 댓글 불러오기
+  // 게시글, 댓글, 좋아요 여부 불러오기
   useEffect(() => {
-    // 게시글 + 댓글 + 좋아요 여부 동시 처리
     const fetchPost = async () => {
       try {
         const res = await fetch(
@@ -41,14 +53,18 @@ const PostDetailPage = ({ onLike }) => {
         setLikeCount(data?.likeCount || 0);
         setPhotoIdx(0);
 
-        // 🟢 좋아요 여부 상태 요청
-        const likeStatusRes = await fetch(
-          `http://localhost:8080/community-service/posts/${postId}/like/status?userId=${userId}`
-        );
-        const isLiked = await likeStatusRes.json();
-        setLiked(isLiked);
+        // 좋아요 여부
+        if (userId) {
+          const likeStatusRes = await fetch(
+            `http://localhost:8080/community-service/posts/${postId}/like/status?userId=${userId}`
+          );
+          const isLiked = await likeStatusRes.json();
+          setLiked(isLiked);
+        } else {
+          setLiked(false);
+        }
 
-        // 🏔️ 산 이름 요청
+        // 산 이름
         if (data?.mountainId) {
           const mountainRes = await fetch(
             `http://localhost:8080/mountain-service/name-by-id?mountainId=${data.mountainId}`
@@ -63,7 +79,7 @@ const PostDetailPage = ({ onLike }) => {
 
     fetchPost();
     fetchComments();
-  }, [postId, fetchComments]);
+  }, [postId, fetchComments, userId]);
 
   if (!post) return <div style={{ padding: "2rem" }}>로딩 중...</div>;
 
@@ -84,6 +100,10 @@ const PostDetailPage = ({ onLike }) => {
 
   const handleLike = async () => {
     try {
+      if (!userId) {
+        alert("로그인 후 좋아요를 누를 수 있습니다.");
+        return;
+      }
       if (!liked) {
         await axios.post(
           `http://localhost:8080/community-service/posts/${postId}/like?userId=${userId}`
@@ -131,7 +151,8 @@ const PostDetailPage = ({ onLike }) => {
   return (
     <div
       style={{
-        maxWidth: "600px",
+        maxWidth: "90%",
+        minWidth: "80%",
         margin: "0 auto",
         padding: "2.2rem 1rem 2.5rem 1rem",
         background: "#fff",
@@ -146,21 +167,35 @@ const PostDetailPage = ({ onLike }) => {
           display: "flex",
           alignItems: "center",
           marginBottom: "1.2rem",
+          minHeight: "40px",
         }}
       >
         <button
           onClick={() => navigate(-1)}
           style={{
-            background: "none",
+            background: "#f4f8f4",
             border: "none",
             color: "#27ae60",
-            fontSize: "1.5rem",
+            fontSize: "1.15rem",
             cursor: "pointer",
+            borderRadius: "999px",
+            padding: "0.5rem 1.1rem 0.5rem 0.7rem",
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 600,
+            boxShadow: "0 2px 8px rgba(39,174,96,0.07)",
+            transition: "background 0.15s",
             marginRight: "auto",
+            gap: "0.3rem",
           }}
           aria-label="뒤로가기"
+          onMouseOver={(e) => (e.currentTarget.style.background = "#e6f6ec")}
+          onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
         >
-          ← 뒤로가기
+          <ArrowBackIosNewIcon
+            style={{ fontSize: "1.2rem", marginRight: "0.2rem" }}
+          />
+          <span>목록으로</span>
         </button>
         {/* 본인 글일 때만 메뉴버튼 노출 */}
         {post && userId === post.userId && (
@@ -210,6 +245,51 @@ const PostDetailPage = ({ onLike }) => {
           </>
         )}
       </div>
+
+      {/* 작성자, 날짜 - 사진 위 */}
+      <div
+        style={{
+          color: "#888",
+          fontSize: "1.01rem",
+          marginBottom: "0.7rem",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "0.7rem",
+          flexDirection: "row",
+        }}
+      >
+        <span
+          style={{
+            color: "#000000",
+            fontWeight: 700,
+            fontSize: "1.08rem",
+            borderRadius: "8px",
+            padding: "0.18em 0.7em 0.18em 0.5em",
+            letterSpacing: "0.01em",
+            display: "inline-block",
+            lineHeight: 1.3,
+            minWidth: "90px",
+          }}
+        >
+          <NicknameWithBadge
+            userId={post.userId}
+            nickname={post.nickname}
+            style={{
+              color: "#2b2b2b",
+              fontWeight: 700,
+              fontSize: "1.08rem",
+              background: "none",
+              padding: 0,
+              boxShadow: "none",
+            }}
+          />
+          <br />
+          <span style={{ color: "#aaa", fontWeight: 400, fontSize: "0.97rem" }}>
+            {new Date(post.createdAt).toLocaleString()}
+          </span>
+        </span>
+      </div>
+
       {/* 사진 캐러셀 */}
       {hasPhotos && (
         <div
@@ -218,22 +298,27 @@ const PostDetailPage = ({ onLike }) => {
             width: "100%",
             borderRadius: "12px",
             overflow: "hidden",
-            height: "clamp(340px, 48vw, 420px)",
             background: "#f4f8f4",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginBottom: "1.2rem",
+            minHeight: "220px",
+            maxHeight: "520px",
           }}
         >
           <img
             src={getPhotoUrl(photoIdx)}
             alt={`피드 이미지 ${photoIdx + 1}`}
             style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
+              maxWidth: "100%",
+              maxHeight: "480px",
+              width: "auto",
+              height: "auto",
+              objectFit: "contain",
               display: "block",
+              margin: "0 auto",
+              background: "#f4f8f4",
             }}
           />
           {totalPhotos > 1 && (
@@ -248,7 +333,7 @@ const PostDetailPage = ({ onLike }) => {
                   background: "none",
                   border: "none",
                   fontSize: "2.2rem",
-                  color: "rgba(255,255,255,0.55)",
+                  color: "rgba(0, 0, 0, 0.55)",
                   outline: "none",
                   cursor: "pointer",
                   zIndex: 5,
@@ -279,7 +364,7 @@ const PostDetailPage = ({ onLike }) => {
                   background: "none",
                   border: "none",
                   fontSize: "2.2rem",
-                  color: "rgba(255,255,255,0.55)",
+                  color: "rgba(0, 0, 0, 0.55)",
                   outline: "none",
                   cursor: "pointer",
                   zIndex: 5,
@@ -330,11 +415,30 @@ const PostDetailPage = ({ onLike }) => {
           )}
         </div>
       )}
+
+      {/* 산 이름 - 사진 아래 */}
+      {mountainName && (
+        <div
+          style={{
+            color: "#235a3a",
+            fontWeight: 600,
+            fontSize: "1.05rem",
+            marginBottom: "0.7rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem",
+          }}
+        >
+          🏔️ {mountainName}
+        </div>
+      )}
+
       {/* 제목 */}
       <div
         style={{
-          fontWeight: 700,
-          fontSize: "1.25rem",
+          color: "#2b2b2b",
+          fontWeight: "bold",
+          fontSize: "1rem",
           marginBottom: "0.6rem",
         }}
       >
@@ -343,30 +447,13 @@ const PostDetailPage = ({ onLike }) => {
       {/* 글 */}
       <div
         style={{
-          fontSize: "1.08rem",
+          color: "#2b2b2b",
+          fontSize: "1rem",
           marginBottom: "0.7rem",
           whiteSpace: "pre-line",
         }}
       >
         {post.content}
-      </div>
-      {/* 작성자, 산, 날짜 */}
-      <div
-        style={{
-          color: "#888",
-          fontSize: "1.01rem",
-          marginBottom: "0.7rem",
-        }}
-      >
-        작성자: <b style={{ color: "#27ae60" }}>{post.nickname}</b>
-        {mountainName && (
-          <span style={{ marginLeft: "0.7rem", color: "#27ae60" }}>
-            🏔️ {mountainName}
-          </span>
-        )}
-        <span style={{ marginLeft: "0.7rem", color: "#aaa" }}>
-          {new Date(post.createdAt).toLocaleString()}
-        </span>
       </div>
       {/* 좋아요, 댓글 */}
       <div
@@ -401,7 +488,7 @@ const PostDetailPage = ({ onLike }) => {
         postId={postId}
         userId={userId}
         postUserId={post.userId}
-        onCommentsChanged={handleCommentsChanged} // 댓글 변경시 새로고침
+        onCommentsChanged={handleCommentsChanged}
       />
     </div>
   );
