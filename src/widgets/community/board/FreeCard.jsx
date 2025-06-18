@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 
 const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [mountainName, setMountainName] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
@@ -13,7 +14,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   useEffect(() => {
     if (post.mountainId) {
       fetch(
-        `http://localhost:8080/mountain-service/name-by-id?mountainId=${post.mountainId}`
+        `${baseUrl}/mountain-service/name-by-id?mountainId=${post.mountainId}`
       )
         .then((res) => res.json())
         .then((data) => setMountainName(data.name))
@@ -30,7 +31,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const getPhotoUrl = (idx) =>
     post.imageUrls[idx].startsWith("http")
       ? post.imageUrls[idx]
-      : `http://localhost:8080${post.imageUrls[idx]}`;
+      : `${baseUrl}${post.imageUrls[idx]}`;
 
   const handlePrev = (e) => {
     e.stopPropagation();

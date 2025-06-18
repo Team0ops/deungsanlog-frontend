@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [loading, setLoading] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState(null);
   const navigate = useNavigate();
@@ -28,15 +29,13 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     setLoading(true);
     setLoadingProvider("google");
-    // 바로 Gateway의 Google OAuth 엔드포인트로 리다이렉트
-    window.location.href = "http://localhost:8080/auth/google";
+    window.location.href = `${BASE_URL}/auth/google`; // 템플릿 리터럴로 수정
   };
 
   const handleNaverLogin = () => {
     setLoading(true);
     setLoadingProvider("naver");
-    // 바로 Gateway의 네이버 OAuth 엔드포인트로 리다이렉트
-    window.location.href = "http://localhost:8080/auth/naver";
+    window.location.href = `${BASE_URL}/auth/naver`; // 템플릿 리터럴로 수정
   };
 
   return (

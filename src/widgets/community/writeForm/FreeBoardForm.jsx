@@ -6,9 +6,10 @@ import GreenInput from "shared/ui/greenInput";
 import MultiPhotoUploadWidget from "widgets/PhotoUpload/MultiPhotoUploadWidget";
 import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
 import MountainSearchOnlyWidget from "widgets/mountain/MountainSearchOnlyWidget";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 
 const FreeBoardWriteForm = ({ userId: propUserId }) => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const { postId } = useParams();
   // prop으로 받은 userId가 있으면 사용, 없으면 기본값(11)
   const userId = propUserId ?? 11;
@@ -27,8 +28,8 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
     if (!postId) return;
     const fetchPost = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:8080/community-service/posts/${postId}`
+        const res = await axiosInstance.get(
+          `/community-service/posts/${postId}`
         );
         const data = res.data;
         setTitle(data.title);
@@ -43,8 +44,8 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
           });
         } else if (data.mountainId) {
           // mountainName이 없으면 fetch
-          const res2 = await axios.get(
-            `http://localhost:8080/mountain-service/name-by-id?mountainId=${data.mountainId}`
+          const res2 = await axiosInstance.get(
+            `/mountain-service/name-by-id?mountainId=${data.mountainId}`
           );
           setMountain({
             id: data.mountainId,
@@ -58,7 +59,7 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
         // 사진 미리보기 처리
         setPhotoPreviews(
           (data.imageUrls || []).map((url) =>
-            url.startsWith("http") ? url : `http://localhost:8080${url}`
+            url.startsWith("http") ? url : `${baseUrl}${url}`
           )
         );
       } catch (err) {
@@ -107,8 +108,8 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
       if (photos.length > 0) {
         const formData = new FormData();
         photos.forEach((file) => formData.append("images", file));
-        const res = await axios.post(
-          "http://localhost:8080/community-service/posts/upload-image",
+        const res = await axiosInstance.post(
+          "/community-service/posts/upload-image",
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -125,16 +126,10 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
         imageUrls,
       };
       if (postId) {
-        await axios.put(
-          `http://localhost:8080/community-service/posts/${postId}`,
-          payload
-        );
+        await axiosInstance.put(`/community-service/posts/${postId}`, payload);
         alert("게시글이 수정되었습니다.");
       } else {
-        await axios.post(
-          "http://localhost:8080/community-service/posts",
-          payload
-        );
+        await axiosInstance.post("/community-service/posts", payload);
         alert("게시글이 등록되었습니다.");
       }
       navigate("/community/free");

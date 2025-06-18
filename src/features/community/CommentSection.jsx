@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import axiosInstance from "shared/lib/axiosInstance";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
-import GreenInput from "shared/ui/greenInput";
-import GreenButton from "shared/ui/greenButton";
+import GreenButton from "shared/ui/GreenButton";
+import GreenInput from "shared/ui/GreenInput";
 
 const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [comments, setComments] = useState([]);
@@ -13,8 +13,8 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
 
   // 댓글 목록 새로고침 함수
   const fetchComments = () => {
-    axios
-      .get(`http://localhost:8080/community-service/comments?postId=${postId}`)
+    axiosInstance
+      .get(`/community-service/comments`, { params: { postId } })
       .then((res) => setComments(Array.isArray(res.data) ? res.data : []))
       .catch(() => setComments([]));
   };
@@ -31,7 +31,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
     e.preventDefault();
     if (!comment.trim()) return;
     try {
-      await axios.post(`http://localhost:8080/community-service/comments`, {
+      await axiosInstance.post(`/community-service/comments`, {
         postId,
         userId,
         content: comment,
@@ -42,7 +42,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
     } catch {
       alert("댓글 등록 실패");
     }
-  };
+  }; // ← 여기까지가 handleComment 함수의 끝입니다.
 
   // 대댓글 입력 토글
   const toggleReplyInput = (commentId) => {
@@ -52,19 +52,20 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
     }));
   };
 
-  // 대댓글 등록 함수
+  // 대댓글 입력
   const handleReplySubmit = async (e, parentId) => {
     e.preventDefault();
     const content = replyInputMap[parentId]?.trim();
     if (!content) return;
 
     try {
-      await axios.post(`http://localhost:8080/community-service/comments`, {
+      await axiosInstance.post(`/community-service/comments`, {
         postId,
         userId,
         content,
         parentCommentId: parentId,
       });
+
       // 상태 초기화
       setReplyInputMap((prev) => ({ ...prev, [parentId]: "" }));
       setReplyOpenMap((prev) => ({ ...prev, [parentId]: false }));
@@ -260,9 +261,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const handleDelete = async (commentId) => {
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
     try {
-      await axios.delete(
-        `http://localhost:8080/community-service/comments/${commentId}`
-      );
+      await axiosInstance.delete(`/community-service/comments/${commentId}`);
       fetchComments();
       onCommentsChanged?.(); // 댓글 개수 새로고침
     } catch {

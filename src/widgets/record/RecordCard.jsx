@@ -2,7 +2,7 @@ import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import defaultImage from "shared/assets/images/logo_mountain.png";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 import html2canvas from "html2canvas";
 
 const RecordCard = ({
@@ -23,9 +23,7 @@ const RecordCard = ({
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
       console.log("삭제 요청 recordId:", recordId); // 추가
-      await axios.delete(
-        `http://localhost:8080/record-service/delete?recordId=${recordId}`
-      );
+      await axiosInstance.delete(`/record-service/delete?recordId=${recordId}`);
       alert("삭제되었습니다.");
       if (onDeleted) onDeleted();
     } catch (e) {

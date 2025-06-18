@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../shared/lib/axiosInstance";
 import KingOfMountainWidget from "widgets/community/Rank/KingOfMountainWidget";
 import HotMountainList from "widgets/community/HotMountain/HotMountainList";
 import FreeBoardBanner from "widgets/community/board/FreeBoardBanner";
@@ -27,8 +27,8 @@ const CommunityPage = () => {
   };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/community-service/posts/preview")
+    axiosInstance
+      .get("/community-service/posts/preview")
       .then((res) => setPreviewPosts(res.data))
       .catch(() => setPreviewPosts([]));
   }, []);

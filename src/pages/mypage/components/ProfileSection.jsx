@@ -1,31 +1,33 @@
-import React, { useState } from 'react';
+import { useState } from "react";
+import axiosInstance from "shared/lib/axiosInstance";
 
 const ProfileSection = ({ userInfo, setUserInfo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
-    nickname: userInfo?.nickname || '',
-    profileImgUrl: userInfo?.profileImgUrl || ''
+    nickname: userInfo?.nickname || "",
+    profileImgUrl: userInfo?.profileImgUrl || "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl, setPreviewUrl] = useState("");
 
   // 파일 선택 핸들러
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB 제한
-        alert('파일 크기는 5MB 이하로 선택해주세요.');
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB 제한
+        alert("파일 크기는 5MB 이하로 선택해주세요.");
         return;
       }
-      
-      if (!file.type.startsWith('image/')) {
-        alert('이미지 파일만 선택해주세요.');
+
+      if (!file.type.startsWith("image/")) {
+        alert("이미지 파일만 선택해주세요.");
         return;
       }
 
       setSelectedFile(file);
-      
+
       // 미리보기 URL 생성
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -39,10 +41,10 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
   const handleEditStart = () => {
     setEditData({
       nickname: userInfo.nickname,
-      profileImgUrl: userInfo.profileImgUrl || ''
+      profileImgUrl: userInfo.profileImgUrl || "",
     });
     setSelectedFile(null);
-    setPreviewUrl('');
+    setPreviewUrl("");
     setIsEditing(true);
   };
 
@@ -50,82 +52,86 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
   const handleEditCancel = () => {
     setEditData({
       nickname: userInfo.nickname,
-      profileImgUrl: userInfo.profileImgUrl || ''
+      profileImgUrl: userInfo.profileImgUrl || "",
     });
     setSelectedFile(null);
-    setPreviewUrl('');
+    setPreviewUrl("");
     setIsEditing(false);
   };
 
   // 프로필 수정 저장
   const handleEditSave = async () => {
     if (!editData.nickname.trim()) {
-      alert('닉네임을 입력해주세요.');
+      alert("닉네임을 입력해주세요.");
       return;
     }
 
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('X-AUTH-TOKEN') || 
-                    localStorage.getItem('authToken') ||
-                    localStorage.getItem('token');
+      const token =
+        localStorage.getItem("X-AUTH-TOKEN") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("token");
 
       let profileImgUrl = editData.profileImgUrl;
 
       // 새 파일이 선택된 경우 업로드
       if (selectedFile) {
         const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('userId', userInfo.id);
+        formData.append("file", selectedFile);
+        formData.append("userId", userInfo.id);
 
         try {
-          const uploadResponse = await fetch('http://localhost:8080/user-service/api/users/upload-profile-image', {
-            method: 'POST',
-            headers: {
-              'X-AUTH-TOKEN': token
-            },
-            body: formData
-          });
+          const uploadResponse = await axiosInstance.post(
+            "/user-service/api/users/upload-profile-image",
+            formData,
+            {
+              headers: {
+                "X-AUTH-TOKEN": token,
+                // axios는 FormData일 경우 Content-Type을 자동으로 설정해줌!
+              },
+            }
+          );
 
-          if (uploadResponse.ok) {
-            const uploadData = await uploadResponse.json();
-            profileImgUrl = uploadData.imageUrl;
-          } else {
-            throw new Error('이미지 업로드 실패');
-          }
+          const uploadData = uploadResponse.data;
+          profileImgUrl = uploadData.imageUrl;
         } catch (uploadError) {
-          console.error('이미지 업로드 오류:', uploadError);
-          alert('이미지 업로드에 실패했습니다. 프로필만 수정됩니다.');
+          console.error("이미지 업로드 오류:", uploadError);
+          alert("이미지 업로드에 실패했습니다. 프로필만 수정됩니다.");
         }
       }
 
       // 프로필 정보 업데이트
-      const response = await fetch(`http://localhost:8080/user-service/api/users/${userInfo.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-AUTH-TOKEN': token
-        },
-        body: JSON.stringify({
+      const response = await axiosInstance.put(
+        `/user-service/api/users/${userInfo.id}`,
+        {
           nickname: editData.nickname,
-          profileImgUrl: profileImgUrl
-        })
-      });
+          profileImgUrl: profileImgUrl,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-AUTH-TOKEN": token,
+          },
+        }
+      );
 
       if (response.ok) {
         const updatedUser = await response.json();
         setUserInfo(updatedUser);
         setIsEditing(false);
         setSelectedFile(null);
-        setPreviewUrl('');
-        alert('프로필이 성공적으로 수정되었습니다!');
+        setPreviewUrl("");
+        alert("프로필이 성공적으로 수정되었습니다!");
       } else {
-        console.error('프로필 수정 실패:', response.status);
-        alert('프로필 수정에 실패했습니다. User Service에 PUT API가 구현되어 있는지 확인해주세요.');
+        console.error("프로필 수정 실패:", response.status);
+        alert(
+          "프로필 수정에 실패했습니다. User Service에 PUT API가 구현되어 있는지 확인해주세요."
+        );
       }
     } catch (error) {
-      console.error('프로필 수정 오류:', error);
-      alert('프로필 수정 중 오류가 발생했습니다.');
+      console.error("프로필 수정 오류:", error);
+      alert("프로필 수정 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -133,38 +139,38 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
 
   // 날짜 포맷팅
   const formatDate = (dateString) => {
-    if (!dateString) return '정보 없음';
+    if (!dateString) return "정보 없음";
     const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   return (
     <section style={sectionStyle}>
       <h2 style={sectionTitleStyle}>👤 프로필 관리</h2>
-      
+
       <div style={profileContentStyle}>
         {/* 프로필 이미지 */}
         <div style={profileImageContainerStyle}>
           <div style={profileImageWrapperStyle}>
             {previewUrl ? (
-              <img 
-                src={previewUrl} 
+              <img
+                src={previewUrl}
                 alt="프로필 미리보기"
                 style={profileImageStyle}
               />
             ) : userInfo.profileImgUrl ? (
-              <img 
-                src={userInfo.profileImgUrl} 
+              <img
+                src={userInfo.profileImgUrl}
                 alt="프로필 사진"
                 style={profileImageStyle}
               />
             ) : (
               <div style={defaultProfileStyle}>
-                <span style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>👤</span>
+                <span style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}>👤</span>
               </div>
             )}
           </div>
@@ -174,10 +180,13 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 id="profile-image-input"
               />
-              <label htmlFor="profile-image-input" style={fileSelectButtonStyle}>
+              <label
+                htmlFor="profile-image-input"
+                style={fileSelectButtonStyle}
+              >
                 📁 사진 선택
               </label>
               {selectedFile && (
@@ -201,7 +210,9 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
               <input
                 type="text"
                 value={editData.nickname}
-                onChange={(e) => setEditData({...editData, nickname: e.target.value})}
+                onChange={(e) =>
+                  setEditData({ ...editData, nickname: e.target.value })
+                }
                 style={inputStyle}
                 placeholder="닉네임을 입력하세요"
               />
@@ -233,7 +244,7 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
           <div style={infoItemStyle}>
             <label style={labelStyle}>로그인 방식</label>
             <span style={valueStyle}>
-              {userInfo.provider === 'google' ? '🔍 Google' : userInfo.provider}
+              {userInfo.provider === "google" ? "🔍 Google" : userInfo.provider}
             </span>
           </div>
         </div>
@@ -243,25 +254,25 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
       <div style={actionButtonsStyle}>
         {isEditing ? (
           <>
-            <button 
+            <button
               onClick={handleEditSave}
               disabled={isLoading}
-              style={{...buttonStyle, ...saveButtonStyle}}
+              style={{ ...buttonStyle, ...saveButtonStyle }}
             >
-              {isLoading ? '저장 중...' : '💾 저장'}
+              {isLoading ? "저장 중..." : "💾 저장"}
             </button>
-            <button 
+            <button
               onClick={handleEditCancel}
               disabled={isLoading}
-              style={{...buttonStyle, ...cancelButtonStyle}}
+              style={{ ...buttonStyle, ...cancelButtonStyle }}
             >
               ❌ 취소
             </button>
           </>
         ) : (
-          <button 
+          <button
             onClick={handleEditStart}
-            style={{...buttonStyle, ...editButtonStyle}}
+            style={{ ...buttonStyle, ...editButtonStyle }}
           >
             ✏️ 프로필 수정
           </button>
@@ -273,161 +284,161 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
 
 // 스타일 정의 (rem + vw 기반)
 const sectionStyle = {
-  backgroundColor: '#ffffff',
-  borderRadius: '1rem',
-  padding: 'clamp(1.5rem, 3vw, 2rem)',
-  boxShadow: '0 0.2rem 1rem rgba(0,0,0,0.1)',
-  border: '0.1rem solid #e9ecef',
+  backgroundColor: "#ffffff",
+  borderRadius: "1rem",
+  padding: "clamp(1.5rem, 3vw, 2rem)",
+  boxShadow: "0 0.2rem 1rem rgba(0,0,0,0.1)",
+  border: "0.1rem solid #e9ecef",
 };
 
 const sectionTitleStyle = {
-  fontSize: 'clamp(1.3rem, 2.5vw, 1.5rem)',
-  fontWeight: '600',
-  color: '#2c3e50',
-  marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
+  fontSize: "clamp(1.3rem, 2.5vw, 1.5rem)",
+  fontWeight: "600",
+  color: "#2c3e50",
+  marginBottom: "clamp(1.5rem, 3vw, 2rem)",
 };
 
 const profileContentStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'auto 1fr',
-  gap: 'clamp(1.5rem, 3vw, 2rem)',
-  alignItems: 'start',
-  '@media (max-width: 768px)': {
-    gridTemplateColumns: '1fr',
-    textAlign: 'center',
-  }
+  display: "grid",
+  gridTemplateColumns: "auto 1fr",
+  gap: "clamp(1.5rem, 3vw, 2rem)",
+  alignItems: "start",
+  "@media (max-width: 768px)": {
+    gridTemplateColumns: "1fr",
+    textAlign: "center",
+  },
 };
 
 const profileImageContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: 'clamp(1rem, 2vw, 1.5rem)',
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "clamp(1rem, 2vw, 1.5rem)",
 };
 
 const profileImageWrapperStyle = {
-  width: 'clamp(6rem, 12vw, 8rem)',
-  height: 'clamp(6rem, 12vw, 8rem)',
-  borderRadius: '50%',
-  overflow: 'hidden',
-  border: '0.2rem solid #e9ecef',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  width: "clamp(6rem, 12vw, 8rem)",
+  height: "clamp(6rem, 12vw, 8rem)",
+  borderRadius: "50%",
+  overflow: "hidden",
+  border: "0.2rem solid #e9ecef",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
 const profileImageStyle = {
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
 };
 
 const defaultProfileStyle = {
-  width: '100%',
-  height: '100%',
-  backgroundColor: '#f8f9fa',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: '#6c757d',
+  width: "100%",
+  height: "100%",
+  backgroundColor: "#f8f9fa",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: "#6c757d",
 };
 
 const imageEditSection = {
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.5rem',
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
 };
 
 const profileInfoStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'clamp(1rem, 2vw, 1.5rem)',
+  display: "flex",
+  flexDirection: "column",
+  gap: "clamp(1rem, 2vw, 1.5rem)",
 };
 
 const infoItemStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.5rem',
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
 };
 
 const labelStyle = {
-  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-  fontWeight: '600',
-  color: '#495057',
+  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
+  fontWeight: "600",
+  color: "#495057",
 };
 
 const valueStyle = {
-  fontSize: 'clamp(1rem, 1.8vw, 1.1rem)',
-  color: '#2c3e50',
-  padding: '0.5rem 0',
+  fontSize: "clamp(1rem, 1.8vw, 1.1rem)",
+  color: "#2c3e50",
+  padding: "0.5rem 0",
 };
 
 const inputStyle = {
-  padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
-  border: '0.1rem solid #ced4da',
-  borderRadius: '0.5rem',
-  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-  transition: 'border-color 0.3s ease',
+  padding: "clamp(0.6rem, 1.2vw, 0.8rem)",
+  border: "0.1rem solid #ced4da",
+  borderRadius: "0.5rem",
+  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
+  transition: "border-color 0.3s ease",
 };
 
 const helpTextStyle = {
-  fontSize: 'clamp(0.8rem, 1.3vw, 0.9rem)',
-  color: '#6c757d',
-  fontStyle: 'italic',
+  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+  color: "#6c757d",
+  fontStyle: "italic",
 };
 
 const actionButtonsStyle = {
-  display: 'flex',
-  gap: 'clamp(0.8rem, 1.5vw, 1rem)',
-  marginTop: 'clamp(1.5rem, 3vw, 2rem)',
-  justifyContent: 'flex-end',
-  flexWrap: 'wrap',
+  display: "flex",
+  gap: "clamp(0.8rem, 1.5vw, 1rem)",
+  marginTop: "clamp(1.5rem, 3vw, 2rem)",
+  justifyContent: "flex-end",
+  flexWrap: "wrap",
 };
 
 const buttonStyle = {
-  padding: 'clamp(0.7rem, 1.4vw, 0.9rem) clamp(1.2rem, 2.4vw, 1.5rem)',
-  border: 'none',
-  borderRadius: '0.5rem',
-  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-  fontWeight: '600',
-  cursor: 'pointer',
-  transition: 'all 0.3s ease',
+  padding: "clamp(0.7rem, 1.4vw, 0.9rem) clamp(1.2rem, 2.4vw, 1.5rem)",
+  border: "none",
+  borderRadius: "0.5rem",
+  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
 };
 
 const editButtonStyle = {
-  backgroundColor: '#007bff',
-  color: '#ffffff',
+  backgroundColor: "#007bff",
+  color: "#ffffff",
 };
 
 const saveButtonStyle = {
-  backgroundColor: '#28a745',
-  color: '#ffffff',
+  backgroundColor: "#28a745",
+  color: "#ffffff",
 };
 
 const cancelButtonStyle = {
-  backgroundColor: '#6c757d',
-  color: '#ffffff',
+  backgroundColor: "#6c757d",
+  color: "#ffffff",
 };
 
 const fileSelectButtonStyle = {
-  display: 'inline-block',
-  padding: 'clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.5rem)',
-  backgroundColor: '#007bff',
-  color: '#ffffff',
-  borderRadius: '0.5rem',
-  cursor: 'pointer',
-  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-  fontWeight: '600',
-  textAlign: 'center',
-  transition: 'all 0.3s ease',
-  border: 'none',
+  display: "inline-block",
+  padding: "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.5rem)",
+  backgroundColor: "#007bff",
+  color: "#ffffff",
+  borderRadius: "0.5rem",
+  cursor: "pointer",
+  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
+  fontWeight: "600",
+  textAlign: "center",
+  transition: "all 0.3s ease",
+  border: "none",
 };
 
 const fileInfoStyle = {
-  fontSize: 'clamp(0.8rem, 1.3vw, 0.9rem)',
-  color: '#28a745',
-  padding: '0.5rem 0',
+  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+  color: "#28a745",
+  padding: "0.5rem 0",
 };
 
 export default ProfileSection;

@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import LogWriteForm from "./form/LogWriteForm";
-import axios from "axios";
+import axiosInstance from "shared/lib/axiosInstance";
 import { getUserInfo, requireAuth } from "shared/lib/auth";
 
 const LogEditPage = () => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const { recordId } = useParams();
   const navigate = useNavigate();
   const [record, setRecord] = useState(null);
@@ -12,7 +13,9 @@ const LogEditPage = () => {
   const [isBlocked, setIsBlocked] = useState(false); // ✅
 
   useEffect(() => {
-    const ok = requireAuth("기록 수정을 위해 로그인이 필요합니다. 로그인하시겠습니까?");
+    const ok = requireAuth(
+      "기록 수정을 위해 로그인이 필요합니다. 로그인하시겠습니까?"
+    );
     if (!ok) {
       setIsBlocked(true); // ✅ 렌더링 차단
       return;
@@ -29,8 +32,9 @@ const LogEditPage = () => {
 
   useEffect(() => {
     if (!recordId || !userId) return;
-    axios
-      .get(`http://localhost:8080/record-service/record/${recordId}`)
+
+    axiosInstance
+      .get(`/record-service/record/${recordId}`)
       .then((res) => setRecord(res.data))
       .catch((err) => {
         console.error("기록 불러오기 실패", err);
@@ -42,18 +46,20 @@ const LogEditPage = () => {
   if (isBlocked || !record) return null; // ✅ 렌더링 차단
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      height: "100vh",
-      width: "100vw",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 10,
-      background: "transparent",
-    }}>
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        height: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 10,
+        background: "transparent",
+      }}
+    >
       <LogWriteForm
         userId={userId}
         initialMountain={
@@ -64,16 +70,18 @@ const LogEditPage = () => {
         initialDate={record.recordDate}
         initialContent={record.content}
         initialPhoto={
-          record.photoUrl
-            ? `http://localhost:8080/record-service${record.photoUrl}`
-            : null
+          record.photoUrl ? `${baseUrl}/record-service${record.photoUrl}` : null
         }
         onSubmit={async (formData) => {
           try {
-            await axios.put(
-              `http://localhost:8080/record-service/record/${recordId}`,
+            await axiosInstance.put(
+              `/record-service/record/${recordId}`,
               formData,
-              { headers: { "Content-Type": "multipart/form-data" } }
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
             );
             alert("기록 수정 완료!");
             navigate("/log");

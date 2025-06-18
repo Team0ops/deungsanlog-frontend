@@ -1,12 +1,12 @@
-import axios from "axios";
+import axiosInstance from "../../../shared/lib/axiosInstance";
 
 export const sendChatToOrmie = async (message, profile) => {
   console.log("보낼 메시지:", message);
   console.log("프로필 정보:", profile);
 
   try {
-    const response = await axios.post(
-      "http://localhost:8080/ormie-service/chat", // gateway 기준 주소
+    const response = await axiosInstance.post(
+      "/ormie-service/chat",
       {
         message,
         age: profile.age,
