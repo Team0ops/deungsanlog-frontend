@@ -1,6 +1,20 @@
+import { useEffect, useState } from "react";
+import { getUserInfo } from "shared/lib/auth";
 import FreeBoardForm from "../../widgets/community/writeForm/FreeBoardForm";
 
 const FreeBoardWritePage = () => {
+  const [userId, setUserId] = useState(null);
+
+  // 로그인 여부만 체크해서 userId만 저장
+  useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      setUserId(null); // 비로그인 시 null
+    }
+  }, []);
+
   return (
     <div
       style={{
@@ -18,7 +32,8 @@ const FreeBoardWritePage = () => {
         zIndex: 10,
       }}
     >
-      <FreeBoardForm />
+      {/* userId를 FreeBoardForm에 prop으로 전달 */}
+      <FreeBoardForm userId={userId} />
     </div>
   );
 };

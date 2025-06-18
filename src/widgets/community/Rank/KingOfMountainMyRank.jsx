@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import GreenButton from "shared/ui/greenButton"; // Assuming GreenButton is in the same directory
+import GreenButton from "shared/ui/greenButton";
 
-const MyRankingBox = ({ myRank }) => {
+const MyRankingBox = ({ myRank, loading }) => {
   const navigate = useNavigate();
   return (
     <div
@@ -20,7 +20,11 @@ const MyRankingBox = ({ myRank }) => {
         justifyContent: "center",
       }}
     >
-      {myRank ? (
+      {loading ? (
+        <span style={{ color: "#4b8161", fontWeight: 500 }}>
+          🏔️ 내 등산 랭킹을 불러오는 중입니다...
+        </span>
+      ) : myRank ? (
         <span>
           <b style={{ color: "#696969" }}>{myRank.nickname}</b>님, 꾸준한
           기록으로 <b style={{ color: "#696969" }}>{myRank.rank}위</b>에

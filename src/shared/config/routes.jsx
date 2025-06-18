@@ -6,13 +6,11 @@ import OrmiIcon from "@mui/icons-material/SmartToy";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LoginIcon from "@mui/icons-material/Login";
-import LogoutIcon from "@mui/icons-material/Logout";  // ✅ 추가
-import { isAuthenticated, logout } from 'shared/lib/auth';  // ✅ 추가
+import LogoutIcon from "@mui/icons-material/Logout";
+import { isAuthenticated, logout } from "shared/lib/auth";
 
-// ✅ 정적 배열 → 동적 함수로 변경
 const getRoutes = () => {
   const baseRoutes = [
-    // Title: 메인 서비스
     { type: "title", title: "서비스" },
     {
       type: "collapse",
@@ -45,7 +43,6 @@ const getRoutes = () => {
 
     { type: "divider" },
 
-    // Title: 도우미
     { type: "title", title: "도우미" },
     {
       type: "collapse",
@@ -63,37 +60,41 @@ const getRoutes = () => {
     },
 
     { type: "divider" },
-
-    // Title: 계정
-    { type: "title", title: "계정" },
-    {
-      type: "collapse",
-      name: "마이페이지",
-      key: "mypage",
-      route: "/mypage",
-      icon: <AccountCircleIcon />,
-    },
   ];
 
-  // ✅ 로그인 상태에 따라 마지막 메뉴 결정
-  const authRoute = isAuthenticated() 
-    ? {
-        type: "action",  // 액션 타입으로 구분
+  // 로그인 상태별 계정 메뉴
+  if (isAuthenticated()) {
+    return [
+      ...baseRoutes,
+      { type: "title", title: "계정" },
+      {
+        type: "collapse",
+        name: "마이페이지",
+        key: "mypage",
+        route: "/mypage",
+        icon: <AccountCircleIcon />,
+      },
+      {
+        type: "action",
         name: "로그아웃",
-        key: "logout", 
-        action: logout,  // 클릭 시 실행할 함수
+        key: "logout",
+        action: logout,
         icon: <LogoutIcon />,
-      }
-    : {
+      },
+    ];
+  } else {
+    return [
+      ...baseRoutes,
+      { type: "title", title: "계정" },
+      {
         type: "collapse",
         name: "로그인",
         key: "login",
         route: "/login",
         icon: <LoginIcon />,
-      };
-
-  return [...baseRoutes, authRoute];
+      },
+    ];
+  }
 };
 
-// ✅ 기본 export를 동적 함수로 변경
 export default getRoutes;

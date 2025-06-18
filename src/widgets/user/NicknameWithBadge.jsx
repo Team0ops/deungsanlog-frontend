@@ -16,7 +16,12 @@ const NicknameWithBadge = ({ userId, nickname, style = {} }) => {
 
   return (
     <span
-      style={{ display: "flex", alignItems: "center", gap: "0.3rem", ...style }}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "0.03rem",
+        ...style,
+      }}
     >
       {nickname}
       {badgeInfo && (
@@ -24,12 +29,12 @@ const NicknameWithBadge = ({ userId, nickname, style = {} }) => {
           src={`/assets/badges/Badge_0${badgeInfo.stage}.svg`}
           alt="등산 배지"
           style={{
-            width: 22,
-            height: 22,
-            marginLeft: 4,
+            width: 20,
+            height: 20,
+            marginLeft: 2, // 더 좁게
             verticalAlign: "middle",
             position: "relative",
-            top: "-2px", // 배지를 약간 위로 올림
+            top: "-2px",
           }}
         />
       )}
