@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import MountainBasicInfo from "./components/mountainBasicInfo";
-import MountainImage from "./components/mountainImage";
-import MountainDescription from "./components/mountainDescription";
-import MountainSafetyInfo from "./components/mountainSafetyInfo";
+import MountainBasicInfo from "./components/MountainBasicInfo";
+import MountainImage from "./components/MountainImage";
+import MountainDescription from "./components/MountainDescription";
+import MountainSafetyInfo from "./components/MountainSafetyInfo";
 import axiosInstance from "shared/lib/axiosInstance";
 
 const MountainDetailPage = () => {
