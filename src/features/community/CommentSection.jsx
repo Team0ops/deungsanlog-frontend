@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "shared/lib/axiosInstance";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
-import GreenButton from "shared/ui/GreenButton";
-import GreenInput from "shared/ui/GreenInput";
+import GreenButton from "shared/ui/greenButton";
+import GreenInput from "shared/ui/greenInput";
 
 const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [comments, setComments] = useState([]);
