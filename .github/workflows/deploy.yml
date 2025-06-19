@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Create .env.production
+        run: echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
+
       - name: Use production env
         run: cp .env.production .env
 
