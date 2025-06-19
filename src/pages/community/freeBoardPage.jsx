@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardHeader from "widgets/community/board/FreeBoardHeader";
 import { getUserInfo } from "shared/lib/auth";
-import { axiosInstance } from "shared/lib/axiosInstance";
+import axiosInstance from "shared/lib/axiosInstance";
 
 const FreeBoardPage = () => {
   const [userId, setUserId] = useState(null);
