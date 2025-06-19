@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import SoftInput from "shared/ui/SoftInput";
 import SearchIcon from "@mui/icons-material/Search";
-import { loadKakaoMap } from "shared/lib/kakaoMap";
+import { loadKakaoMap } from "shared/lib/KakaoMap";
 import ZoomControl from "shared/ui/ZoomControl";
 import axiosInstance from "shared/lib/axiosInstance";
 
