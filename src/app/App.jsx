@@ -34,14 +34,14 @@ import LogWritePage from "../pages/record/LogWritePage";
 import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
 import CommunityPage from "pages/community/communityPage";
 import FreeBoardPage from "pages/community/freeBoardPage";
-import FreeBoardWritePage from "../pages/community/freeBoardWritePage";
-import PostDetailPage from "../pages/community/PostDetailPage";
-import GroupPage from "../pages/groupPage";
-import OrmiPage from "../pages/ormie/ormiPage";
-import NotificationPage from "../pages/notificationPage";
-import MyPage from "../pages/mypage/mypage"; // ✅ 너가 원하는 경로
-import LoginPage from "../pages/user/LoginPage";
-import LogEditPage from "../pages/record/LogEditPage";
+import FreeBoardWritePage from "pages/community/freeBoardWritePage";
+import PostDetailPage from "pages/community/PostDetailPage";
+import GroupPage from "pages/groupPage";
+import OrmiPage from "pages/ormie/ormiPage";
+import NotificationPage from "pages/notificationPage";
+import MyPage from "pages/mypage/mypage";
+import LoginPage from "pages/user/LoginPage";
+import LogEditPage from "pages/record/LogEditPage";
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
