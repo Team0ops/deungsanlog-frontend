@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GreenButton from "../../../shared/ui/greenButton";
-import GreenInput from "../../../shared/ui/GreenInput";
+import GreenInput from "../../../shared/ui/greenInput";
 
 const ChatInput = ({ onSend }) => {
   const [value, setValue] = useState("");
