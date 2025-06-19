@@ -36,7 +36,7 @@ const CommunityPage = () => {
   // 등산왕 위젯 mount 시 강제 리프레시 트리거
   useEffect(() => {
     setRefreshKing(true);
-    const timer = setTimeout(() => setRefreshKing(false), 100); // 짧게 true였다가 false로
+    const timer = setTimeout(() => setRefreshKing(false), 100);
     return () => clearTimeout(timer);
   }, []);
 
