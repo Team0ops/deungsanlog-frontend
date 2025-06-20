@@ -3,6 +3,7 @@ import SoftInput from "shared/ui/SoftInput";
 import SearchIcon from "@mui/icons-material/Search";
 import { loadKakaoMap } from "shared/lib/kakaoMap";
 import ZoomControl from "shared/ui/ZoomControl";
+import MountainSearchModal from "./MountainSearchModal";
 import axiosInstance from "shared/lib/axiosInstance";
 
 const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
@@ -10,11 +11,15 @@ const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
 const MountainInfoPage = () => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-
-  // 🏔️ 산 마커 관련 상태 추가
+  
+  // 🏔️ 산 마커 관련 상태
   const [mountains, setMountains] = useState([]);
   const [selectedMountain, setSelectedMountain] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+  
+  // ✅ 검색 관련 상태 추가
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   useEffect(() => {
     const initMap = () => {
@@ -113,6 +118,29 @@ const MountainInfoPage = () => {
     setSelectedMountain(null);
   };
 
+  // ✅ 검색어 변경 핸들러
+  const handleSearchChange = (event) => {
+    const keyword = event.target.value;
+    setSearchKeyword(keyword);
+    setShowSearchResults(keyword.length > 0);
+  };
+
+  // ✅ 검색 결과에서 산 선택 시 - 상세 페이지로 이동
+  const handleSelectMountain = (mountain) => {
+    console.log('🔍 검색에서 산 선택:', mountain.name);
+    
+    // 상세 페이지로 이동 (가리산 → /mountain/detail/가리산)
+    window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`;
+  };
+
+  // ✅ 검색창 외부 클릭 시 검색 결과 닫기
+  const handleSearchBlur = () => {
+    // 약간의 지연을 두어 검색 결과 클릭이 먼저 처리되도록 함
+    setTimeout(() => {
+      setShowSearchResults(false);
+    }, 200);
+  };
+
   const handleZoomIn = () => {
     if (mapRef.current) {
       const currentLevel = mapRef.current.getLevel();
@@ -129,6 +157,7 @@ const MountainInfoPage = () => {
 
   return (
     <>
+      {/* 지도 */}
       <div
         id="map"
         style={{
@@ -140,6 +169,8 @@ const MountainInfoPage = () => {
           zIndex: 0,
         }}
       />
+      
+      {/* 검색창 */}
       <div
         style={{
           position: "absolute",
@@ -150,18 +181,33 @@ const MountainInfoPage = () => {
           width: "clamp(20rem, 60vw, 31.25rem)",
         }}
       >
-        <SoftInput
-          placeholder="산 이름을 검색하세요"
-          icon={{ component: <SearchIcon />, direction: "right" }}
-          size="large"
-          style={{
-            fontSize: "clamp(1rem, 2vw, 1.2rem)",
-            py: "clamp(0.8rem, 1.5vw, 2rem)",
-            px: "clamp(1rem, 2vw, 3rem)",
-          }}
-          fullWidth
-        />
+        <div style={{ position: 'relative' }}>
+          <SoftInput
+            placeholder="산 이름을 검색하세요"
+            icon={{ component: <SearchIcon />, direction: "right" }}
+            size="large"
+            value={searchKeyword}
+            onChange={handleSearchChange}
+            onBlur={handleSearchBlur}
+            style={{
+              fontSize: "clamp(1rem, 2vw, 1.2rem)",
+              py: "clamp(0.8rem, 1.5vw, 2rem)",
+              px: "clamp(1rem, 2vw, 3rem)",
+            }}
+            fullWidth
+          />
+          
+          {/* ✅ 검색 결과 모달 */}
+          {showSearchResults && (
+            <MountainSearchModal
+              searchKeyword={searchKeyword}
+              onSelect={handleSelectMountain}
+            />
+          )}
+        </div>
       </div>
+
+      {/* 줌 컨트롤 */}
       {mapLoaded && (
         <div
           style={{
@@ -229,10 +275,8 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
           </div>
 
           <div style={actionButtonsStyle}>
-            <button
-              onClick={() =>
-                (window.location.href = `/mountain/detail/${mountain.name}`)
-              }
+            <button 
+              onClick={() => window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`}
               style={detailButtonStyle}
             >
               🔍 상세보기
@@ -250,7 +294,7 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
   );
 };
 
-// 🎨 rem + vw 기반 반응형 스타일들
+// 🎨 스타일들 (기존과 동일)
 const popupOverlayStyle = {
   position: "fixed",
   top: 0,
