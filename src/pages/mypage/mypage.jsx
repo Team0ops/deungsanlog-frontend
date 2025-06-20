@@ -4,7 +4,7 @@ import {
   getToken,
   isAuthenticated,
   requireAuth,
-} from "shared/lib/auth"; // ✅ 추가
+} from "shared/lib/auth";
 import ProfileSection from "./components/ProfileSection";
 import HikingStatsSection from "./components/HikingStatsSection";
 import FavoriteSection from "./components/FavoriteSection";
@@ -16,17 +16,17 @@ const MyPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ 기존 인증 확인 로직을 requireAuth로 교체
+  // ✅ 인증 확인 및 사용자 ID 추출
   useEffect(() => {
     console.log("🔍 MyPage 인증 확인 시작");
 
-    // ✅ requireAuth 사용 - alert 창으로 확인
+    // requireAuth 사용 - 인증 실패 시 자동 리다이렉트
     if (
       !requireAuth(
         "마이페이지를 이용하려면 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
       )
     ) {
-      return; // 인증 실패 시 함수 종료 (requireAuth가 리다이렉트 처리)
+      return; // 인증 실패 시 함수 종료
     }
 
     // JWT에서 사용자 정보 추출
@@ -35,6 +35,7 @@ const MyPage = () => {
 
     if (extractedUserInfo && extractedUserInfo.userId) {
       setUserId(extractedUserInfo.userId);
+      console.log("✅ userId 설정 완료:", extractedUserInfo.userId);
     } else {
       console.error("❌ JWT에서 userId를 찾을 수 없습니다");
       setError("사용자 ID를 확인할 수 없습니다.");
@@ -42,7 +43,7 @@ const MyPage = () => {
     }
   }, []);
 
-  // ✅ 사용자 정보 조회 (API 호출)
+  // ✅ 사용자 정보 API 조회 (axios 방식으로 수정)
   useEffect(() => {
     const fetchUserInfo = async () => {
       if (!userId) {
@@ -51,37 +52,48 @@ const MyPage = () => {
       }
 
       try {
-        const token = getToken(); // ✅ 인증 유틸 사용
+        const token = getToken();
 
         console.log("📡 사용자 정보 API 호출:", `userId=${userId}`);
+        console.log("🔑 사용할 토큰:", token ? token.substring(0, 30) + '...' : '없음');
 
-        const response = await axiosInstance.get(
-          `/user-service/api/users/${userId}`,
-          {
-            headers: {
-              "X-AUTH-TOKEN": token,
-            },
-          }
-        );
+        // ✅ axios 방식으로 수정
+        const response = await axiosInstance.get(`/user-service/${userId}`, {
+          headers: {
+            "X-AUTH-TOKEN": token,
+          },
+        });
 
-        console.log("📡 사용자 정보 API 응답:", response.status);
+        console.log("✅ 사용자 정보 조회 성공:", response.data);
+        setUserInfo(response.data);
+        setError(null);
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log("✅ 사용자 정보 조회 성공:", data);
-          setUserInfo(data);
-        } else {
-          const errorText = await response.text();
-          console.error(
-            "❌ 사용자 정보 조회 실패:",
-            response.status,
-            errorText
-          );
-          setError("사용자 정보를 불러올 수 없습니다.");
-        }
       } catch (error) {
         console.error("❌ 사용자 정보 조회 오류:", error);
-        setError("사용자 정보 조회 중 오류가 발생했습니다.");
+
+        if (error.response) {
+          // 서버 응답이 있는 경우 (4xx, 5xx)
+          console.error('응답 상태:', error.response.status);
+          console.error('응답 데이터:', error.response.data);
+          
+          if (error.response.status === 401) {
+            // 인증 오류 시 로그아웃 처리
+            console.log("🔒 인증 오류 발생, 로그아웃 처리");
+            setError("인증이 만료되었습니다. 다시 로그인해주세요.");
+          } else if (error.response.status === 404) {
+            setError("사용자 정보를 찾을 수 없습니다.");
+          } else {
+            setError(`사용자 정보 조회 실패: ${error.response.status}`);
+          }
+        } else if (error.request) {
+          // 요청은 전송되었으나 응답이 없는 경우
+          console.error('요청 오류:', error.request);
+          setError('서버에 연결할 수 없습니다.');
+        } else {
+          // 기타 오류
+          console.error('설정 오류:', error.message);
+          setError(`오류: ${error.message}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -90,7 +102,7 @@ const MyPage = () => {
     fetchUserInfo();
   }, [userId]);
 
-  // 🔍 디버깅 정보 표시
+  // 🔍 디버깅 정보
   const debugInfo = {
     userId,
     userInfo: userInfo ? { id: userInfo.id, email: userInfo.email } : null,
@@ -204,7 +216,7 @@ const MyPage = () => {
   );
 };
 
-// 스타일 정의 (기존과 동일)
+// 스타일 정의들 (기존과 동일)
 const containerStyle = {
   width: "100%",
   maxWidth: "1200px",

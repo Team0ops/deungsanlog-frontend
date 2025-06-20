@@ -7,32 +7,46 @@ import MountainSafetyInfo from "./components/MountainSafetyInfo";
 import axiosInstance from "shared/lib/axiosInstance";
 
 const MountainDetailPage = () => {
-  const { mountainName } = useParams(); // ✅ useParams 사용
+  const { mountainName } = useParams();
   const [mountainData, setMountainData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // 산 정보 조회
   useEffect(() => {
     const fetchMountainData = async () => {
       try {
+        console.log('🏔️ 산 정보 조회 시작:', mountainName);
+        
         const token = localStorage.getItem("X-AUTH-TOKEN");
 
-        // 토큰이 있으면 헤더에 포함, 없으면 제외 (공개 API이므로)
-        const headers = token ? { "X-AUTH-TOKEN": token } : {};
-
+        // ✅ axios 방식으로 수정
         const response = await axiosInstance.get("/mountain-service/search", {
           params: { name: mountainName },
-          headers,
+          headers: token ? { "X-AUTH-TOKEN": token } : {}
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setMountainData(data);
-        } else {
-          console.error("산 정보 조회 실패");
-        }
+        console.log('✅ 산 정보 조회 성공:', response.data);
+        setMountainData(response.data);
+        setError(null);
+
       } catch (error) {
-        console.error("API 호출 오류:", error);
+        console.error("❌ API 호출 오류:", error);
+        
+        if (error.response) {
+          // 서버 응답이 있는 경우 (4xx, 5xx)
+          console.error('응답 상태:', error.response.status);
+          console.error('응답 데이터:', error.response.data);
+          setError(`산 정보 조회 실패: ${error.response.status}`);
+        } else if (error.request) {
+          // 요청은 전송되었으나 응답이 없는 경우
+          console.error('요청 오류:', error.request);
+          setError('서버에 연결할 수 없습니다.');
+        } else {
+          // 기타 오류
+          console.error('오류:', error.message);
+          setError(`오류: ${error.message}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -40,94 +54,141 @@ const MountainDetailPage = () => {
 
     if (mountainName) {
       fetchMountainData();
+    } else {
+      setError('산 이름이 제공되지 않았습니다.');
+      setLoading(false);
     }
   }, [mountainName]);
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50vh",
-          fontSize: "clamp(1rem, 2vw, 1.2rem)",
-          color: "#666",
-        }}
-      >
-        산 정보를 불러오는 중...
+      <div style={loadingStyle}>
+        <div>산 정보를 불러오는 중...</div>
+        <div style={{ fontSize: '0.8rem', color: '#999', marginTop: '1rem' }}>
+          조회 중인 산: {mountainName}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={errorStyle}>
+        <div>{error}</div>
+        <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '1rem' }}>
+          요청한 산: {mountainName}
+        </div>
+        <button 
+          onClick={() => window.location.href = '/mountain'}
+          style={backButtonStyle}
+        >
+          산 목록으로 돌아가기
+        </button>
       </div>
     );
   }
 
   if (!mountainData) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50vh",
-          fontSize: "clamp(1rem, 2vw, 1.2rem)",
-          color: "#e74c3c",
-        }}
-      >
-        산 정보를 찾을 수 없습니다.
+      <div style={errorStyle}>
+        <div>산 정보를 찾을 수 없습니다.</div>
+        <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '1rem' }}>
+          요청한 산: {mountainName}
+        </div>
       </div>
     );
   }
 
-  const { mountain, description, sunInfo, weatherInfo, fireRiskInfo } =
-    mountainData;
-
-  const containerStyle = {
-    width: "100%",
-    maxWidth: "1200px", // 최대 너비 제한
-    margin: "0",
-    padding: "clamp(0.5rem, 1.5vw, 1rem)",
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    minHeight: "100vh",
-    overflowX: "hidden", // 가로 스크롤 방지
-  };
-
-  const contentLayoutStyle = {
-    display: "flex",
-    flexDirection: window.innerWidth <= 768 ? "column" : "row",
-    gap: "clamp(1rem, 2vw, 2rem)",
-    alignItems: "flex-start",
-    width: "100%",
-    maxWidth: "100%",
-  };
+  const { mountain, description, sunInfo, weatherInfo, fireRiskInfo } = mountainData;
 
   return (
     <div style={containerStyle}>
-      {/* 1. 산이름과 해발고도 + 산 요약 박스 (맨 위) */}
+      {/* 디버깅 정보 (개발용) */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        background: 'rgba(0,0,0,0.8)',
+        color: 'white',
+        padding: '10px',
+        fontSize: '12px',
+        zIndex: 9999
+      }}>
+        <div>🏔️ Debug: {mountainName}</div>
+        <div>📊 Data: {mountainData ? '✅' : '❌'}</div>
+      </div>
+
       <MountainBasicInfo mountain={mountain} description={description} />
 
-      {/* 메인 컨텐츠 영역 */}
       <main>
         <div style={contentLayoutStyle}>
-          {/* 2. 산 설명 박스 (왼쪽) */}
           <div style={{ flex: "2", minWidth: "0" }}>
             <MountainDescription description={description} />
           </div>
 
-          {/* 3. 오른쪽 영역 (위에서 아래로) */}
           <div style={{ flex: "1", minWidth: "300px" }}>
-            {/* 안전정보 박스 (맨 위) */}
             <MountainSafetyInfo
               weatherInfo={weatherInfo}
               fireRiskInfo={fireRiskInfo}
               sunInfo={sunInfo}
             />
-            {/* 산 이미지 + 기타 박스들 */}
             <MountainImage mountain={mountain} />
           </div>
         </div>
       </main>
     </div>
   );
+};
+
+// 스타일 정의들...
+const containerStyle = {
+  width: "100%",
+  maxWidth: "1200px",
+  margin: "0",
+  padding: "clamp(0.5rem, 1.5vw, 1rem)",
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  minHeight: "100vh",
+  overflowX: "hidden",
+};
+
+const contentLayoutStyle = {
+  display: "flex",
+  flexDirection: window.innerWidth <= 768 ? "column" : "row",
+  gap: "clamp(1rem, 2vw, 2rem)",
+  alignItems: "flex-start",
+  width: "100%",
+  maxWidth: "100%",
+};
+
+const loadingStyle = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "50vh",
+  fontSize: "clamp(1rem, 2vw, 1.2rem)",
+  color: "#666",
+};
+
+const errorStyle = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "50vh",
+  fontSize: "clamp(1rem, 2vw, 1.2rem)",
+  color: "#e74c3c",
+  gap: "1rem",
+};
+
+const backButtonStyle = {
+  padding: "0.8rem 1.5rem",
+  backgroundColor: "#007bff",
+  color: "white",
+  border: "none",
+  borderRadius: "0.5rem",
+  cursor: "pointer",
+  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
 };
 
 export default MountainDetailPage;

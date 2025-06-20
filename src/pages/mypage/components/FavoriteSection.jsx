@@ -12,53 +12,63 @@ const FavoriteSection = ({ userId }) => {
   // 즐겨찾기 데이터 조회
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (!userId) return;
+      if (!userId) {
+        console.log("⏳ userId가 없어서 즐겨찾기 조회 대기 중...");
+        return;
+      }
 
       try {
-        // ✅ 인증 유틸 사용
+        console.log("⭐ 즐겨찾기 조회 시작:", userId);
+        
         const token = getToken();
-
         if (!token) {
           setError("로그인이 필요합니다.");
           setLoading(false);
           return;
         }
 
-        const idsResponse = await axiosInstance.get(
-          `/user-service/api/users/${userId}/favorites/ids`,
-          {
-            headers: {
-              "X-AUTH-TOKEN": token,
-            },
-          }
-        );
+        // ✅ axios 방식으로 수정 - Promise.all 사용
+        const [idsResponse, countResponse] = await Promise.all([
+          axiosInstance.get(`/user-service/${userId}/favorites/ids`, {
+            headers: { "X-AUTH-TOKEN": token },
+          }),
+          axiosInstance.get(`/user-service/${userId}/favorites/count`, {
+            headers: { "X-AUTH-TOKEN": token },
+          })
+        ]);
 
-        const countResponse = await axiosInstance.get(
-          `/user-service/api/users/${userId}/favorites/count`,
-          {
-            headers: {
-              "X-AUTH-TOKEN": token,
-            },
-          }
-        );
+        console.log("✅ 즐겨찾기 API 응답:", {
+          ids: idsResponse.status,
+          count: countResponse.status
+        });
 
-        if (idsResponse.ok && countResponse.ok) {
-          const idsData = await idsResponse.json();
-          const countData = await countResponse.json();
+        // ✅ axios는 .data로 접근
+        const mountainIds = idsResponse.data.favoriteIds || [];
+        const count = countResponse.data.count || 0;
 
-          const mountainIds = idsData.favoriteIds || [];
-          setFavoriteCount(countData.count || 0);
+        setFavoriteCount(count);
+        console.log("📊 즐겨찾기 통계:", { count, mountainIds: mountainIds.length });
 
-          // 3. 각 산의 상세 정보 조회
-          if (mountainIds.length > 0) {
-            await fetchMountainDetails(mountainIds);
-          }
+        // 산 상세 정보 조회
+        if (mountainIds.length > 0) {
+          await fetchMountainDetails(mountainIds);
         } else {
-          setError("즐겨찾기 정보를 불러올 수 없습니다.");
+          setFavoriteMountains([]);
         }
+
       } catch (error) {
-        console.error("즐겨찾기 조회 오류:", error);
-        setError("즐겨찾기 조회 중 오류가 발생했습니다.");
+        console.error("❌ 즐겨찾기 조회 오류:", error);
+        
+        if (error.response) {
+          console.error('응답 오류:', error.response.status, error.response.data);
+          setError(`즐겨찾기 조회 실패: ${error.response.status}`);
+        } else if (error.request) {
+          console.error('요청 오류:', error.request);
+          setError('서버에 연결할 수 없습니다.');
+        } else {
+          console.error('설정 오류:', error.message);
+          setError(`오류: ${error.message}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -67,35 +77,50 @@ const FavoriteSection = ({ userId }) => {
     fetchFavorites();
   }, [userId]);
 
-  // 산 상세 정보 배치 조회
+  // ✅ 산 상세 정보 배치 조회 - 더 나은 에러 처리
   const fetchMountainDetails = async (mountainIds) => {
     try {
+      console.log("🏔️ 산 상세 정보 조회 시작:", mountainIds.length, "개");
+
+      // ✅ 실제로는 mountainId로 산을 조회해야 하는데, 
+      // 현재 API가 name으로만 검색 가능하므로 임시 처리
       const mountainPromises = mountainIds.map(async (mountainId) => {
         try {
-          const response = await axiosInstance.get("/mountain-service/search", {
-            params: { name: mountainId },
-          });
-
-          return response.data.mountain;
+          // ✅ 올바른 방법: mountainId로 직접 조회하는 API가 필요
+          // 임시로 전체 산 목록에서 ID로 찾기
+          const response = await axiosInstance.get(`/mountain-service/${mountainId}`);
+          return response.data;
         } catch (error) {
-          console.error(`산 정보 조회 실패: ${mountainId}`, error);
-          return null;
+          console.error(`❌ 산 정보 조회 실패: ${mountainId}`, error);
+          
+          // ✅ fallback: 산 이름으로 검색 시도 (mountainId가 실제로는 name일 수 있음)
+          try {
+            console.log(`🔄 fallback: 이름으로 검색 시도 - ${mountainId}`);
+            const fallbackResponse = await axiosInstance.get("/mountain-service/search", {
+              params: { name: mountainId }
+            });
+            return fallbackResponse.data.mountain;
+          } catch (fallbackError) {
+            console.error(`❌ fallback도 실패: ${mountainId}`, fallbackError);
+            return null;
+          }
         }
       });
 
       const mountains = await Promise.all(mountainPromises);
       const validMountains = mountains.filter((mountain) => mountain !== null);
+      
+      console.log("✅ 산 정보 조회 완료:", validMountains.length, "개");
       setFavoriteMountains(validMountains);
+      
     } catch (error) {
-      console.error("산 정보 배치 조회 오류:", error);
+      console.error("❌ 산 정보 배치 조회 오류:", error);
     }
   };
 
-  // 즐겨찾기 삭제
+  // ✅ 즐겨찾기 삭제 - axios 방식으로 수정
   const handleRemoveFavorite = async (mountainId, mountainName) => {
-    if (
-      !window.confirm(`'${mountainName}'을(를) 즐겨찾기에서 삭제하시겠습니까?`)
-    ) {
+    if (!window.confirm(`'${mountainName}'을(를) 즐겨찾기에서 삭제하시겠습니까?`)) {
       return;
     }
 
@@ -103,14 +128,13 @@ const FavoriteSection = ({ userId }) => {
     try {
       const token = getToken();
 
-      await axiosInstance.delete(
-        `/user-service/api/users/${userId}/favorites/${mountainId}`,
-        {
-          headers: {
-            "X-AUTH-TOKEN": token,
-          },
-        }
-      );
+      console.log("🗑️ 즐겨찾기 삭제 시도:", { userId, mountainId, mountainName });
+
+      await axiosInstance.delete(`/user-service/${userId}/favorites/${mountainId}`, {
+        headers: { "X-AUTH-TOKEN": token },
+      });
+
+      console.log("✅ 즐겨찾기 삭제 성공");
 
       // UI 업데이트
       setFavoriteMountains((prev) =>
@@ -118,9 +142,16 @@ const FavoriteSection = ({ userId }) => {
       );
       setFavoriteCount((prev) => prev - 1);
       alert("즐겨찾기에서 삭제되었습니다.");
+
     } catch (error) {
-      console.error("즐겨찾기 삭제 오류:", error);
-      alert("즐겨찾기 삭제 중 오류가 발생했습니다.");
+      console.error("❌ 즐겨찾기 삭제 오류:", error);
+      
+      if (error.response) {
+        console.error('삭제 실패:', error.response.status, error.response.data);
+        alert(`즐겨찾기 삭제 실패: ${error.response.status}`);
+      } else {
+        alert("즐겨찾기 삭제 중 오류가 발생했습니다.");
+      }
     } finally {
       setRemovingId(null);
     }
@@ -128,9 +159,8 @@ const FavoriteSection = ({ userId }) => {
 
   // 산 상세 페이지로 이동
   const handleViewMountain = (mountainName) => {
-    window.location.href = `/mountain/detail/${encodeURIComponent(
-      mountainName
-    )}`;
+    console.log("🔍 산 상세 페이지로 이동:", mountainName);
+    window.location.href = `/mountain/detail/${encodeURIComponent(mountainName)}`;
   };
 
   if (loading) {
@@ -150,6 +180,20 @@ const FavoriteSection = ({ userId }) => {
         <h2 style={sectionTitleStyle}>⭐ 즐겨찾기 관리</h2>
         <div style={errorStyle}>
           <span>❌ {error}</span>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              marginTop: "1rem",
+              padding: "0.5rem 1rem",
+              backgroundColor: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "0.3rem",
+              cursor: "pointer"
+            }}
+          >
+            🔄 다시 시도
+          </button>
         </div>
       </section>
     );
@@ -157,6 +201,21 @@ const FavoriteSection = ({ userId }) => {
 
   return (
     <section style={sectionStyle}>
+      {/* 디버깅 정보 (개발용) */}
+      <div style={{
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        background: 'rgba(0,0,0,0.7)',
+        color: 'white',
+        padding: '5px',
+        fontSize: '10px',
+        borderRadius: '3px',
+        zIndex: 1000
+      }}>
+        즐겨찾기: {favoriteCount}개 | 표시: {favoriteMountains.length}개
+      </div>
+
       <div style={headerStyle}>
         <h2 style={sectionTitleStyle}>⭐ 즐겨찾기 관리</h2>
         <div style={countBadgeStyle}>총 {favoriteCount}개의 산</div>
@@ -199,9 +258,7 @@ const FavoriteSection = ({ userId }) => {
                   👁️ 상세보기
                 </button>
                 <button
-                  onClick={() =>
-                    handleRemoveFavorite(mountain.id, mountain.name)
-                  }
+                  onClick={() => handleRemoveFavorite(mountain.id, mountain.name)}
                   disabled={removingId === mountain.id}
                   style={{
                     ...actionButtonStyle,
@@ -232,7 +289,7 @@ const FavoriteSection = ({ userId }) => {
       )}
 
       {/* 즐겨찾기 통계 */}
-      {favoriteCount > 0 && (
+      {favoriteCount > 0 && favoriteMountains.length > 0 && (
         <div style={statsStyle}>
           <div style={statItemStyle}>
             <span style={statLabelStyle}>총 즐겨찾기</span>
@@ -244,8 +301,7 @@ const FavoriteSection = ({ userId }) => {
               {Math.round(
                 favoriteMountains.reduce((sum, m) => sum + m.elevation, 0) /
                   favoriteMountains.length
-              )}
-              m
+              )}m
             </span>
           </div>
         </div>
@@ -255,7 +311,7 @@ const FavoriteSection = ({ userId }) => {
 };
 
 // ============================================
-// 스타일 정의 (rem + vw 기반)
+// 스타일 정의 (기존과 동일)
 // ============================================
 
 const sectionStyle = {
@@ -264,6 +320,7 @@ const sectionStyle = {
   padding: "clamp(1.5rem, 3vw, 2rem)",
   boxShadow: "0 0.2rem 1rem rgba(0,0,0,0.1)",
   border: "0.1rem solid #e9ecef",
+  position: "relative", // ✅ 디버깅 정보용
 };
 
 const headerStyle = {
@@ -293,8 +350,7 @@ const countBadgeStyle = {
 
 const favoritesGridStyle = {
   display: "grid",
-  gridTemplateColumns:
-    "repeat(auto-fit, minmax(clamp(18rem, 30vw, 24rem), 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(clamp(18rem, 30vw, 24rem), 1fr))",
   gap: "clamp(1.2rem, 2.5vw, 1.8rem)",
 };
 
@@ -465,6 +521,9 @@ const errorStyle = {
   padding: "clamp(2rem, 4vw, 3rem)",
   color: "#e74c3c",
   fontSize: "clamp(1rem, 1.8vw, 1.1rem)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
 };
 
 export default FavoriteSection;

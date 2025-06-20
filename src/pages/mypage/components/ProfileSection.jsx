@@ -83,7 +83,7 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
 
         try {
           const uploadResponse = await axiosInstance.post(
-            "/user-service/api/users/upload-profile-image",
+            "/user-service/upload-profile-image",
             formData,
             {
               headers: {
@@ -103,7 +103,7 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
 
       // 프로필 정보 업데이트
       const response = await axiosInstance.put(
-        `/user-service/api/users/${userInfo.id}`,
+        `/user-service/${userInfo.id}`,
         {
           nickname: editData.nickname,
           profileImgUrl: profileImgUrl,
