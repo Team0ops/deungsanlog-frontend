@@ -11,12 +11,12 @@ const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
 const MountainInfoPage = () => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  
+
   // 🏔️ 산 마커 관련 상태
   const [mountains, setMountains] = useState([]);
   const [selectedMountain, setSelectedMountain] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  
+
   // ✅ 검색 관련 상태 추가
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -64,10 +64,12 @@ const MountainInfoPage = () => {
   const fetchAllMountains = async () => {
     try {
       const response = await axiosInstance.get("/mountain-service/all");
-      const data = response.data;
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
 
-      console.log("📍 가져온 산 데이터:", data.length, "개");
-      setMountains(data);
+      console.log("📍 가져온 산 데이터:", data?.length, "개");
+      setMountains(data || []);
     } catch (error) {
       console.error("산 데이터 조회 오류:", error);
     }
@@ -127,10 +129,12 @@ const MountainInfoPage = () => {
 
   // ✅ 검색 결과에서 산 선택 시 - 상세 페이지로 이동
   const handleSelectMountain = (mountain) => {
-    console.log('🔍 검색에서 산 선택:', mountain.name);
-    
+    console.log("🔍 검색에서 산 선택:", mountain.name);
+
     // 상세 페이지로 이동 (가리산 → /mountain/detail/가리산)
-    window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`;
+    window.location.href = `/mountain/detail/${encodeURIComponent(
+      mountain.name
+    )}`;
   };
 
   // ✅ 검색창 외부 클릭 시 검색 결과 닫기
@@ -169,7 +173,7 @@ const MountainInfoPage = () => {
           zIndex: 0,
         }}
       />
-      
+
       {/* 검색창 */}
       <div
         style={{
@@ -181,7 +185,7 @@ const MountainInfoPage = () => {
           width: "clamp(20rem, 60vw, 31.25rem)",
         }}
       >
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <SoftInput
             placeholder="산 이름을 검색하세요"
             icon={{ component: <SearchIcon />, direction: "right" }}
@@ -196,7 +200,7 @@ const MountainInfoPage = () => {
             }}
             fullWidth
           />
-          
+
           {/* ✅ 검색 결과 모달 */}
           {showSearchResults && (
             <MountainSearchModal
@@ -275,8 +279,12 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
           </div>
 
           <div style={actionButtonsStyle}>
-            <button 
-              onClick={() => window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`}
+            <button
+              onClick={() =>
+                (window.location.href = `/mountain/detail/${encodeURIComponent(
+                  mountain.name
+                )}`)
+              }
               style={detailButtonStyle}
             >
               🔍 상세보기
