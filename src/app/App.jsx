@@ -37,6 +37,7 @@ import FreeBoardPage from "pages/community/freeBoardPage";
 import FreeBoardWritePage from "pages/community/freeBoardWritePage";
 import PostDetailPage from "pages/community/PostDetailPage";
 import MeetingPage from "pages/meeting/MeetingPage";
+import MeetingCreatePage from "pages/meeting/MeetingCreatePage";
 import OrmiPage from "pages/ormie/ormiPage";
 import NotificationPage from "pages/notificationPage";
 import MyPage from "pages/mypage/mypage";
@@ -158,6 +159,7 @@ function AppContent() {
               element={<PostDetailPage />}
             />
             <Route path="/meeting" element={<MeetingPage />} />
+            <Route path="/meeting/create" element={<MeetingCreatePage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/mypage" element={<MyPage />} />

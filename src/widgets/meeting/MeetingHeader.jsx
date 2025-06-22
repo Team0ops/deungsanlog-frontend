@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import GreenButton from "shared/ui/GreenButton";
+import { useNavigate } from "react-router-dom";
 
 const messages = [
   "오늘 어떤 모임을 찾고 계신가요?",
@@ -9,6 +10,7 @@ const messages = [
 
 const MeetingHeader = () => {
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -87,6 +89,7 @@ const MeetingHeader = () => {
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
+            onClick={() => navigate("/meeting/create")} // 추가
           >
             새로운 모임 만들기
           </GreenButton>
