@@ -10,21 +10,24 @@ const TimePickerHMWidget = ({
   error = false,
   errorMessage = "",
 }) => {
-  const [h, m] = value ? value.split(":").map(Number) : ["", ""];
+  const [h, m] = value
+    ? value.split(":").map((v) => (v === "" ? "" : Number(v)))
+    : ["", ""];
 
   const handleChange = (type, val) => {
-    let hour = h,
-      min = m;
-    if (type === "hour") hour = Number(val);
-    if (type === "minute") min = Number(val);
-    if (hour !== "" && min !== "") {
-      onChange(
-        `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`
-      );
-    } else {
-      onChange("");
-      TimePickerHMWidget;
-    }
+    let hour = h;
+    let min = m;
+
+    if (type === "hour") hour = val === "" ? "" : Number(val);
+    if (type === "minute") min = val === "" ? "" : Number(val);
+
+    // 시 또는 분 중 하나만 있어도 반영
+    const formatted =
+      (hour !== "" ? hour.toString().padStart(2, "0") : "--") +
+      ":" +
+      (min !== "" ? min.toString().padStart(2, "0") : "--");
+
+    onChange(formatted);
   };
 
   return (
@@ -36,7 +39,6 @@ const TimePickerHMWidget = ({
         marginBottom: "1rem",
       }}
     >
-      {/* <label style={{ minWidth: 40, fontWeight: 600 }}>{label}</label> */}
       <select
         value={h !== "" ? h : ""}
         onChange={(e) => handleChange("hour", e.target.value)}
@@ -55,6 +57,7 @@ const TimePickerHMWidget = ({
           </option>
         ))}
       </select>
+
       <select
         value={m !== "" ? m : ""}
         onChange={(e) => handleChange("minute", e.target.value)}
@@ -73,6 +76,7 @@ const TimePickerHMWidget = ({
           </option>
         ))}
       </select>
+
       {error && (
         <span
           style={{

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const years = Array.from(
   { length: 100 },
@@ -21,25 +21,31 @@ const DatePickerYMDWidget = ({
   minYear,
   maxYear,
 }) => {
-  const [year, month, day] = value
-    ? value.split("-").map(Number)
-    : [undefined, undefined, undefined];
+  const [year, setYear] = useState();
+  const [month, setMonth] = useState();
+  const [day, setDay] = useState();
 
-  const handleChange = (type, val) => {
-    let y = year,
-      m = month,
-      d = day;
-    if (type === "year") y = Number(val);
-    if (type === "month") m = Number(val);
-    if (type === "day") d = Number(val);
-    if (y && m && d) {
-      onChange(
-        `${y.toString().padStart(4, "0")}-${m.toString().padStart(2, "0")}-${d
-          .toString()
-          .padStart(2, "0")}`
-      );
+  // 외부 value가 변경되면 내부 상태 업데이트
+  useEffect(() => {
+    if (value) {
+      const [y, m, d] = value.split("-").map(Number);
+      setYear(y);
+      setMonth(m);
+      setDay(d);
     } else {
-      onChange("");
+      setYear(undefined);
+      setMonth(undefined);
+      setDay(undefined);
+    }
+  }, [value]);
+
+  // 날짜 선택 시 조합해서 전달
+  const updateDate = (y, m, d) => {
+    if (y && m && d) {
+      const dateStr = `${y.toString().padStart(4, "0")}-${m
+        .toString()
+        .padStart(2, "0")}-${d.toString().padStart(2, "0")}`;
+      onChange(dateStr);
     }
   };
 
@@ -52,10 +58,13 @@ const DatePickerYMDWidget = ({
         alignItems: "center",
       }}
     >
-      {/* <label style={{ minWidth: 40, fontWeight: 600 }}>{label}</label> */}
       <select
         value={year || ""}
-        onChange={(e) => handleChange("year", e.target.value)}
+        onChange={(e) => {
+          const y = Number(e.target.value);
+          setYear(y);
+          updateDate(y, month, day);
+        }}
         required={required}
         style={{
           border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
@@ -75,9 +84,14 @@ const DatePickerYMDWidget = ({
             </option>
           ))}
       </select>
+
       <select
         value={month || ""}
-        onChange={(e) => handleChange("month", e.target.value)}
+        onChange={(e) => {
+          const m = Number(e.target.value);
+          setMonth(m);
+          updateDate(year, m, day);
+        }}
         required={required}
         style={{
           border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
@@ -93,9 +107,14 @@ const DatePickerYMDWidget = ({
           </option>
         ))}
       </select>
+
       <select
         value={day || ""}
-        onChange={(e) => handleChange("day", e.target.value)}
+        onChange={(e) => {
+          const d = Number(e.target.value);
+          setDay(d);
+          updateDate(year, month, d);
+        }}
         required={required}
         style={{
           border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
@@ -111,6 +130,7 @@ const DatePickerYMDWidget = ({
           </option>
         ))}
       </select>
+
       {error && (
         <span
           style={{
