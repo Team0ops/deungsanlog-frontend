@@ -3,12 +3,12 @@ import { Box, Modal, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import GreenInput from "shared/ui/greenInput";
 import GreenButton from "shared/ui/greenButton";
-import MountainSearchOnlyWidget from "widgets/mountain/MountainSearchOnlyWidget";
 import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
 import DatePickerYMDWidget from "widgets/DatePick/DatePickerYMDWidget";
 import TimePickerHMWidget from "widgets/DatePick/TimePickerHMWidget";
 import axiosInstance from "shared/lib/axiosInstance";
 import { getUserInfo } from "shared/lib/auth";
+import MountainInputWidget from "widgets/mountain/MountainInputWidget";
 
 // 라벨+설명+필드 컴포넌트
 const LabeledField = ({ label, description, children, style }) => (
@@ -79,6 +79,9 @@ const MeetingCreateForm = () => {
     let hasError = false;
 
     if (!mountain) {
+      setMountainError(true);
+      hasError = true;
+    } else if (!mountain.name || !mountain.name.trim()) {
       setMountainError(true);
       hasError = true;
     } else {
@@ -174,8 +177,9 @@ const MeetingCreateForm = () => {
     setConfirmModalOpen(false);
 
     const payload = {
-      hostUserId: userId, // 로그인 사용자 정보 사용
-      mountainId: mountain?.id,
+      hostUserId: userId,
+      mountain_id: mountain?.id || "",
+      mountain_name: mountain?.name || "",
       location: mountain?.location || "",
       title,
       description,
@@ -212,9 +216,12 @@ const MeetingCreateForm = () => {
     >
       <form onSubmit={handleSubmit}>
         <LabeledField label="산">
-          <MountainSearchOnlyWidget
+          <MountainInputWidget
             value={mountain}
-            onChange={setMountain}
+            onChange={(mountainObj) => {
+              setMountain(mountainObj);
+              setMountainError(false); // 에러 해제
+            }}
             onSearchClick={() => setMountainModalOpen(true)}
             error={mountainError}
             errorMessage="산을 선택해주세요."
