@@ -10,9 +10,9 @@ const cardHoverStyle = {
   transition: "box-shadow 0.2s, transform 0.15s, background 0.2s",
 };
 const cardHoverActiveStyle = {
-  boxShadow: "0 8px 32px 0 rgba(76, 117, 89, 0.28)", // 더 진하고 크게
+  boxShadow: "0 8px 24px rgba(28, 48, 34, 0.2)",
   transform: "translateY(-4px) scale(1.025)",
-  background: "#f3f8f3",
+  background: "#f3f3f3",
 };
 
 const PreviewCard = ({ post }) => {
