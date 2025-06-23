@@ -1,51 +1,28 @@
 import { Box } from "@mui/material";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import SoftInput from "shared/ui/SoftInput";
 import SearchIcon from "@mui/icons-material/Search";
-
-// ✅ ToggleButton 공통 스타일 정의
-const toggleButtonStyle = {
-  outline: "none",
-  boxShadow: "none",
-  color: "#333",
-  background: "#fff",
-  transition: "border-color 0.15s, background 0.15s",
-  "&:hover": {
-    border: "1px solid #e0e0e0",
-    background: "#f7faf7",
-    outline: "none",
-    boxShadow: "none",
-  },
-  "&:focus": {
-    border: "1px solid #e0e0e0",
-    outline: "none",
-    boxShadow: "none",
-  },
-  "&:focus-visible": {
-    border: "1px solid #e0e0e0",
-    outline: "none",
-    boxShadow: "none",
-  },
-  "&.Mui-selected": {
-    backgroundColor: "#70a784",
-    color: "#fff",
-    border: "1px solid #4b8161", // 선택된 것만 진초록 테두리
-    "&:hover": {
-      backgroundColor: "#5b8e6f",
-      border: "2px solid #245e3c",
-      outline: "none",
-      boxShadow: "none",
-    },
-  },
-};
 
 const MeetingSearchSection = ({
   filter,
   setFilter,
   searchKeyword,
   setSearchKeyword,
+  sort,
+  setSort,
+  onSearch, // 검색 실행 함수 (props로 전달)
 }) => {
+  // 검색 실행 핸들러
+  const handleSearch = () => {
+    if (onSearch) {
+      onSearch({
+        status: filter,
+        sort,
+        keyword: searchKeyword,
+        page: 0,
+      });
+    }
+  };
+
   return (
     <Box
       mt={3}
@@ -58,39 +35,92 @@ const MeetingSearchSection = ({
       gap={2}
     >
       {/* 모집 상태 필터 */}
-      <ToggleButtonGroup
-        value={filter}
-        exclusive
-        onChange={(e, newFilter) => newFilter && setFilter(newFilter)}
-        aria-label="모집 상태 필터"
-        sx={{
-          flexWrap: "nowrap",
-          border: "none",
-          outline: "none",
-          boxShadow: "none",
-          "&:focus": {
+      <Box flex="0 0 160px" minWidth="120px" maxWidth="200px">
+        <select
+          style={{
+            width: "100%",
+            height: "48px",
+            padding: "0 1rem",
+            borderRadius: "12px",
+            border: "1px solid #d0d0d0",
+            background: "#fdfdfd",
+            fontWeight: "bold",
+            fontSize: "1rem",
+            color: "#4c7559",
             outline: "none",
-            boxShadow: "none",
-          },
-          "&:focus-visible": {
+            cursor: "pointer",
+            appearance: "none",
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg fill='Green' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>\")",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 1rem center",
+            backgroundSize: "16px 16px",
+          }}
+          value={filter}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            // 값이 바뀌면 바로 검색 실행
+            if (onSearch) {
+              onSearch({
+                status: e.target.value,
+                sort,
+                keyword: searchKeyword,
+                page: 0,
+              });
+            }
+          }}
+        >
+          <option value="all">전체</option>
+          <option value="open">모집중</option>
+          <option value="closed">마감</option>
+          <option value="cancelled">취소</option>
+        </select>
+      </Box>
+
+      {/* 정렬 기준 */}
+      <Box flex="0 0 160px" minWidth="120px" maxWidth="200px">
+        <select
+          style={{
+            width: "100%",
+            height: "48px",
+            padding: "0 1rem",
+            borderRadius: "12px",
+            border: "1px solid #d0d0d0",
+            background: "#fdfdfd",
+            fontWeight: "bold",
+            fontSize: "1rem",
+            color: "#4c7559",
             outline: "none",
-            boxShadow: "none",
-          },
-        }}
-      >
-        <ToggleButton value="all" sx={toggleButtonStyle}>
-          전체
-        </ToggleButton>
-        <ToggleButton value="open" sx={toggleButtonStyle}>
-          모집중
-        </ToggleButton>
-        <ToggleButton value="closed" sx={toggleButtonStyle}>
-          마감
-        </ToggleButton>
-      </ToggleButtonGroup>
+            cursor: "pointer",
+            appearance: "none",
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg fill='Green' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>\")",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 1rem center",
+            backgroundSize: "16px 16px",
+          }}
+          value={sort}
+          onChange={(e) => {
+            setSort(e.target.value);
+            // 값이 바뀌면 바로 검색 실행
+            if (onSearch) {
+              onSearch({
+                status: filter,
+                sort: e.target.value,
+                keyword: searchKeyword,
+                page: 0,
+              });
+            }
+          }}
+        >
+          <option value="deadline">마감 임박순</option>
+          <option value="latest">최신순</option>
+          <option value="oldest">오래된 순</option>
+        </select>
+      </Box>
 
       {/* 검색 입력창 */}
-      <Box flex={1} minWidth="220px">
+      <Box flex="2 1 0" minWidth="220px">
         <SoftInput
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
@@ -103,17 +133,11 @@ const MeetingSearchSection = ({
             px: 3,
           }}
           fullWidth
-          onIconClick={() => {
-            if (searchKeyword.trim()) {
-              console.log("검색:", searchKeyword.trim());
-            }
-          }}
+          onIconClick={handleSearch}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
-              if (searchKeyword.trim()) {
-                console.log("검색(엔터):", searchKeyword.trim());
-              }
+              handleSearch();
             }
           }}
         />

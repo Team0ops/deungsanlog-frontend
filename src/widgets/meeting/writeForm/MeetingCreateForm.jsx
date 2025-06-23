@@ -40,7 +40,7 @@ const LabeledField = ({ label, description, children, style }) => (
 
 const MeetingCreateForm = () => {
   const navigate = useNavigate();
-  const [mountain, setMountain] = useState(null);
+  const [mountain, setMountain] = useState({ id: "", name: "", location: "" });
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -178,8 +178,8 @@ const MeetingCreateForm = () => {
 
     const payload = {
       hostUserId: userId,
-      mountain_id: mountain?.id || "",
-      mountain_name: mountain?.name || "",
+      mountainId: mountain?.id || "",
+      mountainName: mountain?.name || "",
       location: mountain?.location || "",
       title,
       description,
@@ -218,9 +218,19 @@ const MeetingCreateForm = () => {
         <LabeledField label="산">
           <MountainInputWidget
             value={mountain}
-            onChange={(mountainObj) => {
-              setMountain(mountainObj);
-              setMountainError(false); // 에러 해제
+            onChange={(mountainObjOrEvent) => {
+              if (mountainObjOrEvent?.target?.value) {
+                setMountain({
+                  id: "",
+                  name:
+                    mountainObjOrEvent.target.value.name ||
+                    mountainObjOrEvent.target.value,
+                  location: "",
+                });
+              } else {
+                setMountain(mountainObjOrEvent);
+              }
+              setMountainError(false);
             }}
             onSearchClick={() => setMountainModalOpen(true)}
             error={mountainError}

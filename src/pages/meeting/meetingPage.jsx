@@ -1,11 +1,7 @@
-import { useState } from "react";
 import MeetingBoardHeader from "widgets/meeting/MeetingHeader";
-import MeetingSearchSection from "widgets/meeting/MeetingSearchSection";
+import MeetingListContainer from "widgets/meeting/MeetingListContainer";
 
 const MeetingPage = () => {
-  const [filter, setFilter] = useState("all");
-  const [searchKeyword, setSearchKeyword] = useState("");
-
   return (
     <div
       style={{
@@ -23,12 +19,7 @@ const MeetingPage = () => {
     >
       <div>
         <MeetingBoardHeader />
-        <MeetingSearchSection
-          filter={filter}
-          setFilter={setFilter}
-          searchKeyword={searchKeyword}
-          setSearchKeyword={setSearchKeyword}
-        />
+        <MeetingListContainer />
       </div>
     </div>
   );

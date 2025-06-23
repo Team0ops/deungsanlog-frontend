@@ -72,7 +72,7 @@ const MeetingHeader = () => {
           display={{ xs: "none", md: "block" }}
         />
 
-        {/* 버튼 & 셀렉트 박스 (기능 없이 시각적으로만) */}
+        {/* 버튼만 (정렬 기준 대신) */}
         <Box
           flex={1}
           display="flex"
@@ -89,35 +89,22 @@ const MeetingHeader = () => {
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
-            onClick={() => navigate("/meeting/create")} // 추가
+            onClick={() => navigate("/meeting/create")}
           >
             새로운 모임 만들기
           </GreenButton>
-
-          <select
+          <GreenButton
             style={{
-              height: "48px",
+              height: "55px",
               width: "100%",
-              padding: "0 1rem",
-              borderRadius: "12px",
-              border: "1px solid #d0d0d0",
-              background: "#fdfdfd",
-              fontWeight: "bold",
-              fontSize: "1rem",
               color: "#4c7559",
-              outline: "none",
-              cursor: "default",
-              appearance: "none",
-              backgroundImage:
-                "url(\"data:image/svg+xml;utf8,<svg fill='Green' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>\")",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "right 1rem center",
-              backgroundSize: "16px 16px",
+              background: "#fdfdfd",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
-            disabled
+            onClick={() => navigate("/meeting/my")}
           >
-            <option>정렬 기준</option>
-          </select>
+            나의 모임 참여 현황
+          </GreenButton>
         </Box>
       </Box>
     </Box>
