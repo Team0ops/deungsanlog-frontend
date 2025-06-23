@@ -111,6 +111,7 @@ const FreeBoardPage = () => {
           style={{
             flex: 1,
             overflowY: "auto",
+            overflowX: "hidden", // ← 추가: 가로 스크롤 제거
             minHeight: 0,
             paddingRight: "2px",
             position: "relative",
