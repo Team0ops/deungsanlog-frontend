@@ -33,6 +33,7 @@ import LogViewPage from "../pages/record/LogViewPage";
 import LogWritePage from "../pages/record/LogWritePage";
 import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
 import BadgeInfoModalPage from "pages/record/BadgeInfoModalPage";
+import LogDetailModalPage from "pages/record/RecordDetailModalPage";
 import CommunityPage from "pages/community/communityPage";
 import FreeBoardPage from "pages/community/freeBoardPage";
 import FreeBoardWritePage from "pages/community/freeBoardWritePage";
@@ -146,6 +147,10 @@ function AppContent() {
               element={<LogMountainSearchPage />}
             />
             <Route path="/log/badge-info" element={<BadgeInfoModalPage />} />
+            <Route
+              path="/log/detail/:recordId"
+              element={<LogDetailModalPage />}
+            />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/community/free" element={<FreeBoardPage />} />
             <Route

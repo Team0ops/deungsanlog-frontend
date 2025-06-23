@@ -11,6 +11,7 @@ const RecordCard = ({
   date,
   content,
   onEdit,
+  onClick,
   recordId,
   onDeleted, // 삭제 후 콜백 prop 추가 (optional)
 }) => {
@@ -66,6 +67,7 @@ const RecordCard = ({
   return (
     <Box
       id={`record-card-${recordId}`}
+      onClick={onClick}
       sx={{
         width: 250,
         minHeight: 330,

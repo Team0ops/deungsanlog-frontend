@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { getUserInfo } from "shared/lib/auth";
 import LogHeader from "widgets/LogHeader/LogHeader";
 import axiosInstance from "shared/lib/axiosInstance";
@@ -150,6 +150,7 @@ const LogViewPage = () => {
               date={record.recordDate}
               content={record.content}
               onEdit={() => navigate(`/log/edit/${record.id}`)}
+              onClick={() => navigate(`/log/detail/${record.id}`)}
               onDeleted={() => {
                 setRecords((prev) => prev.filter((r) => r.id !== record.id));
               }}
@@ -157,6 +158,7 @@ const LogViewPage = () => {
           </Grid>
         ))}
       </Grid>
+      <Outlet />
     </Box>
   );
 };
