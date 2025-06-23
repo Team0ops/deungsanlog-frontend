@@ -78,6 +78,13 @@ const RecordCard = ({
         display: "flex",
         flexDirection: "column",
         p: 2,
+        transition: "box-shadow 0.2s, transform 0.2s, background 0.2s",
+        cursor: "pointer",
+        "&:hover": {
+          boxShadow: "0 8px 24px rgba(28, 48, 34, 0.18)",
+          background: "#eaf0e8",
+          transform: "translateY(-4px) scale(1.02)",
+        },
       }}
     >
       {/* 이미지 영역 */}
