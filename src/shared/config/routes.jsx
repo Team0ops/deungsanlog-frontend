@@ -36,8 +36,8 @@ const getRoutes = () => {
     {
       type: "collapse",
       name: "모임",
-      key: "group",
-      route: "/group",
+      key: "meeting",
+      route: "/meeting",
       icon: <GroupIcon />,
     },
 

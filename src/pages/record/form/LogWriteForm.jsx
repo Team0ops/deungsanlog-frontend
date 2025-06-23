@@ -205,22 +205,25 @@ const LogWriteForm = ({
         <MountainInputWidget
           value={mountain}
           onChange={(e) => {
-            // e.target.value가 객체인지 문자열인지 체크
             if (typeof e.target.value === "object") {
-              setMountain(e.target.value);
+              setMountain(e.target.value); // 검색으로 선택한 경우
             } else {
-              setMountain({ id: null, name: e.target.value, location: "" });
+              setMountain({ id: null, name: e.target.value, location: "" }); // 직접입력한 경우
             }
             setMountainError(false);
           }}
-          error={mountainError}
-          errorMessage="산 이름을 입력해주세요."
           onSearchClick={() => setMountainModalOpen(true)}
+          error={mountainError}
+          errorMessage="산을 선택해주세요."
         />
+
         <LogMountainSearchModal
           open={mountainModalOpen}
           onClose={() => setMountainModalOpen(false)}
-          onSelect={(mountainObj) => setMountain(mountainObj)}
+          onSelect={(mountainObj) => {
+            setMountain(mountainObj); // id, name, location 다 포함됨
+            setMountainError(false);
+          }}
         />
         <Box mt={3} />
         <DatePickerWidget
