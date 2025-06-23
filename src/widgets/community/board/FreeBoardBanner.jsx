@@ -12,7 +12,7 @@ const cardHoverStyle = {
 const cardHoverActiveStyle = {
   boxShadow: "0 8px 24px rgba(28, 48, 34, 0.2)",
   transform: "translateY(-4px) scale(1.025)",
-  background: "#f3f3f3",
+  background: "#f5f8f5",
 };
 
 const PreviewCard = ({ post }) => {
@@ -30,7 +30,7 @@ const PreviewCard = ({ post }) => {
         maxWidth: "240px",
         minWidth: "240px",
         height: isTextOnly ? "180px" : "300px",
-        background: "#f9fcf9",
+        background: "#f5f8f5",
         borderRadius: "12px",
         padding: "0.7rem",
         boxShadow: "0 2px 8px rgba(14, 44, 15, 0.2)",
