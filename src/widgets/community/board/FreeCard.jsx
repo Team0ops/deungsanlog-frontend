@@ -3,6 +3,8 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useNavigate } from "react-router-dom";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
+import HeartIcon from "shared/assets/icons/heart_y.svg";
+import CommentIcon from "shared/assets/icons/Comment.svg";
 
 const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -124,17 +126,19 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
                       textAlign: "left",
                       cursor: "pointer",
+                      outline: "none",
                       fontWeight: 500,
-                      color: "#27ae60",
+                      color: "#222222",
                       borderBottom: "1px solid #f0f0f0",
+                      fontSize: "0.97rem",
                     }}
                   >
-                    ✏️ 수정
+                    수정
                   </button>
                   <button
                     onClick={(e) => {
@@ -144,16 +148,18 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
+                      outline: "none",
                       textAlign: "left",
                       cursor: "pointer",
                       fontWeight: 500,
                       color: "#e74c3c",
+                      fontSize: "0.97rem",
                     }}
                   >
-                    🗑️ 삭제
+                    삭제
                   </button>
                 </div>
               )}
@@ -209,8 +215,34 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           <span style={{ color: "#aaa" }}>
             {new Date(post.createdAt).toLocaleString()}
           </span>
-          <span>❤️ {post.likeCount}</span>
-          <span>💬 {post.commentCount}</span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={HeartIcon}
+              alt="좋아요"
+              style={{ width: 20, height: 20, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.likeCount}
+            </span>
+          </span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={CommentIcon}
+              alt="댓글"
+              style={{ width: 19, height: 19, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.commentCount}
+            </span>
+          </span>
         </div>
       </div>
     );
@@ -407,17 +439,18 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
                       textAlign: "left",
                       cursor: "pointer",
                       fontWeight: 500,
-                      color: "#27ae60",
+                      color: "#222222",
                       borderBottom: "1px solid #f0f0f0",
+                      fontSize: "0.97rem", // 글씨 크기 줄임
                     }}
                   >
-                    ✏️ 수정
+                    수정
                   </button>
                   <button
                     onClick={(e) => {
@@ -427,16 +460,17 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
                       textAlign: "left",
                       cursor: "pointer",
                       fontWeight: 500,
                       color: "#e74c3c",
+                      fontSize: "0.97rem", // 글씨 크기 줄임
                     }}
                   >
-                    🗑️ 삭제
+                    삭제
                   </button>
                 </div>
               )}
@@ -492,8 +526,34 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           <span style={{ color: "#aaa" }}>
             {new Date(post.createdAt).toLocaleString()}
           </span>
-          <span>❤️ {post.likeCount}</span>
-          <span>💬 {post.commentCount}</span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={HeartIcon}
+              alt="좋아요"
+              style={{ width: 20, height: 20, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.likeCount}
+            </span>
+          </span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={CommentIcon}
+              alt="댓글"
+              style={{ width: 19, height: 19, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.commentCount}
+            </span>
+          </span>
         </div>
       </div>
     </div>
