@@ -2,14 +2,26 @@ import GreenButton from "shared/ui/greenButton";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge"; // 추가
+import HeartIcon from "shared/assets/icons/heart_y.svg";
+import CommentIcon from "shared/assets/icons/Comment.svg";
 
 // 공통 미리보기 카드
+const cardHoverStyle = {
+  transition: "box-shadow 0.2s, transform 0.15s, background 0.2s",
+};
+const cardHoverActiveStyle = {
+  boxShadow: "0 8px 32px 0 rgba(76, 117, 89, 0.28)", // 더 진하고 크게
+  transform: "translateY(-4px) scale(1.025)",
+  background: "#f3f8f3",
+};
+
 const PreviewCard = ({ post }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-
   const isTextOnly =
     !post.hasImage || !post.imageUrls || post.imageUrls.length === 0;
+
+  const [isHover, setIsHover] = useState(false);
 
   return (
     <div
@@ -18,18 +30,24 @@ const PreviewCard = ({ post }) => {
         maxWidth: "240px",
         minWidth: "240px",
         height: isTextOnly ? "180px" : "300px",
-        background: "#f7faf7",
+        background: "#f9fcf9",
         borderRadius: "12px",
         padding: "0.7rem",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        boxShadow: "0 2px 8px rgba(14, 44, 15, 0.2)",
         display: "flex",
         flexDirection: "column",
         cursor: "pointer",
         flex: "0 0 auto",
         boxSizing: "border-box",
         touchAction: "manipulation",
+        marginLeft: "13px",
+        marginTop: "13px",
+        ...cardHoverStyle,
+        ...(isHover ? cardHoverActiveStyle : {}),
       }}
       onClick={() => navigate(`/community/post/${post.id}`)}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
       {/* 이미지 */}
       {post.hasImage && post.imageUrls?.length > 0 && (
@@ -93,7 +111,7 @@ const PreviewCard = ({ post }) => {
           {post.content}
         </div>
       )}
-      {/* 하단 정보: 항상 카드 맨 아래에 붙도록 marginTop: auto */}
+      {/* 하단 정보 */}
       <div
         style={{
           marginTop: "auto",
@@ -128,13 +146,18 @@ const PreviewCard = ({ post }) => {
         >
           <span
             style={{
-              color: "#e74c3c",
+              color: "#4b8161",
               display: "flex",
               alignItems: "center",
               gap: "0.2rem",
             }}
           >
-            ❤️ {post.likeCount ?? 0}
+            <img
+              src={HeartIcon}
+              alt="좋아요"
+              style={{ width: 16, height: 16, verticalAlign: "middle" }}
+            />
+            {post.likeCount ?? 0}
           </span>
           <span
             style={{
@@ -144,7 +167,12 @@ const PreviewCard = ({ post }) => {
               gap: "0.2rem",
             }}
           >
-            💬 {post.commentCount ?? 0}
+            <img
+              src={CommentIcon}
+              alt="댓글"
+              style={{ width: 16, height: 16, verticalAlign: "middle" }}
+            />
+            {post.commentCount ?? 0}
           </span>
         </div>
       </div>
