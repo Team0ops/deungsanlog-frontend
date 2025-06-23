@@ -17,7 +17,7 @@ const MountainInfoPage = () => {
   const [selectedMountain, setSelectedMountain] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   
-  // ✅ 검색 관련 상태 추가
+  // ✅ 검색 관련 상태
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
 
@@ -56,7 +56,7 @@ const MountainInfoPage = () => {
   // 🏔️ 마커 생성 (맵이 로드된 후에만)
   useEffect(() => {
     if (mapRef.current && mountains.length > 0 && mapLoaded) {
-      createMountainMarkers();
+      createCustomMountainMarkers();
     }
   }, [mapRef.current, mountains, mapLoaded]);
 
@@ -73,8 +73,8 @@ const MountainInfoPage = () => {
     }
   };
 
-  // 🏔️ 마커 생성
-  const createMountainMarkers = () => {
+  // 🎨 커스텀 산 마커 생성
+  const createCustomMountainMarkers = () => {
     mountains.forEach((mountain) => {
       if (mountain.latitude && mountain.longitude) {
         const markerPosition = new window.kakao.maps.LatLng(
@@ -82,9 +82,13 @@ const MountainInfoPage = () => {
           mountain.longitude
         );
 
+        // 🏔️ 커스텀 마커 이미지 생성
+        const customMarkerImage = createCustomMarkerImage(mountain);
+
         const marker = new window.kakao.maps.Marker({
           position: markerPosition,
           title: mountain.name,
+          image: customMarkerImage // 🎨 커스텀 이미지 적용
         });
 
         marker.setMap(mapRef.current);
@@ -93,8 +97,69 @@ const MountainInfoPage = () => {
         window.kakao.maps.event.addListener(marker, "click", () => {
           handleMarkerClick(mountain);
         });
+
+        // 🏷️ 산 이름 라벨 추가 (선택사항)
+        if (mountain.elevation > 1000) { // 1000m 이상만 라벨 표시
+          createMountainLabel(mountain, markerPosition);
+        }
       }
     });
+  };
+
+  // 🎨 커스텀 마커 이미지 생성 함수
+  const createCustomMarkerImage = (mountain) => {
+    let imageSrc, imageSize, imageOption;
+
+    // 🏔️ 산의 높이에 따라 다른 마커 사용
+    if (mountain.elevation >= 1500) {
+      // 고산 (1500m 이상) - 큰 산 아이콘
+      imageSrc = '/images/mountain-high.png';
+      imageSize = new window.kakao.maps.Size(40, 40);
+    } else if (mountain.elevation >= 1000) {
+      // 중산 (1000-1499m) - 중간 산 아이콘
+      imageSrc = '/images/mountain-medium.png';
+      imageSize = new window.kakao.maps.Size(32, 32);
+    } else {
+      // 저산 (1000m 미만) - 작은 산 아이콘
+      imageSrc = '/images/mountain-small.png';
+      imageSize = new window.kakao.maps.Size(24, 24);
+    }
+
+    // 🎯 마커 이미지 옵션 (클릭 영역 설정)
+    imageOption = {
+      offset: new window.kakao.maps.Point(imageSize.width/2, imageSize.height) // 하단 중앙이 좌표점
+    };
+
+    return new window.kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+  };
+
+  // 🏷️ 산 이름 라벨 생성 (선택사항)
+  const createMountainLabel = (mountain, position) => {
+    const labelContent = `
+      <div style="
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      ">
+        ${mountain.name}<br>
+        <span style="color: #666; font-size: 10px;">${mountain.elevation}m</span>
+      </div>
+    `;
+
+    const customOverlay = new window.kakao.maps.CustomOverlay({
+      position: position,
+      content: labelContent,
+      yAnchor: 1.3, // 마커 위쪽에 표시
+      clickable: false
+    });
+
+    customOverlay.setMap(mapRef.current);
   };
 
   // 🏔️ 마커 클릭 처리
@@ -129,13 +194,12 @@ const MountainInfoPage = () => {
   const handleSelectMountain = (mountain) => {
     console.log('🔍 검색에서 산 선택:', mountain.name);
     
-    // 상세 페이지로 이동 (가리산 → /mountain/detail/가리산)
+    // 상세 페이지로 이동
     window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`;
   };
 
   // ✅ 검색창 외부 클릭 시 검색 결과 닫기
   const handleSearchBlur = () => {
-    // 약간의 지연을 두어 검색 결과 클릭이 먼저 처리되도록 함
     setTimeout(() => {
       setShowSearchResults(false);
     }, 200);
@@ -207,6 +271,23 @@ const MountainInfoPage = () => {
         </div>
       </div>
 
+      {/* 🎨 마커 범례 (선택사항) */}
+      <div style={legendStyle}>
+        <h3 style={legendTitleStyle}>산 높이 구분</h3>
+        <div style={legendItemStyle}>
+          <img src="/images/mountain-high.png" alt="고산" style={legendIconStyle} />
+          <span>1500m 이상</span>
+        </div>
+        <div style={legendItemStyle}>
+          <img src="/images/mountain-medium.png" alt="중산" style={legendIconStyle} />
+          <span>1000-1499m</span>
+        </div>
+        <div style={legendItemStyle}>
+          <img src="/images/mountain-small.png" alt="저산" style={legendIconStyle} />
+          <span>1000m 미만</span>
+        </div>
+      </div>
+
       {/* 줌 컨트롤 */}
       {mapLoaded && (
         <div
@@ -229,7 +310,7 @@ const MountainInfoPage = () => {
   );
 };
 
-// 🏔️ 산 정보 팝업 컴포넌트
+// 🏔️ 산 정보 팝업 컴포넌트 (기존과 동일)
 const MountainInfoPopup = ({ mountain, onClose }) => {
   return (
     <div style={popupOverlayStyle}>
@@ -294,7 +375,42 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
   );
 };
 
-// 🎨 스타일들 (기존과 동일)
+// 🎨 새로운 스타일들
+const legendStyle = {
+  position: "fixed",
+  top: "clamp(1rem, 3vw, 2rem)",
+  right: "clamp(1rem, 3vw, 2rem)",
+  backgroundColor: "rgba(255, 255, 255, 0.95)",
+  padding: "clamp(0.8rem, 1.5vw, 1rem)",
+  borderRadius: "0.5rem",
+  boxShadow: "0 0.2rem 0.8rem rgba(0,0,0,0.15)",
+  zIndex: 10,
+  minWidth: "8rem",
+};
+
+const legendTitleStyle = {
+  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+  fontWeight: "600",
+  margin: "0 0 0.5rem 0",
+  color: "#333",
+};
+
+const legendItemStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.5rem",
+  marginBottom: "0.3rem",
+  fontSize: "clamp(0.7rem, 1.2vw, 0.8rem)",
+  color: "#666",
+};
+
+const legendIconStyle = {
+  width: "1rem",
+  height: "1rem",
+  objectFit: "contain",
+};
+
+// 🎨 기존 스타일들 (동일)
 const popupOverlayStyle = {
   position: "fixed",
   top: 0,
