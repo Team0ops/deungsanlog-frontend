@@ -83,8 +83,8 @@ const RecordCard = ({
         transition: "box-shadow 0.2s, transform 0.2s, background 0.2s",
         cursor: "pointer",
         "&:hover": {
-          boxShadow: "0 8px 24px rgba(28, 48, 34, 0.18)",
-          background: "#eaf0e8",
+          boxShadow: "0 8px 24px rgba(28, 48, 34, 0.2)",
+          background: "#f3f3f3",
           transform: "translateY(-4px) scale(1.02)",
         },
       }}
