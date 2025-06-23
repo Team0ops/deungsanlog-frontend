@@ -4,6 +4,8 @@ import axiosInstance from "shared/lib/axiosInstance";
 import { Box, Typography } from "@mui/material";
 import mountainMessages from "shared/constants/mountainMessages";
 import GreenButton from "shared/ui/GreenButton";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
 
 const LogHeader = ({ userId, sortOption, setSortOption }) => {
   const [badgeInfo, setBadgeInfo] = useState(null);
@@ -59,6 +61,26 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
           py={1}
           textAlign="center"
         >
+          {/* (i) 아이콘 버튼 추가 */}
+          <Box display="flex" justifyContent="flex-end" width="100%">
+            <IconButton
+              size="small" // 더 크게
+              onClick={() => navigate("/log/badge-info")}
+              sx={{
+                color: "#4b8161",
+                fontSize: 25, // 아이콘 자체 크기 키움
+                outline: "none",
+                "&:focus": { outline: "none" }, // 포커스 아웃라인 제거
+                "&:active": { outline: "none" },
+              }}
+              aria-label="배지 단계 설명"
+              disableFocusRipple
+              disableRipple
+              tabIndex={0}
+            >
+              <InfoOutlinedIcon sx={{ fontSize: 32 }} />
+            </IconButton>
+          </Box>
           {!badgeInfo ? (
             <Typography>🧭 배지를 찾는 중... 조금만 기다려주세요!</Typography>
           ) : (
