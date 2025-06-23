@@ -178,24 +178,26 @@ const PostDetailPage = ({ onLike }) => {
             color: "#27ae60",
             fontSize: "1.15rem",
             cursor: "pointer",
-            borderRadius: "999px",
-            padding: "0.5rem 1.1rem 0.5rem 0.7rem",
+            borderRadius: "50%", // 완전 동그랗게
+            width: "44px", // 정사각형
+            height: "44px",
+            minWidth: "44px",
+            minHeight: "44px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
             fontWeight: 600,
             boxShadow: "0 2px 8px rgba(39,174,96,0.07)",
             transition: "background 0.15s",
             marginRight: "auto",
+            padding: 0,
             gap: "0.3rem",
           }}
           aria-label="뒤로가기"
           onMouseOver={(e) => (e.currentTarget.style.background = "#e6f6ec")}
           onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
         >
-          <ArrowBackIosNewIcon
-            style={{ fontSize: "1.2rem", marginRight: "0.2rem" }}
-          />
-          <span>목록으로</span>
+          <ArrowBackIosNewIcon style={{ fontSize: "1.2rem" }} />
         </button>
         {/* 본인 글일 때만 메뉴버튼 노출 */}
         {post && userId === post.userId && (
