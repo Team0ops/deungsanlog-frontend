@@ -113,15 +113,18 @@ const RecordCard = ({
         {/* 아이콘 버튼 (이미지 오른쪽 위) */}
         <IconButton
           id={`menu-button-${recordId}`}
-          onClick={handleClick}
+          onClick={(e) => {
+            e.stopPropagation(); // 카드 클릭 이벤트 버블링 방지
+            handleClick(e);
+          }}
           sx={{
             position: "absolute",
             top: 8,
             right: 8,
             bgcolor: "rgba(255,255,255,0.7)",
             zIndex: 2,
-            outline: "none", // ✅ 포커스 테두리 제거
-            boxShadow: "none", // ✅ 일부 브라우저 그림자 제거
+            outline: "none",
+            boxShadow: "none",
             "&:focus": {
               outline: "none",
               boxShadow: "none",
@@ -132,25 +135,26 @@ const RecordCard = ({
         </IconButton>
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           <MenuItem
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // 추가
               handleClose();
               onEdit?.();
             }}
           >
             수정
           </MenuItem>
-
           <MenuItem
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // 추가
               handleClose();
               handleDelete();
             }}
           >
             삭제
           </MenuItem>
-
           <MenuItem
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // 추가
               handleClose();
               handleImageDownload?.();
             }}
