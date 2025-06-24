@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const [mountainName, setMountainName] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
+  const [isHover, setIsHover] = useState(false); // <-- 조건문 밖에서 선언
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +45,15 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
     setPhotoIdx((prev) => (prev + 1) % totalPhotos);
   };
 
+  const cardHoverStyle = {
+    transition: "box-shadow 0.18s, transform 0.13s, background 0.18s",
+  };
+  const cardHoverActiveStyle = {
+    boxShadow: "0 8px 32px 0 rgba(47, 66, 47, 0.18)",
+    transform: "translateY(-3px) scale(1.012)",
+    background: "#f6f7f6",
+  };
+
   // 사진 없는 카드
   if (!hasPhotos) {
     return (
@@ -54,8 +64,8 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
           padding: "1.2rem 2rem",
           marginBottom: "1.2rem",
-          width: "100%",
-          maxWidth: "100%", // ← 900px → 100%
+          width: "96%",
+          maxWidth: "96%",
           position: "relative",
           cursor: "pointer",
           display: "flex",
@@ -63,12 +73,17 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           alignItems: "flex-start",
           minHeight: "140px",
           justifyContent: "center",
+          margin: "30px auto", // ← 중앙 정렬
+          ...cardHoverStyle,
+          ...(isHover ? cardHoverActiveStyle : {}),
         }}
         onClick={() =>
           navigate(`/community/post/${post.id}`, {
             state: { userId: myUserId },
           })
         }
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
       >
         {/* 상단: 작성자/메뉴 */}
         <div
@@ -257,8 +272,8 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
         padding: "1.2rem",
         marginBottom: "1.2rem",
-        width: "100%",
-        maxWidth: "100%", // ← 900px → 100%
+        width: "96%",
+        maxWidth: "96%",
         position: "relative",
         cursor: "pointer",
         display: "flex",
@@ -266,10 +281,15 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         gap: "2rem",
         alignItems: "stretch",
         minHeight: "220px",
+        margin: "30px auto", // ← 중앙 정렬
+        ...cardHoverStyle,
+        ...(isHover ? cardHoverActiveStyle : {}),
       }}
       onClick={() =>
         navigate(`/community/post/${post.id}`, { state: { userId: myUserId } })
       }
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
       {/* 왼쪽: 이미지 영역 */}
       <div
