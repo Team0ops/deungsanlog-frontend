@@ -8,6 +8,7 @@ import Grid from "@mui/material/Grid";
 import { Box, Button } from "@mui/material";
 import greenSpot from "shared/assets/images/green_spot.png";
 import GreenButton from "shared/ui/greenButton";
+import Pagination from "@mui/material/Pagination";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -33,7 +34,6 @@ const NotLoggedIn = () => (
       justifyContent="center"
       flexDirection="column"
     >
-      {/* 이미지 */}
       <img
         src={greenSpot}
         alt="로그인 안내"
@@ -46,8 +46,6 @@ const NotLoggedIn = () => (
           display: "block",
         }}
       />
-
-      {/* 텍스트와 버튼 겹쳐 표시 */}
       <Box
         position="absolute"
         top="50%"
@@ -92,7 +90,10 @@ const NotLoggedIn = () => (
 const LogViewPage = () => {
   const [sortOption, setSortOption] = useState("latest");
   const [records, setRecords] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [userId, setUserId] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -104,20 +105,30 @@ const LogViewPage = () => {
 
   useEffect(() => {
     if (!userId) return;
+
     axiosInstance
-      .get(`/record-service/get?userId=${userId}`)
+      .get(`/record-service/get`, {
+        params: {
+          userId,
+          page,
+          size: 6,
+        },
+      })
       .then((res) => {
-        const sorted = [...res.data].sort((a, b) => {
+        const { content, totalPages } = res.data;
+
+        const sorted = [...content].sort((a, b) => {
           return sortOption === "latest"
             ? new Date(b.recordDate) - new Date(a.recordDate)
             : new Date(a.recordDate) - new Date(b.recordDate);
         });
+
         setRecords(sorted);
+        setTotalPages(totalPages);
       })
       .catch((err) => console.error("기록 불러오기 실패", err));
-  }, [userId, sortOption]);
+  }, [userId, sortOption, page]);
 
-  // 로그인 안한 경우 안내창만 보여줌
   if (!userId) return <NotLoggedIn />;
 
   return (
@@ -135,10 +146,9 @@ const LogViewPage = () => {
         width="100%"
         alignItems="flex-start"
         mt={2}
-        ml={-10}
       >
         {records.map((record) => (
-          <Grid item key={record.id}>
+          <Grid item key={record.id} xs={12} sm={6} md={4}>
             <RecordCard
               recordId={record.id}
               image={
@@ -158,6 +168,43 @@ const LogViewPage = () => {
           </Grid>
         ))}
       </Grid>
+
+      {/* 페이지네이션 버튼 */}
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Pagination
+          count={totalPages}
+          page={page + 1}
+          onChange={(_, value) => setPage(value - 1)}
+          color="primary"
+          shape="rounded"
+          size="large"
+          siblingCount={1}
+          boundaryCount={1}
+          showFirstButton
+          showLastButton
+          sx={{
+            "& .MuiPaginationItem-root": {
+              color: "#356849", // 기본 텍스트 색상
+              fontWeight: 600,
+              borderRadius: "24px !important",
+              outline: "none",
+            },
+            "& .Mui-selected": {
+              backgroundColor: "#bfccb185 !important", // 선택된 버튼 배경
+              color: "#143622 !important", // 선택된 버튼 텍스트
+              border: "none",
+              borderRadius: "24px !important",
+              outline: "none",
+            },
+            "& .MuiPaginationItem-root:hover": {
+              backgroundColor: "#b5b9ae1c",
+              borderRadius: "24px !important",
+              outline: "none",
+            },
+          }}
+        />
+      </Box>
+
       <Outlet />
     </Box>
   );
