@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardHeader from "widgets/community/board/FreeBoardHeader";
+import FreeBoardSearchSection from "widgets/community/board/FreeBoardSearchSection";
 import { getUserInfo } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
 
@@ -10,6 +11,8 @@ const FreeBoardPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("latest");
+  const [searchField, setSearchField] = useState("all");
+  const [searchKeyword, setSearchKeyword] = useState("");
   const navigate = useNavigate();
   const cardAreaRef = useRef(null);
 
@@ -40,28 +43,56 @@ const FreeBoardPage = () => {
     }
   };
 
-  // 게시글 가져오기
+  // 게시글 검색 핸들러
+  const handleSearch = async ({
+    sort = sortOption,
+    field = searchField,
+    keyword = searchKeyword,
+    page = 0,
+    size = 10,
+  } = {}) => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.get("/community-service/posts/search", {
+        params: {
+          sort,
+          field,
+          keyword,
+          page,
+          size,
+        },
+      });
+      setPosts(res.data);
+    } catch {
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 게시글 최초 로딩
   useEffect(() => {
-    axiosInstance
-      .get("/community-service/posts")
-      .then((res) => setPosts(res.data))
-      .catch(() => setPosts([]))
-      .finally(() => setLoading(false));
+    handleSearch({
+      sort: sortOption,
+      field: searchField,
+      keyword: searchKeyword,
+      page: 0,
+      size: 10,
+    });
+    // eslint-disable-next-line
   }, []);
 
-  // 게시글 정렬
-  const sortedPosts = [...posts].sort((a, b) => {
-    if (sortOption === "latest") {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    }
-    if (sortOption === "oldest") {
-      return new Date(a.createdAt) - new Date(b.createdAt);
-    }
-    if (sortOption === "likes") {
-      return b.likeCount - a.likeCount;
-    }
-    return 0;
-  });
+  // 1. useEffect로 sortOption, searchField, searchKeyword가 바뀔 때마다 자동 검색
+  useEffect(() => {
+    handleSearch({
+      sort: sortOption,
+      field: searchField,
+      keyword: searchKeyword,
+      page: 0,
+      size: 10,
+    });
+    // eslint-disable-next-line
+  }, [sortOption, searchField, searchKeyword]);
 
   return (
     <div
@@ -103,6 +134,18 @@ const FreeBoardPage = () => {
           <FreeBoardHeader
             sortOption={sortOption}
             setSortOption={setSortOption}
+          />
+
+          <FreeBoardSearchSection
+            sort={sortOption}
+            setSort={setSortOption}
+            searchField={searchField}
+            setSearchField={setSearchField}
+            searchKeyword={searchKeyword}
+            setSearchKeyword={setSearchKeyword}
+            onSearch={handleSearch}
+            page={0}
+            size={10}
           />
         </div>
         {/* 카드 영역 스크롤 */}
@@ -163,7 +206,7 @@ const FreeBoardPage = () => {
               >
                 🐿️ 게시글을 열심히 줍줍(!) 중입니다...
               </div>
-            ) : sortedPosts.length === 0 ? (
+            ) : posts.length === 0 ? (
               <div
                 style={{
                   color: "#aaa",
@@ -179,7 +222,7 @@ const FreeBoardPage = () => {
                 <br />첫 번째 이야기를 남겨주세요 🌰
               </div>
             ) : (
-              sortedPosts.map((post) => (
+              posts.map((post) => (
                 <FeedCard
                   key={post.id}
                   post={post}
