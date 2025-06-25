@@ -8,7 +8,7 @@ const messages = [
   "커뮤니티에서 함께 소통해요 😊",
 ];
 
-const FreeBoardHeader = ({ sortOption, setSortOption }) => {
+const FreeBoardHeader = () => {
   const navigate = useNavigate();
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
@@ -91,33 +91,21 @@ const FreeBoardHeader = ({ sortOption, setSortOption }) => {
           >
             ✏️ 글쓰기
           </GreenButton>
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
+          <GreenButton
+            onClick={() => {
+              /* 원하는 동작 추가 */
+            }}
             style={{
-              height: "48px",
+              height: "55px",
               width: "100%",
-              padding: "0 1rem",
-              borderRadius: "12px",
-              border: "1px solid #d0d0d0",
-              background: "#fdfdfd",
-              fontWeight: "bold",
-              fontSize: "1rem",
               color: "#4c7559",
-              outline: "none",
-              cursor: "pointer",
-              appearance: "none",
-              backgroundImage:
-                "url(\"data:image/svg+xml;utf8,<svg fill='Green' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>\")",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "right 1rem center",
-              backgroundSize: "16px 16px",
+              background: "#fdfdfd",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <option value="latest">최신순</option>
-            <option value="oldest">오래된순</option>
-            <option value="likes">좋아요 많은 순</option>
-          </select>
+            {/* 버튼 텍스트를 원하는 대로 변경 */}
+            📢 나의 게시물
+          </GreenButton>
         </Box>
       </Box>
     </Box>

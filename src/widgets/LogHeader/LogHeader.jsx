@@ -170,7 +170,7 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
               color: "#4c7559",
               fontWeight: "bold",
               fontSize: "1.1rem",
-              background: "#f5f5f5",
+              background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >

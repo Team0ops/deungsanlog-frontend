@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useNavigate } from "react-router-dom";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
+import HeartIcon from "shared/assets/icons/heart_y.svg";
+import CommentIcon from "shared/assets/icons/Comment.svg";
 
 const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [mountainName, setMountainName] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
+  const [isHover, setIsHover] = useState(false); // <-- 조건문 밖에서 선언
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +45,15 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
     setPhotoIdx((prev) => (prev + 1) % totalPhotos);
   };
 
+  const cardHoverStyle = {
+    transition: "box-shadow 0.18s, transform 0.13s, background 0.18s",
+  };
+  const cardHoverActiveStyle = {
+    boxShadow: "0 8px 32px 0 rgba(47, 66, 47, 0.18)",
+    transform: "translateY(-3px) scale(1.012)",
+    background: "#f6f7f6",
+  };
+
   // 사진 없는 카드
   if (!hasPhotos) {
     return (
@@ -52,8 +64,8 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
           padding: "1.2rem 2rem",
           marginBottom: "1.2rem",
-          width: "100%",
-          maxWidth: "100%", // ← 900px → 100%
+          width: "96%",
+          maxWidth: "96%",
           position: "relative",
           cursor: "pointer",
           display: "flex",
@@ -61,12 +73,17 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           alignItems: "flex-start",
           minHeight: "140px",
           justifyContent: "center",
+          margin: "30px auto", // ← 중앙 정렬
+          ...cardHoverStyle,
+          ...(isHover ? cardHoverActiveStyle : {}),
         }}
         onClick={() =>
           navigate(`/community/post/${post.id}`, {
             state: { userId: myUserId },
           })
         }
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
       >
         {/* 상단: 작성자/메뉴 */}
         <div
@@ -124,17 +141,19 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
                       textAlign: "left",
                       cursor: "pointer",
+                      outline: "none",
                       fontWeight: 500,
-                      color: "#27ae60",
+                      color: "#222222",
                       borderBottom: "1px solid #f0f0f0",
+                      fontSize: "0.97rem",
                     }}
                   >
-                    ✏️ 수정
+                    수정
                   </button>
                   <button
                     onClick={(e) => {
@@ -144,16 +163,18 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
+                      outline: "none",
                       textAlign: "left",
                       cursor: "pointer",
                       fontWeight: 500,
                       color: "#e74c3c",
+                      fontSize: "0.97rem",
                     }}
                   >
-                    🗑️ 삭제
+                    삭제
                   </button>
                 </div>
               )}
@@ -209,8 +230,34 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           <span style={{ color: "#aaa" }}>
             {new Date(post.createdAt).toLocaleString()}
           </span>
-          <span>❤️ {post.likeCount}</span>
-          <span>💬 {post.commentCount}</span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={HeartIcon}
+              alt="좋아요"
+              style={{ width: 20, height: 20, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.likeCount}
+            </span>
+          </span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={CommentIcon}
+              alt="댓글"
+              style={{ width: 19, height: 19, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.commentCount}
+            </span>
+          </span>
         </div>
       </div>
     );
@@ -225,8 +272,8 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
         padding: "1.2rem",
         marginBottom: "1.2rem",
-        width: "100%",
-        maxWidth: "100%", // ← 900px → 100%
+        width: "96%",
+        maxWidth: "96%",
         position: "relative",
         cursor: "pointer",
         display: "flex",
@@ -234,10 +281,15 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         gap: "2rem",
         alignItems: "stretch",
         minHeight: "220px",
+        margin: "30px auto", // ← 중앙 정렬
+        ...cardHoverStyle,
+        ...(isHover ? cardHoverActiveStyle : {}),
       }}
       onClick={() =>
         navigate(`/community/post/${post.id}`, { state: { userId: myUserId } })
       }
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
       {/* 왼쪽: 이미지 영역 */}
       <div
@@ -407,17 +459,18 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
                       textAlign: "left",
                       cursor: "pointer",
                       fontWeight: 500,
-                      color: "#27ae60",
+                      color: "#222222",
                       borderBottom: "1px solid #f0f0f0",
+                      fontSize: "0.97rem", // 글씨 크기 줄임
                     }}
                   >
-                    ✏️ 수정
+                    수정
                   </button>
                   <button
                     onClick={(e) => {
@@ -427,16 +480,17 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                     }}
                     style={{
                       width: "100%",
-                      padding: "0.7rem 1rem",
+                      padding: "0.6rem 1rem",
                       background: "none",
                       border: "none",
                       textAlign: "left",
                       cursor: "pointer",
                       fontWeight: 500,
                       color: "#e74c3c",
+                      fontSize: "0.97rem", // 글씨 크기 줄임
                     }}
                   >
-                    🗑️ 삭제
+                    삭제
                   </button>
                 </div>
               )}
@@ -492,8 +546,34 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           <span style={{ color: "#aaa" }}>
             {new Date(post.createdAt).toLocaleString()}
           </span>
-          <span>❤️ {post.likeCount}</span>
-          <span>💬 {post.commentCount}</span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={HeartIcon}
+              alt="좋아요"
+              style={{ width: 20, height: 20, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.likeCount}
+            </span>
+          </span>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          >
+            <img
+              src={CommentIcon}
+              alt="댓글"
+              style={{ width: 19, height: 19, verticalAlign: "middle" }}
+            />
+            <span
+              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+            >
+              {post.commentCount}
+            </span>
+          </span>
         </div>
       </div>
     </div>
