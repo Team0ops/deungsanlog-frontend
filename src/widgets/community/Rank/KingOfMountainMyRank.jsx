@@ -6,18 +6,20 @@ const MyRankingBox = ({ myRank, loading }) => {
   return (
     <div
       style={{
-        background: "#ecf5e8",
+        background: "linear-gradient(135deg, #ecf5e8 80%, #d8e7d1 100%)",
         borderRadius: "1rem",
         padding: "1.1rem 1rem",
         fontWeight: 600,
         fontSize: "1.08rem",
         color: "#8b8b8b",
-        boxShadow: "0 2px 8px #d1f2eb33",
+        boxShadow:
+          "0 4px 24px 0 rgba(76, 117, 89, 0.13), 0 1.5px 8px 0 #b5cdbb55, 0 0.5px 0 #fff inset",
         minHeight: "3.2rem",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        border: "1.5px solid #d2e6d2",
       }}
     >
       {loading ? (

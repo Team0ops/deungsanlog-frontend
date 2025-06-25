@@ -25,18 +25,26 @@ const LoginPage = () => {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [navigate]);
-
+  
   const handleGoogleLogin = () => {
     setLoading(true);
     setLoadingProvider("google");
-    window.location.href = `${BASE_URL}/auth/google`; // 템플릿 리터럴로 수정
+    window.location.href = `/auth/google`;  // ⭐ BASE_URL 제거
   };
 
   const handleNaverLogin = () => {
     setLoading(true);
     setLoadingProvider("naver");
-    window.location.href = `${BASE_URL}/auth/naver`; // 템플릿 리터럴로 수정
+    window.location.href = `/auth/naver`;   // ⭐ BASE_URL 제거
   };
+
+  // 🔥 카카오 로그인 핸들러 추가
+  const handleKakaoLogin = () => {
+    setLoading(true);
+    setLoadingProvider("kakao");
+    window.location.href = `/auth/kakao`;   // ⭐ BASE_URL 제거
+  };
+
 
   return (
     <div
@@ -179,6 +187,7 @@ const LoginPage = () => {
             transition: "all 0.3s ease",
             boxShadow: "0 0.125rem 0.25rem rgba(0, 0, 0, 0.1)",
             minHeight: "3rem",
+            marginBottom: "clamp(0.8rem, 2vw, 1rem)", // 🔥 카카오 버튼 추가로 간격 유지
           }}
           onMouseOver={(e) => {
             if (!loading) {
@@ -220,6 +229,62 @@ const LoginPage = () => {
             {loading && loadingProvider === "naver"
               ? "네이버 로그인 중..."
               : "네이버로 로그인"}
+          </span>
+        </button>
+
+        {/* 🔥 카카오 로그인 버튼 추가 */}
+        <button
+          type="button"
+          onClick={handleKakaoLogin}
+          disabled={loading}
+          style={{
+            width: "100%",
+            padding: "clamp(0.8rem, 2vw, 1.2rem) clamp(1rem, 3vw, 1.5rem)",
+            backgroundColor:
+              loading && loadingProvider === "kakao" ? "#95a5a6" : "#FEE500",
+            color: loading && loadingProvider === "kakao" ? "white" : "#000000",
+            border: "none",
+            borderRadius: "clamp(0.5rem, 1vw, 0.75rem)",
+            fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "clamp(0.5rem, 1.5vw, 0.8rem)",
+            cursor: loading ? "not-allowed" : "pointer",
+            transition: "all 0.3s ease",
+            boxShadow: "0 0.125rem 0.25rem rgba(0, 0, 0, 0.1)",
+            minHeight: "3rem",
+          }}
+          onMouseOver={(e) => {
+            if (!loading) {
+              e.target.style.backgroundColor = "#FFD700";
+              e.target.style.transform = "translateY(-0.125rem)";
+            }
+          }}
+          onMouseOut={(e) => {
+            if (!loading) {
+              e.target.style.backgroundColor = "#FEE500";
+              e.target.style.transform = "translateY(0)";
+            }
+          }}
+        >
+          {/* 카카오 로고 */}
+          <svg
+            width="clamp(1.2rem, 3vw, 1.5rem)"
+            height="clamp(1.2rem, 3vw, 1.5rem)"
+            viewBox="0 0 24 24"
+            style={{ flexShrink: 0 }}
+          >
+            <path
+              fill="currentColor"
+              d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3Z"
+            />
+          </svg>
+          <span style={{ whiteSpace: "nowrap" }}>
+            {loading && loadingProvider === "kakao"
+              ? "카카오 로그인 중..."
+              : "카카오로 로그인"}
           </span>
         </button>
 

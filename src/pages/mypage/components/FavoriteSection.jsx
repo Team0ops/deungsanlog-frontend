@@ -77,29 +77,55 @@ const FavoriteSection = ({ userId }) => {
     fetchFavorites();
   }, [userId]);
 
-  // ✅ 산 상세 정보 배치 조회 - 더 나은 에러 처리
+  // ✅ 산 상세 정보 배치 조회 - 실시간 정보 포함 (2단계 조회)
   const fetchMountainDetails = async (mountainIds) => {
     try {
       console.log("🏔️ 산 상세 정보 조회 시작:", mountainIds.length, "개");
 
-      // ✅ 실제로는 mountainId로 산을 조회해야 하는데, 
-      // 현재 API가 name으로만 검색 가능하므로 임시 처리
       const mountainPromises = mountainIds.map(async (mountainId) => {
         try {
-          // ✅ 올바른 방법: mountainId로 직접 조회하는 API가 필요
-          // 임시로 전체 산 목록에서 ID로 찾기
-          const response = await axiosInstance.get(`/mountain-service/${mountainId}`);
-          return response.data;
+          console.log(`🔍 1단계: mountainId로 기본 정보 조회 - ${mountainId}`);
+          
+          // ✅ 1단계: mountainId로 기본 산 정보 조회
+          const basicResponse = await axiosInstance.get(`/mountain-service/${mountainId}`);
+          const basicMountain = basicResponse.data;
+          
+          if (!basicMountain || !basicMountain.name) {
+            console.log(`❌ 기본 정보 없음: ${mountainId}`);
+            return null;
+          }
+          
+          console.log(`✅ 1단계 성공: ${basicMountain.name}`);
+          console.log(`🔍 2단계: 실시간 정보 조회 시작 - ${basicMountain.name}`);
+          
+          // ✅ 2단계: 산 이름으로 실시간 정보 포함 상세 조회
+          const detailResponse = await axiosInstance.get("/mountain-service/search", {
+            params: { name: basicMountain.name }
+          });
+          
+          console.log(`✅ 2단계 성공: ${basicMountain.name} 실시간 정보 포함`);
+          console.log('실시간 정보:', {
+            sunInfo: !!detailResponse.data.sunInfo,
+            fireRiskInfo: !!detailResponse.data.fireRiskInfo
+          });
+          
+          // ✅ 기본 정보 + 실시간 정보 결합
+          return {
+            ...basicMountain,
+            sunInfo: detailResponse.data.sunInfo,
+            fireRiskInfo: detailResponse.data.fireRiskInfo,
+            description: detailResponse.data.description,
+            weatherInfo: detailResponse.data.weatherInfo
+          };
+          
         } catch (error) {
           console.error(`❌ 산 정보 조회 실패: ${mountainId}`, error);
           
-          // ✅ fallback: 산 이름으로 검색 시도 (mountainId가 실제로는 name일 수 있음)
+          // ✅ fallback: 기본 정보만이라도 조회
           try {
-            console.log(`🔄 fallback: 이름으로 검색 시도 - ${mountainId}`);
-            const fallbackResponse = await axiosInstance.get("/mountain-service/search", {
-              params: { name: mountainId }
-            });
-            return fallbackResponse.data.mountain;
+            console.log(`🔄 fallback: 기본 정보만 조회 - ${mountainId}`);
+            const fallbackResponse = await axiosInstance.get(`/mountain-service/${mountainId}`);
+            return fallbackResponse.data;
           } catch (fallbackError) {
             console.error(`❌ fallback도 실패: ${mountainId}`, fallbackError);
             return null;
@@ -111,6 +137,7 @@ const FavoriteSection = ({ userId }) => {
       const validMountains = mountains.filter((mountain) => mountain !== null);
       
       console.log("✅ 산 정보 조회 완료:", validMountains.length, "개");
+      console.log("실시간 정보 포함된 산:", validMountains.filter(m => m.sunInfo || m.fireRiskInfo).length, "개");
       setFavoriteMountains(validMountains);
       
     } catch (error) {
@@ -157,10 +184,20 @@ const FavoriteSection = ({ userId }) => {
     }
   };
 
-  // 산 상세 페이지로 이동
-  const handleViewMountain = (mountainName) => {
+  // ✅ 산 상세 페이지로 이동 (산 이름 클릭용)
+  const handleMountainClick = (mountainName) => {
     console.log("🔍 산 상세 페이지로 이동:", mountainName);
     window.location.href = `/mountain/detail/${encodeURIComponent(mountainName)}`;
+  };
+
+  // ✅ 산불위험도에 따른 색상 반환
+  const getFireRiskColor = (riskCode) => {
+    switch(riskCode) {
+      case '1': return '#d4edda'; // 안전 - 초록
+      case '2': return '#fff3cd'; // 주의 - 노랑
+      case '3': return '#f8d7da'; // 경보 - 빨강
+      default: return '#e2e3e5';
+    }
   };
 
   if (loading) {
@@ -222,53 +259,63 @@ const FavoriteSection = ({ userId }) => {
       </div>
 
       {favoriteMountains.length > 0 ? (
-        <div style={favoritesGridStyle}>
+        <div style={favoritesListStyle}>
           {favoriteMountains.map((mountain) => (
-            <div key={mountain.id} style={favoriteCardStyle}>
-              {/* 산 이미지 */}
-              <div style={mountainImageStyle}>
-                {mountain.thumbnailImgUrl ? (
-                  <img
-                    src={mountain.thumbnailImgUrl}
-                    alt={mountain.name}
-                    style={mountainImageImgStyle}
-                  />
-                ) : (
-                  <div style={mountainImagePlaceholderStyle}>
-                    <span>🏔️</span>
-                  </div>
-                )}
-              </div>
-
-              {/* 산 정보 */}
-              <div style={mountainInfoStyle}>
-                <h3 style={mountainNameStyle}>{mountain.name}</h3>
+            <div key={mountain.id} style={favoriteItemStyle}>
+              {/* ✅ 산 정보 - 클릭 가능 */}
+              <div 
+                style={mountainInfoClickableStyle}
+                onClick={() => handleMountainClick(mountain.name)}
+              >
+                <h3 style={mountainNameClickableStyle}>{mountain.name}</h3>
+                
                 <div style={mountainDetailsStyle}>
                   <span style={detailItemStyle}>📍 {mountain.location}</span>
                   <span style={detailItemStyle}>⛰️ {mountain.elevation}m</span>
+                  
+                  {/* ✅ 산불위험도 정보 추가 */}
+                  {mountain.fireRiskInfo && !mountain.fireRiskInfo.error && (
+                    <span style={{
+                      ...detailItemStyle,
+                      backgroundColor: getFireRiskColor(mountain.fireRiskInfo.riskLevelCode),
+                      fontWeight: '600'
+                    }}>
+                      🔥 {mountain.fireRiskInfo.riskLevel}
+                    </span>
+                  )}
+                  
+                  {/* ✅ 일출/일몰 정보 추가 */}
+                  {mountain.sunInfo && (
+                    <span style={sunInfoStyle}>
+                      🌅 {mountain.sunInfo.sunriseTime} 🌇 {mountain.sunInfo.sunsetTime}
+                    </span>
+                  )}
                 </div>
               </div>
+{/*               
+              {mountain.sunInfo && (
+  <span style={sunInfoStyle}>
+    <img src="/images/sunrise.png" alt="일출" style={sunIconStyle} />
+    {mountain.sunInfo.sunriseTime}
+    <img src="/images/sunset.png" alt="일몰" style={sunIconStyle} />
+    {mountain.sunInfo.sunsetTime}
+  </span>
+)} */}
 
-              {/* 액션 버튼들 */}
-              <div style={actionButtonsStyle}>
-                <button
-                  onClick={() => handleViewMountain(mountain.name)}
-                  style={{ ...actionButtonStyle, ...viewButtonStyle }}
-                >
-                  👁️ 상세보기
-                </button>
-                <button
-                  onClick={() => handleRemoveFavorite(mountain.id, mountain.name)}
-                  disabled={removingId === mountain.id}
-                  style={{
-                    ...actionButtonStyle,
-                    ...removeButtonStyle,
-                    opacity: removingId === mountain.id ? 0.6 : 1,
-                  }}
-                >
-                  {removingId === mountain.id ? "⏳" : "🗑️"} 삭제
-                </button>
-              </div>
+              {/* ✅ 삭제 버튼만 유지 */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // 클릭 이벤트 버블링 방지
+                  handleRemoveFavorite(mountain.id, mountain.name);
+                }}
+                disabled={removingId === mountain.id}
+                style={{
+                  ...removeButtonStyle,
+                  opacity: removingId === mountain.id ? 0.6 : 1,
+                }}
+              >
+                {removingId === mountain.id ? "⏳" : "🗑️"}
+              </button>
             </div>
           ))}
         </div>
@@ -311,7 +358,7 @@ const FavoriteSection = ({ userId }) => {
 };
 
 // ============================================
-// 스타일 정의 (기존과 동일)
+// ✅ 스타일 정의
 // ============================================
 
 const sectionStyle = {
@@ -320,7 +367,7 @@ const sectionStyle = {
   padding: "clamp(1.5rem, 3vw, 2rem)",
   boxShadow: "0 0.2rem 1rem rgba(0,0,0,0.1)",
   border: "0.1rem solid #e9ecef",
-  position: "relative", // ✅ 디버깅 정보용
+  position: "relative",
 };
 
 const headerStyle = {
@@ -348,99 +395,81 @@ const countBadgeStyle = {
   fontWeight: "600",
 };
 
-const favoritesGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(clamp(18rem, 30vw, 24rem), 1fr))",
-  gap: "clamp(1.2rem, 2.5vw, 1.8rem)",
+const favoritesListStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "clamp(0.8rem, 1.5vw, 1rem)",
 };
 
-const favoriteCardStyle = {
+const favoriteItemStyle = {
   backgroundColor: "#f8f9fa",
-  borderRadius: "1rem",
+  borderRadius: "0.8rem",
   padding: "clamp(1rem, 2vw, 1.5rem)",
   border: "0.1rem solid #e9ecef",
   display: "flex",
-  flexDirection: "column",
-  gap: "clamp(1rem, 2vw, 1.5rem)",
-  transition: "transform 0.2s ease, box-shadow 0.2s ease",
-};
-
-const mountainImageStyle = {
-  width: "100%",
-  height: "clamp(10rem, 18vw, 14rem)",
-  borderRadius: "0.8rem",
-  overflow: "hidden",
-};
-
-const mountainImageImgStyle = {
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-};
-
-const mountainImagePlaceholderStyle = {
-  width: "100%",
-  height: "100%",
-  backgroundColor: "#e9ecef",
-  display: "flex",
+  justifyContent: "space-between",
   alignItems: "center",
-  justifyContent: "center",
-  fontSize: "clamp(3rem, 6vw, 4rem)",
+  transition: "background-color 0.2s ease, transform 0.2s ease",
 };
 
-const mountainInfoStyle = {
+const mountainInfoClickableStyle = {
+  flex: 1,
+  cursor: "pointer",
   display: "flex",
   flexDirection: "column",
-  gap: "clamp(0.5rem, 1vw, 0.8rem)",
+  gap: "clamp(0.3rem, 0.6vw, 0.5rem)",
+  padding: "clamp(0.3rem, 0.6vw, 0.5rem)",
+  borderRadius: "0.5rem",
+  transition: "background-color 0.2s ease",
 };
 
-const mountainNameStyle = {
-  fontSize: "clamp(1.2rem, 2.2vw, 1.4rem)",
+const mountainNameClickableStyle = {
+  fontSize: "clamp(1.1rem, 2vw, 1.3rem)",
   fontWeight: "700",
-  color: "#2c3e50",
+  color: "#007bff",
   margin: 0,
+  transition: "color 0.2s ease",
 };
 
 const mountainDetailsStyle = {
   display: "flex",
-  gap: "clamp(0.8rem, 1.5vw, 1rem)",
+  gap: "clamp(0.5rem, 1vw, 0.8rem)",
   flexWrap: "wrap",
+  alignItems: "center",
 };
 
 const detailItemStyle = {
   fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
   color: "#6c757d",
   backgroundColor: "#ffffff",
-  padding: "clamp(0.3rem, 0.6vw, 0.5rem) clamp(0.6rem, 1.2vw, 0.8rem)",
-  borderRadius: "0.4rem",
+  padding: "clamp(0.2rem, 0.4vw, 0.3rem) clamp(0.5rem, 1vw, 0.6rem)",
+  borderRadius: "0.3rem",
   border: "0.1rem solid #dee2e6",
+  whiteSpace: "nowrap",
 };
 
-const actionButtonsStyle = {
-  display: "flex",
-  gap: "clamp(0.6rem, 1.2vw, 0.8rem)",
-  marginTop: "auto",
-};
-
-const actionButtonStyle = {
-  flex: 1,
-  padding: "clamp(0.6rem, 1.2vw, 0.8rem)",
-  border: "none",
-  borderRadius: "0.5rem",
+// ✅ 일출/일몰 정보 스타일
+const sunInfoStyle = {
   fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
-  fontWeight: "600",
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-};
-
-const viewButtonStyle = {
-  backgroundColor: "#007bff",
-  color: "#ffffff",
+  color: "#856404",
+  backgroundColor: "#fff3cd",
+  padding: "clamp(0.2rem, 0.4vw, 0.3rem) clamp(0.5rem, 1vw, 0.6rem)",
+  borderRadius: "0.3rem",
+  border: "0.1rem solid #ffeaa7",
+  whiteSpace: "nowrap",
 };
 
 const removeButtonStyle = {
   backgroundColor: "#dc3545",
   color: "#ffffff",
+  border: "none",
+  borderRadius: "0.5rem",
+  padding: "clamp(0.5rem, 1vw, 0.7rem) clamp(0.8rem, 1.5vw, 1rem)",
+  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+  minWidth: "clamp(3rem, 5vw, 4rem)",
 };
 
 const emptyStateStyle = {

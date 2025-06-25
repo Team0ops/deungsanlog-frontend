@@ -187,24 +187,26 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
               {c.content}
             </div>
 
-            {/* 댓글 달기 버튼 */}
-            <div style={{ marginTop: "0.5rem", textAlign: "right" }}>
-              <button
-                onClick={() => toggleReplyInput(c.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#27ae60",
-                  fontSize: "0.85rem",
-                  cursor: "pointer",
-                }}
-              >
-                {replyOpen ? "작성 취소" : "댓글 달기"}
-              </button>
-            </div>
+            {/* 댓글 달기 버튼: level이 1 미만일 때만 표시 */}
+            {level < 1 && (
+              <div style={{ marginTop: "0.5rem", textAlign: "right" }}>
+                <button
+                  onClick={() => toggleReplyInput(c.id)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#27ae60",
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  {replyOpen ? "작성 취소" : "댓글 달기"}
+                </button>
+              </div>
+            )}
 
-            {/* 대댓글 입력창 */}
-            {replyOpen && (
+            {/* 대댓글 입력창: level이 1 미만일 때만 표시 */}
+            {level < 1 && replyOpen && (
               <form
                 onSubmit={(e) => handleReplySubmit(e, c.id)}
                 style={{

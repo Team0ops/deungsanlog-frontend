@@ -11,6 +11,7 @@ const RecordCard = ({
   date,
   content,
   onEdit,
+  onClick,
   recordId,
   onDeleted, // 삭제 후 콜백 prop 추가 (optional)
 }) => {
@@ -66,6 +67,7 @@ const RecordCard = ({
   return (
     <Box
       id={`record-card-${recordId}`}
+      onClick={onClick}
       sx={{
         width: 250,
         minHeight: 330,
@@ -78,6 +80,13 @@ const RecordCard = ({
         display: "flex",
         flexDirection: "column",
         p: 2,
+        transition: "box-shadow 0.2s, transform 0.2s, background 0.2s",
+        cursor: "pointer",
+        "&:hover": {
+          boxShadow: "0 8px 24px rgba(28, 48, 34, 0.2)",
+          background: "#f3f3f3",
+          transform: "translateY(-4px) scale(1.02)",
+        },
       }}
     >
       {/* 이미지 영역 */}
@@ -104,15 +113,18 @@ const RecordCard = ({
         {/* 아이콘 버튼 (이미지 오른쪽 위) */}
         <IconButton
           id={`menu-button-${recordId}`}
-          onClick={handleClick}
+          onClick={(e) => {
+            e.stopPropagation(); // 카드 클릭 이벤트 버블링 방지
+            handleClick(e);
+          }}
           sx={{
             position: "absolute",
             top: 8,
             right: 8,
             bgcolor: "rgba(255,255,255,0.7)",
             zIndex: 2,
-            outline: "none", // ✅ 포커스 테두리 제거
-            boxShadow: "none", // ✅ 일부 브라우저 그림자 제거
+            outline: "none",
+            boxShadow: "none",
             "&:focus": {
               outline: "none",
               boxShadow: "none",
@@ -123,25 +135,26 @@ const RecordCard = ({
         </IconButton>
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           <MenuItem
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // 추가
               handleClose();
               onEdit?.();
             }}
           >
             수정
           </MenuItem>
-
           <MenuItem
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // 추가
               handleClose();
               handleDelete();
             }}
           >
             삭제
           </MenuItem>
-
           <MenuItem
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // 추가
               handleClose();
               handleImageDownload?.();
             }}

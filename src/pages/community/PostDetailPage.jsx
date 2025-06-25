@@ -10,6 +10,9 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { getUserInfo } from "shared/lib/auth";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
+import HeartIconN from "shared/assets/icons/heart_n.svg";
+import HeartIconY from "shared/assets/icons/heart_y.svg";
+import CommentIcon from "shared/assets/icons/Comment.svg";
 
 const PostDetailPage = ({ onLike }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -24,6 +27,7 @@ const PostDetailPage = ({ onLike }) => {
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [likePressed, setLikePressed] = useState(false);
 
   // 로그인 여부만 체크해서 userId만 저장
   useEffect(() => {
@@ -178,24 +182,26 @@ const PostDetailPage = ({ onLike }) => {
             color: "#27ae60",
             fontSize: "1.15rem",
             cursor: "pointer",
-            borderRadius: "999px",
-            padding: "0.5rem 1.1rem 0.5rem 0.7rem",
+            borderRadius: "50%", // 완전 동그랗게
+            width: "44px", // 정사각형
+            height: "44px",
+            minWidth: "44px",
+            minHeight: "44px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
             fontWeight: 600,
             boxShadow: "0 2px 8px rgba(39,174,96,0.07)",
             transition: "background 0.15s",
             marginRight: "auto",
+            padding: 0,
             gap: "0.3rem",
           }}
           aria-label="뒤로가기"
           onMouseOver={(e) => (e.currentTarget.style.background = "#e6f6ec")}
           onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
         >
-          <ArrowBackIosNewIcon
-            style={{ fontSize: "1.2rem", marginRight: "0.2rem" }}
-          />
-          <span>목록으로</span>
+          <ArrowBackIosNewIcon style={{ fontSize: "1.2rem" }} />
         </button>
         {/* 본인 글일 때만 메뉴버튼 노출 */}
         {post && userId === post.userId && (
@@ -465,23 +471,73 @@ const PostDetailPage = ({ onLike }) => {
         }}
       >
         <button
-          onClick={handleLike}
+          onClick={async (e) => {
+            setLikePressed(true);
+            await handleLike(e);
+            setTimeout(() => setLikePressed(false), 150); // 0.15초 후 원복
+          }}
           style={{
             background: "none",
             border: "none",
-            color: liked ? "#e74c3c" : "#888",
-            fontSize: "1.25rem",
+            color: "#222",
+            fontSize: "1.08rem",
             cursor: "pointer",
             fontWeight: 700,
             display: "flex",
             alignItems: "center",
             gap: "0.3rem",
+            padding: 0,
+            outline: "none", // 아웃라인 제거
+            boxShadow: "none", // 아웃라인 제거
           }}
+          tabIndex={0}
+          onFocus={(e) => (e.currentTarget.style.outline = "none")}
         >
-          ❤️ {likeCount}
+          <img
+            src={liked ? HeartIconY : HeartIconN}
+            alt="좋아요"
+            style={{
+              width: likePressed ? 36 : 30, // 누를 때 커졌다가 작아짐
+              height: likePressed ? 36 : 30,
+              verticalAlign: "middle",
+              transition: "all 0.13s cubic-bezier(.4,2,.6,1)",
+              userSelect: "none",
+              pointerEvents: "none",
+            }}
+            draggable={false}
+          />
+          <span style={{ fontSize: "1.08rem", fontWeight: 700 }}>
+            {likeCount}
+          </span>
         </button>
-        <span style={{ color: "#888", fontSize: "1.08rem" }}>
-          💬 {comments.length}
+        <span
+          style={{
+            color: "#222", // 폰트색 고정
+            fontSize: "1.08rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.2rem",
+            fontWeight: 700,
+            outline: "none", // 아웃라인 제거
+            boxShadow: "none", // 아웃라인 제거
+          }}
+          tabIndex={-1}
+        >
+          <img
+            src={CommentIcon}
+            alt="댓글"
+            style={{
+              width: 28,
+              height: 28,
+              verticalAlign: "middle",
+              userSelect: "none",
+              pointerEvents: "none",
+            }}
+            draggable={false}
+          />
+          <span style={{ fontSize: "1.08rem", fontWeight: 700 }}>
+            {comments.length}
+          </span>
         </span>
       </div>
       <CommentSection
