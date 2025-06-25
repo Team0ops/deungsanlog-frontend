@@ -89,7 +89,7 @@ const FreeBoardHeader = () => {
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
-            ✏️ 글쓰기
+            글쓰기
           </GreenButton>
           <GreenButton
             onClick={() => {
@@ -104,7 +104,7 @@ const FreeBoardHeader = () => {
             }}
           >
             {/* 버튼 텍스트를 원하는 대로 변경 */}
-            📢 나의 게시물
+            나의 게시물
           </GreenButton>
         </Box>
       </Box>
