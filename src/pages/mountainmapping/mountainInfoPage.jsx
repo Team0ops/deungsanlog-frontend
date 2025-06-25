@@ -25,9 +25,14 @@ const MountainInfoPage = () => {
     const initMap = () => {
       if (window.kakao?.maps) {
         window.kakao.maps.load(() => {
-          const map = loadKakaoMap({ containerId: "map" });
+          // ✅ 한국 전체 영토가 보이도록 변경
+          const map = loadKakaoMap({ 
+            containerId: "map",
+            ...DEFAULT_MAP_SETTINGS.KOREA_FULL_VIEW
+          });
           mapRef.current = map;
           setMapLoaded(true);
+          console.log('🗺️ 지도 초기화 완료 - 한국 전체 영토 보기');
         });
       }
     };
@@ -56,7 +61,8 @@ const MountainInfoPage = () => {
   // 🏔️ 마커 생성 (맵이 로드된 후에만)
   useEffect(() => {
     if (mapRef.current && mountains.length > 0 && mapLoaded) {
-      createCustomMountainMarkers();
+      // ✅ 유틸리티 함수 사용
+      createMountainMarkers(mapRef.current, mountains, handleMarkerClick);
     }
   }, [mapRef.current, mountains, mapLoaded]);
 
@@ -170,17 +176,12 @@ const MountainInfoPage = () => {
 
   // 🏔️ 마커 클릭 처리
   const handleMarkerClick = (mountain) => {
-    console.log("🏔️ 마커 클릭:", mountain.name);
+    console.log("🏔️ 마커 클릭:", mountain.name, `(${mountain.elevation}m)`);
     setSelectedMountain(mountain);
     setShowPopup(true);
 
-    // 지도 중심 이동
-    const moveLatLon = new window.kakao.maps.LatLng(
-      mountain.latitude,
-      mountain.longitude
-    );
-    mapRef.current.setCenter(moveLatLon);
-    mapRef.current.setLevel(6);
+    // ✅ 유틸리티 함수 사용 - 적당한 레벨로 확대
+    moveMapCenter(mapRef.current, mountain.latitude, mountain.longitude, 8);
   };
 
   // 🏔️ 팝업 닫기
@@ -208,6 +209,7 @@ const MountainInfoPage = () => {
 
   // ✅ 검색창 외부 클릭 시 검색 결과 닫기
   const handleSearchBlur = () => {
+    // 약간의 지연을 두어 검색 결과 클릭이 먼저 처리되도록 함
     setTimeout(() => {
       setShowSearchResults(false);
     }, 200);
@@ -324,14 +326,20 @@ const MountainInfoPage = () => {
 
       {/* 🏔️ 산 정보 팝업 */}
       {showPopup && selectedMountain && (
-        <MountainInfoPopup mountain={selectedMountain} onClose={closePopup} />
+        <MountainInfoPopup 
+          mountain={selectedMountain} 
+          onClose={closePopup}
+        />
       )}
     </>
   );
 };
 
-// 🏔️ 산 정보 팝업 컴포넌트 (기존과 동일)
+// 🏔️ 산 정보 팝업 컴포넌트 - 유틸리티 함수 사용
 const MountainInfoPopup = ({ mountain, onClose }) => {
+  // ✅ 유틸리티 함수 사용
+  const gradeInfo = getMountainGradeInfo(mountain.elevation || 0);
+
   return (
     <div style={popupOverlayStyle}>
       <div style={popupContentStyle}>
@@ -348,7 +356,7 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
             />
           ) : (
             <div style={noImageStyle}>
-              <span style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}>🏔️</span>
+              <span style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}>{gradeInfo.icon}</span>
               <p
                 style={{
                   fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
@@ -362,7 +370,12 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
         </div>
 
         <div style={infoContainerStyle}>
-          <h2 style={mountainNameStyle}>🏔️ {mountain.name}</h2>
+          <h2 style={mountainNameStyle}>{gradeInfo.icon} {mountain.name}</h2>
+
+          {/* ✅ 고도별 등급 표시 */}
+          <div style={{...gradeTagStyle, backgroundColor: gradeInfo.color}}>
+            {gradeInfo.type} - {mountain.elevation}m
+          </div>
 
           <div style={detailsStyle}>
             <div style={detailItemStyle}>
@@ -372,6 +385,10 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
             <div style={detailItemStyle}>
               <span style={labelStyle}>⛰️ 높이:</span>
               <span style={valueStyle}>{mountain.elevation}m</span>
+            </div>
+            <div style={detailItemStyle}>
+              <span style={labelStyle}>🏔️ 등급:</span>
+              <span style={valueStyle}>{gradeInfo.description}</span>
             </div>
           </div>
 
@@ -399,42 +416,67 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
   );
 };
 
-// 🎨 새로운 스타일들
+// ✅ 범례 스타일들 - 오른쪽 상단
+const legendContainerStyle = {
+  position: 'fixed',
+  top: 'clamp(1rem, 2vw, 1.5rem)',
+  right: 'clamp(1rem, 2vw, 1.5rem)', // ✅ 오른쪽 상단으로 변경
+  zIndex: 100,
+};
+
 const legendStyle = {
-  position: "fixed",
-  top: "clamp(1rem, 3vw, 2rem)",
-  right: "clamp(1rem, 3vw, 2rem)",
-  backgroundColor: "rgba(255, 255, 255, 0.95)",
-  padding: "clamp(0.8rem, 1.5vw, 1rem)",
-  borderRadius: "0.5rem",
-  boxShadow: "0 0.2rem 0.8rem rgba(0,0,0,0.15)",
-  zIndex: 10,
-  minWidth: "8rem",
+  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+  borderRadius: 'clamp(0.5rem, 1vw, 0.8rem)',
+  padding: 'clamp(0.8rem, 1.5vw, 1rem)',
+  boxShadow: '0 0.2rem 0.5rem rgba(0,0,0,0.1)',
+  maxWidth: 'clamp(12rem, 25vw, 15rem)',
+  fontSize: 'clamp(0.7rem, 1.3vw, 0.8rem)',
 };
 
 const legendTitleStyle = {
-  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
-  fontWeight: "600",
-  margin: "0 0 0.5rem 0",
-  color: "#333",
+  margin: '0 0 clamp(0.5rem, 1vw, 0.8rem) 0',
+  fontSize: 'clamp(0.9rem, 1.8vw, 1rem)',
+  fontWeight: 'bold',
+  color: '#333',
+};
+
+const legendItemsStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'clamp(0.2rem, 0.5vw, 0.3rem)',
+  marginBottom: 'clamp(0.5rem, 1vw, 0.8rem)',
 };
 
 const legendItemStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.5rem",
-  marginBottom: "0.3rem",
-  fontSize: "clamp(0.7rem, 1.2vw, 0.8rem)",
-  color: "#666",
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'clamp(0.3rem, 0.6vw, 0.5rem)',
 };
 
 const legendIconStyle = {
-  width: "1rem",
-  height: "1rem",
-  objectFit: "contain",
+  width: 'clamp(1rem, 2vw, 1.2rem)',
+  height: 'clamp(1rem, 2vw, 1.2rem)',
 };
 
-// 🎨 기존 스타일들 (동일)
+const mapGuideStyle = {
+  margin: 'clamp(0.5rem, 1vw, 0.8rem) 0 0 0',
+  fontSize: 'clamp(0.6rem, 1.2vw, 0.7rem)',
+  color: '#666',
+  fontStyle: 'italic',
+};
+
+const gradeTagStyle = {
+  display: 'inline-block',
+  padding: 'clamp(0.2rem, 0.5vw, 0.3rem) clamp(0.6rem, 1.2vw, 0.8rem)',
+  borderRadius: 'clamp(0.8rem, 1.5vw, 1rem)',
+  color: 'white',
+  fontSize: 'clamp(0.7rem, 1.3vw, 0.8rem)',
+  fontWeight: 'bold',
+  textAlign: 'center',
+  marginBottom: 'clamp(0.4rem, 0.8vw, 0.5rem)',
+};
+
+// 기존 팝업 스타일들...
 const popupOverlayStyle = {
   position: "fixed",
   top: 0,
