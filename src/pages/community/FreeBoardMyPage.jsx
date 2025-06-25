@@ -3,7 +3,7 @@ import { Box, Typography, Pagination } from "@mui/material";
 import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
 
-const CommunityMyPage = () => {
+const FreeBoardMyPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -114,4 +114,4 @@ const CommunityMyPage = () => {
   );
 };
 
-export default CommunityMyPage;
+export default FreeBoardMyPage;

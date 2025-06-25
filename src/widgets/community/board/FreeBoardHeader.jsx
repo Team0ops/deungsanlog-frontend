@@ -92,7 +92,7 @@ const FreeBoardHeader = () => {
             글쓰기
           </GreenButton>
           <GreenButton
-            onClick={() => navigate("/community/my")}
+            onClick={() => navigate("/community/free/my")}
             style={{
               height: "55px",
               width: "100%",

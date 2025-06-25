@@ -35,7 +35,7 @@ import LogMountainSearchPage from "../pages/record/LogMountainSearchModal";
 import BadgeInfoModalPage from "pages/record/BadgeInfoModalPage";
 import LogDetailModalPage from "pages/record/RecordDetailModalPage";
 import CommunityPage from "pages/community/communityPage";
-import CommunityMyPage from "pages/community/communityMyPage";
+import FreeBoardMyPage from "pages/community/FreeBoardMyPage";
 import FreeBoardPage from "pages/community/freeBoardPage";
 import FreeBoardWritePage from "pages/community/freeBoardWritePage";
 import PostDetailPage from "pages/community/PostDetailPage";
@@ -153,7 +153,7 @@ function AppContent() {
               element={<LogDetailModalPage />}
             />
             <Route path="/community" element={<CommunityPage />} />
-            <Route path="/community/my" element={<CommunityMyPage />} />
+            <Route path="/community/free/my" element={<FreeBoardMyPage />} />
             <Route path="/community/free" element={<FreeBoardPage />} />
             <Route
               path="/community/free/write"
