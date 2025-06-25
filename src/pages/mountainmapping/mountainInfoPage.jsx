@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import SoftInput from "shared/ui/SoftInput";
 import SearchIcon from "@mui/icons-material/Search";
-import { loadKakaoMap } from "shared/lib/KakaoMap";
+import { 
+  loadKakaoMap, 
+  moveMapCenter, 
+  createMountainMarkers,
+  getMountainGradeInfo,
+  DEFAULT_MAP_SETTINGS
+} from "shared/lib/kakaoMap";
 import ZoomControl from "shared/ui/ZoomControl";
 import MountainSearchModal from "./MountainSearchModal";
 import axiosInstance from "shared/lib/axiosInstance";
@@ -11,12 +17,12 @@ const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
 const MountainInfoPage = () => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-
+  
   // 🏔️ 산 마커 관련 상태
   const [mountains, setMountains] = useState([]);
   const [selectedMountain, setSelectedMountain] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-
+  
   // ✅ 검색 관련 상태 추가
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -70,111 +76,16 @@ const MountainInfoPage = () => {
   const fetchAllMountains = async () => {
     try {
       const response = await axiosInstance.get("/mountain-service/all");
-      const data = Array.isArray(response.data)
-        ? response.data
-        : response.data.data;
+      const data = response.data;
 
-      console.log("📍 가져온 산 데이터:", data?.length, "개");
-      setMountains(data || []);
+      console.log("📍 가져온 산 데이터:", data.length, "개");
+      setMountains(data);
     } catch (error) {
       console.error("산 데이터 조회 오류:", error);
     }
   };
 
-  // 🎨 커스텀 산 마커 생성
-  const createCustomMountainMarkers = () => {
-    mountains.forEach((mountain) => {
-      if (mountain.latitude && mountain.longitude) {
-        const markerPosition = new window.kakao.maps.LatLng(
-          mountain.latitude,
-          mountain.longitude
-        );
-
-        // 🏔️ 커스텀 마커 이미지 생성
-        const customMarkerImage = createCustomMarkerImage(mountain);
-
-        const marker = new window.kakao.maps.Marker({
-          position: markerPosition,
-          title: mountain.name,
-          image: customMarkerImage, // 🎨 커스텀 이미지 적용
-        });
-
-        marker.setMap(mapRef.current);
-
-        // 마커 클릭 이벤트
-        window.kakao.maps.event.addListener(marker, "click", () => {
-          handleMarkerClick(mountain);
-        });
-
-        // 🏷️ 산 이름 라벨 추가 (선택사항)
-        if (mountain.elevation > 1000) {
-          // 1000m 이상만 라벨 표시
-          createMountainLabel(mountain, markerPosition);
-        }
-      }
-    });
-  };
-
-  // 🎨 커스텀 마커 이미지 생성 함수
-  const createCustomMarkerImage = (mountain) => {
-    let imageSrc, imageSize, imageOption;
-
-    // 🏔️ 산의 높이에 따라 다른 마커 사용
-    if (mountain.elevation >= 1500) {
-      // 고산 (1500m 이상) - 큰 산 아이콘
-      imageSrc = "/images/mountain-high.png";
-      imageSize = new window.kakao.maps.Size(40, 40);
-    } else if (mountain.elevation >= 1000) {
-      // 중산 (1000-1499m) - 중간 산 아이콘
-      imageSrc = "/images/mountain-medium.png";
-      imageSize = new window.kakao.maps.Size(32, 32);
-    } else {
-      // 저산 (1000m 미만) - 작은 산 아이콘
-      imageSrc = "/images/mountain-small.png";
-      imageSize = new window.kakao.maps.Size(24, 24);
-    }
-
-    // 🎯 마커 이미지 옵션 (클릭 영역 설정)
-    imageOption = {
-      offset: new window.kakao.maps.Point(
-        imageSize.width / 2,
-        imageSize.height
-      ), // 하단 중앙이 좌표점
-    };
-
-    return new window.kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-  };
-
-  // 🏷️ 산 이름 라벨 생성 (선택사항)
-  const createMountainLabel = (mountain, position) => {
-    const labelContent = `
-      <div style="
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 2px 6px;
-        font-size: 11px;
-        font-weight: bold;
-        color: #333;
-        text-align: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-      ">
-        ${mountain.name}<br>
-        <span style="color: #666; font-size: 10px;">${mountain.elevation}m</span>
-      </div>
-    `;
-
-    const customOverlay = new window.kakao.maps.CustomOverlay({
-      position: position,
-      content: labelContent,
-      yAnchor: 1.3, // 마커 위쪽에 표시
-      clickable: false,
-    });
-
-    customOverlay.setMap(mapRef.current);
-  };
-
-  // 🏔️ 마커 클릭 처리
+  // 🏔️ 마커 클릭 처리 (유틸리티 함수의 콜백으로 사용)
   const handleMarkerClick = (mountain) => {
     console.log("🏔️ 마커 클릭:", mountain.name, `(${mountain.elevation}m)`);
     setSelectedMountain(mountain);
@@ -199,12 +110,10 @@ const MountainInfoPage = () => {
 
   // ✅ 검색 결과에서 산 선택 시 - 상세 페이지로 이동
   const handleSelectMountain = (mountain) => {
-    console.log("🔍 검색에서 산 선택:", mountain.name);
-
+    console.log('🔍 검색에서 산 선택:', mountain.name);
+    
     // 상세 페이지로 이동 (가리산 → /mountain/detail/가리산)
-    window.location.href = `/mountain/detail/${encodeURIComponent(
-      mountain.name
-    )}`;
+    window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`;
   };
 
   // ✅ 검색창 외부 클릭 시 검색 결과 닫기
@@ -243,7 +152,29 @@ const MountainInfoPage = () => {
           zIndex: 0,
         }}
       />
-
+      
+      {/* ✅ 범례 추가 - 오른쪽 상단 */}
+      <div style={legendContainerStyle}>
+        <div style={legendStyle}>
+          <h4 style={legendTitleStyle}>🏔️ 산 고도별 구분</h4>
+          <div style={legendItemsStyle}>
+            <div style={legendItemStyle}>
+              <img src="/src/shared/assets/images/mountain-high.png" alt="고산" style={legendIconStyle} />
+              <span>고산 (1500m 이상)</span>
+            </div>
+            <div style={legendItemStyle}>
+              <img src="/src/shared/assets/images/mountain-medium.png" alt="중산" style={legendIconStyle} />
+              <span>중산 (800m ~ 1500m)</span>
+            </div>
+            <div style={legendItemStyle}>
+              <img src="/src/shared/assets/images/mountain-small.png" alt="저산" style={legendIconStyle} />
+              <span>저산 (800m 미만)</span>
+            </div>
+          </div>
+          <p style={mapGuideStyle}>📍 마커를 클릭하면 산 정보를 볼 수 있습니다</p>
+        </div>
+      </div>
+      
       {/* 검색창 */}
       <div
         style={{
@@ -255,7 +186,7 @@ const MountainInfoPage = () => {
           width: "clamp(20rem, 60vw, 31.25rem)",
         }}
       >
-        <div style={{ position: "relative" }}>
+        <div style={{ position: 'relative' }}>
           <SoftInput
             placeholder="산 이름을 검색하세요"
             icon={{ component: <SearchIcon />, direction: "right" }}
@@ -270,7 +201,7 @@ const MountainInfoPage = () => {
             }}
             fullWidth
           />
-
+          
           {/* ✅ 검색 결과 모달 */}
           {showSearchResults && (
             <MountainSearchModal
@@ -278,35 +209,6 @@ const MountainInfoPage = () => {
               onSelect={handleSelectMountain}
             />
           )}
-        </div>
-      </div>
-
-      {/* 🎨 마커 범례 (선택사항) */}
-      <div style={legendStyle}>
-        <h3 style={legendTitleStyle}>산 높이 구분</h3>
-        <div style={legendItemStyle}>
-          <img
-            src="/images/mountain-high.png"
-            alt="고산"
-            style={legendIconStyle}
-          />
-          <span>1500m 이상</span>
-        </div>
-        <div style={legendItemStyle}>
-          <img
-            src="/images/mountain-medium.png"
-            alt="중산"
-            style={legendIconStyle}
-          />
-          <span>1000-1499m</span>
-        </div>
-        <div style={legendItemStyle}>
-          <img
-            src="/images/mountain-small.png"
-            alt="저산"
-            style={legendIconStyle}
-          />
-          <span>1000m 미만</span>
         </div>
       </div>
 
@@ -393,12 +295,8 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
           </div>
 
           <div style={actionButtonsStyle}>
-            <button
-              onClick={() =>
-                (window.location.href = `/mountain/detail/${encodeURIComponent(
-                  mountain.name
-                )}`)
-              }
+            <button 
+              onClick={() => window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`}
               style={detailButtonStyle}
             >
               🔍 상세보기
