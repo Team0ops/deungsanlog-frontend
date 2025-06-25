@@ -116,7 +116,7 @@ const FreeBoardPage = () => {
           margin: "0 auto",
           display: "flex",
           flexDirection: "column",
-          gap: "2.5rem",
+          gap: "1.2rem", // ← 기존 2.5rem에서 1.2rem 등으로 줄이세요
           height: "100%",
           position: "relative", // 블러 오버레이용
         }}
@@ -167,7 +167,7 @@ const FreeBoardPage = () => {
               top: 0,
               left: 0,
               width: "100%",
-              height: "32px",
+              height: "10px",
               zIndex: 20,
               pointerEvents: "none",
               background:
