@@ -92,9 +92,7 @@ const FreeBoardHeader = () => {
             글쓰기
           </GreenButton>
           <GreenButton
-            onClick={() => {
-              /* 원하는 동작 추가 */
-            }}
+            onClick={() => navigate("/community/my")}
             style={{
               height: "55px",
               width: "100%",
@@ -103,7 +101,6 @@ const FreeBoardHeader = () => {
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
-            {/* 버튼 텍스트를 원하는 대로 변경 */}
             나의 게시물
           </GreenButton>
         </Box>
