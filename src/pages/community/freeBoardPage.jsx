@@ -7,6 +7,8 @@ import { getUserInfo } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
 import { Pagination } from "@mui/material";
 
+const PAGE_SIZE = 6;
+
 const FreeBoardPage = () => {
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -52,14 +54,13 @@ const FreeBoardPage = () => {
     field = searchField,
     keyword = searchKeyword,
     page = 0,
-    size = 6,
+    size = PAGE_SIZE,
   } = {}) => {
     setLoading(true);
     try {
       const res = await axiosInstance.get("/community-service/posts/search", {
         params: { sort, field, keyword, page, size },
       });
-      // 응답이 없거나 posts가 undefined/null이면 빈 배열로 처리
       setPosts(Array.isArray(res.data?.posts) ? res.data.posts : []);
       setTotalPages(
         typeof res.data?.totalPages === "number" ? res.data.totalPages : 0
@@ -79,7 +80,7 @@ const FreeBoardPage = () => {
       field: searchField,
       keyword: searchKeyword,
       page: 0,
-      size: 2, // size를 2로 맞춰줍니다
+      size: PAGE_SIZE,
     });
     // eslint-disable-next-line
   }, []);
@@ -92,7 +93,7 @@ const FreeBoardPage = () => {
       field: searchField,
       keyword: searchKeyword,
       page: 0,
-      size: 6, // size를 2로 맞춰줍니다
+      size: PAGE_SIZE,
     });
     // eslint-disable-next-line
   }, [sortOption, searchField, searchKeyword]);
@@ -104,7 +105,7 @@ const FreeBoardPage = () => {
       field: searchField,
       keyword: searchKeyword,
       page,
-      size: 2, // size를 2로 맞춰줍니다
+      size: PAGE_SIZE,
     });
     // eslint-disable-next-line
   }, [page]);
