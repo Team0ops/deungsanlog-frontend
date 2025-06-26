@@ -1,27 +1,46 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, Pagination } from "@mui/material";
-import { getUserInfo } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardMyHeader from "widgets/community/board/FreeBoardMyHeader";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const FreeBoardMyPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [userId, setUserId] = useState(null);
+  const [userId] = useState(11); // userId 하드코딩
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTargetPost, setDeleteTargetPost] = useState(null);
 
   const size = 6;
 
-  useEffect(() => {
-    const userInfo = getUserInfo();
-    if (userInfo?.userId) {
-      setUserId(userInfo.userId);
-    } else {
-      setUserId(null);
+  // 게시글 수정 핸들러
+  const handleEdit = (post) => {
+    window.location.href = `/community/free/edit/${post.id}`;
+  };
+
+  // 게시글 삭제 핸들러
+  const handleDelete = (post) => {
+    setDeleteTargetPost(post);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetPost) return;
+    try {
+      await axiosInstance.delete(
+        `/community-service/posts/${deleteTargetPost.id}`
+      );
+      setPosts((prev) => prev.filter((p) => p.id !== deleteTargetPost.id));
+    } catch {
+      alert("삭제에 실패했습니다.");
+    } finally {
+      setShowDeleteModal(false);
+      setDeleteTargetPost(null);
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (!userId) return;
@@ -97,7 +116,12 @@ const FreeBoardMyPage = () => {
                     marginBottom: idx !== posts.length - 1 ? "1.2rem" : 0,
                   }}
                 >
-                  <FeedCard post={post} myUserId={userId} />
+                  <FeedCard
+                    post={post}
+                    myUserId={userId}
+                    onEdit={() => handleEdit(post)}
+                    onDelete={() => handleDelete(post)}
+                  />
                 </div>
               ))}
         </Box>
@@ -137,6 +161,20 @@ const FreeBoardMyPage = () => {
           />
         </Box>
       </div>
+      {/* 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        message={
+          "게시글을 삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?"
+        }
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setDeleteTargetPost(null);
+        }}
+        onConfirm={confirmDelete}
+        cancelText="취소"
+        confirmText="삭제"
+      />
     </div>
   );
 };
