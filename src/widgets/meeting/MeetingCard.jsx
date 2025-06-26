@@ -110,10 +110,10 @@ const MeetingCard = ({ meeting }) => {
       <Box minWidth={110} textAlign="center">
         <Typography variant="body2" color="text.secondary">
           인원: {memberCount !== null ? memberCount : "…"}/
-          {meeting.max_participants}명
+          {meeting.maxParticipants}명
         </Typography>
         <Typography variant="body2" color="text.secondary" noWrap>
-          {meeting.gather_location}
+          {meeting.gatherLocation}
         </Typography>
       </Box>
     </Box>
