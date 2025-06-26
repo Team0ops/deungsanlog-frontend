@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const years = Array.from(
-  { length: 100 },
-  (_, i) => new Date().getFullYear() - i
-);
+const years = [2025, 2026]; // 년도 2025, 2026만 선택 가능
 const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
 function getDays(year, month) {
