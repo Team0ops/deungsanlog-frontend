@@ -6,6 +6,7 @@ import FreeBoardSearchSection from "widgets/community/board/FreeBoardSearchSecti
 import { getUserInfo } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
 import { Pagination } from "@mui/material";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const PAGE_SIZE = 6;
 
@@ -18,6 +19,8 @@ const FreeBoardPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTargetPost, setDeleteTargetPost] = useState(null);
   const navigate = useNavigate();
   const cardAreaRef = useRef(null);
 
@@ -37,14 +40,23 @@ const FreeBoardPage = () => {
   };
 
   // 게시글 삭제 핸들러
-  const handleDelete = async (post) => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
-      try {
-        await axiosInstance.delete(`/community-service/posts/${post.id}`);
-        setPosts((prev) => prev.filter((p) => p.id !== post.id));
-      } catch {
-        alert("삭제에 실패했습니다.");
-      }
+  const handleDelete = (post) => {
+    setDeleteTargetPost(post);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetPost) return;
+    try {
+      await axiosInstance.delete(
+        `/community-service/posts/${deleteTargetPost.id}`
+      );
+      setPosts((prev) => prev.filter((p) => p.id !== deleteTargetPost.id));
+    } catch {
+      alert("삭제에 실패했습니다.");
+    } finally {
+      setShowDeleteModal(false);
+      setDeleteTargetPost(null);
     }
   };
 
@@ -292,6 +304,19 @@ const FreeBoardPage = () => {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        message={
+          "게시글을 삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?"
+        }
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setDeleteTargetPost(null);
+        }}
+        onConfirm={confirmDelete}
+        cancelText="취소"
+        confirmText="삭제"
+      />
     </div>
   );
 };

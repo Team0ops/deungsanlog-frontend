@@ -13,6 +13,7 @@ import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import HeartIconN from "shared/assets/icons/heart_n.svg";
 import HeartIconY from "shared/assets/icons/heart_y.svg";
 import CommentIcon from "shared/assets/icons/Comment.svg";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const PostDetailPage = ({ onLike }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -28,6 +29,7 @@ const PostDetailPage = ({ onLike }) => {
   const [comments, setComments] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [likePressed, setLikePressed] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // 로그인 여부만 체크해서 userId만 저장
   useEffect(() => {
@@ -137,7 +139,10 @@ const PostDetailPage = ({ onLike }) => {
 
   // 게시글 삭제
   const handleDeletePost = async () => {
-    if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeletePost = async () => {
     try {
       await axiosInstance.delete(`/community-service/posts/${postId}`);
       alert("게시글이 삭제되었습니다.");
@@ -145,6 +150,8 @@ const PostDetailPage = ({ onLike }) => {
     } catch (err) {
       console.error(err);
       alert("게시글 삭제에 실패했습니다.");
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
@@ -209,6 +216,7 @@ const PostDetailPage = ({ onLike }) => {
             <button
               onClick={handleMenuOpen}
               style={{
+                outline: "none",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
@@ -545,6 +553,16 @@ const PostDetailPage = ({ onLike }) => {
         userId={userId}
         postUserId={post.userId}
         onCommentsChanged={handleCommentsChanged}
+      />
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        message={
+          "게시글을 삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?"
+        }
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={confirmDeletePost}
+        cancelText="취소"
+        confirmText="삭제"
       />
     </div>
   );
