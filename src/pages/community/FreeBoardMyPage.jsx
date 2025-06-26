@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, Typography, Pagination } from "@mui/material";
 import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
+import FreeBoardMyHeader from "widgets/community/board/FreeBoardMyHeader";
 
 const FreeBoardMyPage = () => {
   const [posts, setPosts] = useState([]);
@@ -11,7 +12,7 @@ const FreeBoardMyPage = () => {
 
   // userId 하드코딩 (임시)
   const userId = 11;
-  const size = 4;
+  const size = 3;
 
   useEffect(() => {
     setLoading(true);
@@ -20,97 +21,113 @@ const FreeBoardMyPage = () => {
         params: { page, size },
       })
       .then((res) => {
-        setPosts(res.data.posts); // posts 배열로 변경
-        setTotalPages(res.data.totalPages); // totalPages 반영
+        setPosts(res.data.posts);
+        setTotalPages(res.data.totalPages);
       })
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
   }, [page]);
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        maxWidth: "600px",
-        margin: "0 auto",
-        padding: "2rem 1rem",
-        background: "#f9f9f9",
-        borderRadius: "18px",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
-        minHeight: "60vh",
+    <div
+      style={{
+        minWidth: "90%",
+        maxWidth: "100%",
+        minHeight: "40vh",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        backgroundColor: "transparent",
+        borderRadius: "20px",
+        padding: "clamp(1rem, 4vw, 1.5rem)",
+        position: "relative",
+        height: "calc(100vh - 40px)",
       }}
     >
-      <Typography variant="h5" fontWeight={700} mb={2} color="#356849">
-        나의 커뮤니티 활동
-      </Typography>
-      <Typography variant="body1" color="#666" mb={4}>
-        내가 작성한 게시글, 댓글, 좋아요 등 커뮤니티 활동 내역을 한눈에 볼 수
-        있습니다.
-      </Typography>
-      <Box
-        sx={{
+      <div
+        style={{
           width: "100%",
-          minHeight: "200px",
-          background: "#fff",
-          borderRadius: "12px",
-          boxShadow: "0 1px 6px rgba(76,117,89,0.07)",
+          maxWidth: "1000px",
+          margin: "0 auto",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: posts.length === 0 ? "center" : "flex-start",
-          color: "#aaa",
-          fontSize: "1.1rem",
-          p: 2,
-          gap: 2,
+          gap: "1.2rem",
+          height: "100%",
+          position: "relative",
         }}
       >
-        {loading
-          ? "불러오는 중..."
-          : posts.length === 0
-          ? "작성한 게시글이 없습니다."
-          : posts.map((post) => (
-              <FeedCard key={post.id} post={post} myUserId={userId} />
-            ))}
-      </Box>
-      {/* 페이지네이션 버튼 */}
-      <Box display="flex" justifyContent="center" mt={4}>
-        <Pagination
-          count={totalPages}
-          page={page + 1}
-          onChange={(_, value) => setPage(value - 1)}
-          color="primary"
-          shape="rounded"
-          size="large"
-          siblingCount={1}
-          boundaryCount={1}
-          showFirstButton
-          showLastButton
+        {/* 헤더 추가 */}
+        <FreeBoardMyHeader />
+        <Box
           sx={{
-            "& .MuiPaginationItem-root": {
-              color: "#356849",
-              fontWeight: 600,
-              borderRadius: "24px !important",
-              outline: "none",
-            },
-            "& .Mui-selected": {
-              backgroundColor: "#bfccb185 !important",
-              color: "#143622 !important",
-              border: "none",
-              borderRadius: "24px !important",
-              outline: "none",
-            },
-            "& .MuiPaginationItem-root:hover": {
-              backgroundColor: "#b5b9ae1c",
-              borderRadius: "24px !important",
-              outline: "none",
-            },
+            width: "100%",
+            minHeight: "200px",
+            background: "transparent",
+            borderRadius: "14px",
+            boxShadow: "none",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: posts.length === 0 ? "center" : "flex-start",
+            color: "#aaa",
+            fontSize: "1.1rem",
+            p: 3,
+            overflowY: "auto",
+            maxHeight: "calc(100vh - 180px)",
           }}
-        />
-      </Box>
-    </Box>
+        >
+          {loading
+            ? "불러오는 중..."
+            : posts.length === 0
+            ? "작성한 게시글이 없습니다."
+            : posts.map((post, idx) => (
+                <div
+                  key={post.id}
+                  style={{
+                    width: "100%",
+                    marginBottom: idx !== posts.length - 1 ? "1.2rem" : 0,
+                  }}
+                >
+                  <FeedCard post={post} myUserId={userId} />
+                </div>
+              ))}
+        </Box>
+        {/* 페이지네이션 버튼 */}
+        <Box display="flex" justifyContent="center" mt={2}>
+          <Pagination
+            count={totalPages}
+            page={page + 1}
+            onChange={(_, value) => setPage(value - 1)}
+            color="primary"
+            shape="rounded"
+            size="large"
+            siblingCount={1}
+            boundaryCount={1}
+            showFirstButton
+            showLastButton
+            sx={{
+              "& .MuiPaginationItem-root": {
+                color: "#356849",
+                fontWeight: 600,
+                borderRadius: "24px !important",
+                outline: "none",
+              },
+              "& .Mui-selected": {
+                backgroundColor: "#bfccb185 !important",
+                color: "#143622 !important",
+                border: "none",
+                borderRadius: "24px !important",
+                outline: "none",
+              },
+              "& .MuiPaginationItem-root:hover": {
+                backgroundColor: "#b5b9ae1c",
+                borderRadius: "24px !important",
+                outline: "none",
+              },
+            }}
+          />
+        </Box>
+      </div>
+    </div>
   );
 };
 
