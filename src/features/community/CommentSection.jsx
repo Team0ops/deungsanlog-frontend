@@ -3,6 +3,7 @@ import axiosInstance from "shared/lib/axiosInstance";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [comments, setComments] = useState([]);
@@ -10,6 +11,8 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [replyOpenMap, setReplyOpenMap] = useState({});
   const [replyInputMap, setReplyInputMap] = useState({});
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   // 댓글 목록 새로고침 함수
   const fetchComments = () => {
@@ -154,7 +157,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                       >
                         <button
                           onClick={() => {
-                            handleDelete(c.id);
+                            handleDeleteClick(c.id);
                             setMenuOpenId(null);
                           }}
                           style={{
@@ -274,18 +277,26 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
       });
   };
 
-  // 댓글 삭제
-  const handleDelete = async (commentId) => {
-    if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
-    try {
-      await axiosInstance.delete(`/community-service/comments/${commentId}`);
-      fetchComments();
-      onCommentsChanged?.(); // 댓글 개수 새로고침
-    } catch {
-      alert("댓글 삭제 실패");
-    }
+  const handleDeleteClick = (commentId) => {
+    setDeleteTargetId(commentId);
+    setShowConfirmModal(true);
   };
 
+  const handleDeleteConfirm = async () => {
+    try {
+      await axiosInstance.delete(
+        `/community-service/comments/${deleteTargetId}`
+      );
+      fetchComments();
+      onCommentsChanged?.();
+    } catch {
+      alert("댓글 삭제 실패");
+    } finally {
+      setShowConfirmModal(false);
+      setDeleteTargetId(null);
+      setMenuOpenId(null);
+    }
+  };
   const handleMenuClick = (commentId) => {
     setMenuOpenId(menuOpenId === commentId ? null : commentId);
   };
@@ -371,6 +382,20 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
           등록
         </GreenButton>
       </form>
+
+      {/* ConfirmModal 적용 */}
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        message={"삭제한 댓글은 복구되지 않습니다.\n댓글을 삭제하시겠습니까?"}
+        onCancel={() => {
+          setShowConfirmModal(false);
+          setDeleteTargetId(null);
+          setMenuOpenId(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        cancelText="취소"
+        confirmText="삭제"
+      />
     </>
   );
 };
