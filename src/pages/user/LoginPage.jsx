@@ -25,25 +25,26 @@ const LoginPage = () => {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [navigate]);
-
+  
   const handleGoogleLogin = () => {
     setLoading(true);
     setLoadingProvider("google");
-    window.location.href = `${BASE_URL}/auth/google`;
+    window.location.href = `/auth/google`;  // ⭐ BASE_URL 제거
   };
 
   const handleNaverLogin = () => {
     setLoading(true);
     setLoadingProvider("naver");
-    window.location.href = `${BASE_URL}/auth/naver`;
+    window.location.href = `/auth/naver`;   // ⭐ BASE_URL 제거
   };
 
   // 🔥 카카오 로그인 핸들러 추가
   const handleKakaoLogin = () => {
     setLoading(true);
     setLoadingProvider("kakao");
-    window.location.href = `${BASE_URL}/auth/kakao`;
+    window.location.href = `/auth/kakao`;   // ⭐ BASE_URL 제거
   };
+
 
   return (
     <div
