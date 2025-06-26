@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, Pagination } from "@mui/material";
+import { getUserInfo } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardMyHeader from "widgets/community/board/FreeBoardMyHeader";
@@ -9,12 +10,21 @@ const FreeBoardMyPage = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [userId, setUserId] = useState(null);
 
-  // userId 하드코딩 (임시)
-  const userId = 11;
-  const size = 3;
+  const size = 6;
 
   useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      setUserId(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
     setLoading(true);
     axiosInstance
       .get(`/community-service/posts/user/${userId}`, {
@@ -26,7 +36,7 @@ const FreeBoardMyPage = () => {
       })
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, userId]);
 
   return (
     <div
