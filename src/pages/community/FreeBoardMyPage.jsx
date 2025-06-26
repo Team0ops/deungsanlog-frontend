@@ -4,17 +4,29 @@ import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardMyHeader from "widgets/community/board/FreeBoardMyHeader";
 import ConfirmModal from "widgets/Modal/ConfirmModal";
+import { getUserInfo } from "shared/lib/auth";
 
 const FreeBoardMyPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [userId] = useState(11); // userId 하드코딩
+  const [userId, setUserId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetPost, setDeleteTargetPost] = useState(null);
+  const [sortOption, setSortOption] = useState("latest");
 
   const size = 6;
+
+  // 로그인 정보 가져오기
+  useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo?.userId) {
+      setUserId(userInfo.userId);
+    } else {
+      setUserId(null);
+    }
+  }, []);
 
   // 게시글 수정 핸들러
   const handleEdit = (post) => {
@@ -57,6 +69,20 @@ const FreeBoardMyPage = () => {
       .finally(() => setLoading(false));
   }, [page, userId]);
 
+  // 프론트에서 정렬
+  const getSortedPosts = () => {
+    if (!posts) return [];
+    let sorted = [...posts];
+    if (sortOption === "latest") {
+      sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (sortOption === "oldest") {
+      sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (sortOption === "popular") {
+      sorted.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
+    }
+    return sorted;
+  };
+
   return (
     <div
       style={{
@@ -84,8 +110,11 @@ const FreeBoardMyPage = () => {
           position: "relative",
         }}
       >
-        {/* 헤더 추가 */}
-        <FreeBoardMyHeader />
+        {/* 헤더에 sortOption, setSortOption 전달 */}
+        <FreeBoardMyHeader
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+        />
         <Box
           sx={{
             width: "100%",
@@ -106,9 +135,9 @@ const FreeBoardMyPage = () => {
         >
           {loading
             ? "불러오는 중..."
-            : posts.length === 0
+            : getSortedPosts().length === 0
             ? "작성한 게시글이 없습니다."
-            : posts.map((post, idx) => (
+            : getSortedPosts().map((post, idx) => (
                 <div
                   key={post.id}
                   style={{
