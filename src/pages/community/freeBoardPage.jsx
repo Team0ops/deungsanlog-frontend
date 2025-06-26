@@ -5,6 +5,7 @@ import FreeBoardHeader from "widgets/community/board/FreeBoardHeader";
 import FreeBoardSearchSection from "widgets/community/board/FreeBoardSearchSection";
 import { getUserInfo } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
+import { Pagination } from "@mui/material";
 
 const FreeBoardPage = () => {
   const [userId, setUserId] = useState(null);
@@ -13,6 +14,8 @@ const FreeBoardPage = () => {
   const [sortOption, setSortOption] = useState("latest");
   const [searchField, setSearchField] = useState("all");
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
   const cardAreaRef = useRef(null);
 
@@ -49,22 +52,21 @@ const FreeBoardPage = () => {
     field = searchField,
     keyword = searchKeyword,
     page = 0,
-    size = 10,
+    size = 6,
   } = {}) => {
     setLoading(true);
     try {
       const res = await axiosInstance.get("/community-service/posts/search", {
-        params: {
-          sort,
-          field,
-          keyword,
-          page,
-          size,
-        },
+        params: { sort, field, keyword, page, size },
       });
-      setPosts(res.data);
+      // 응답이 없거나 posts가 undefined/null이면 빈 배열로 처리
+      setPosts(Array.isArray(res.data?.posts) ? res.data.posts : []);
+      setTotalPages(
+        typeof res.data?.totalPages === "number" ? res.data.totalPages : 0
+      );
     } catch {
       setPosts([]);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
@@ -77,22 +79,35 @@ const FreeBoardPage = () => {
       field: searchField,
       keyword: searchKeyword,
       page: 0,
-      size: 10,
+      size: 2, // size를 2로 맞춰줍니다
     });
     // eslint-disable-next-line
   }, []);
 
-  // 1. useEffect로 sortOption, searchField, searchKeyword가 바뀔 때마다 자동 검색
+  // 1. 정렬/검색 조건이 바뀔 때마다 자동 검색 (page도 0으로 초기화)
   useEffect(() => {
+    setPage(0); // 페이지도 0으로 초기화
     handleSearch({
       sort: sortOption,
       field: searchField,
       keyword: searchKeyword,
       page: 0,
-      size: 10,
+      size: 6, // size를 2로 맞춰줍니다
     });
     // eslint-disable-next-line
   }, [sortOption, searchField, searchKeyword]);
+
+  // 2. 페이지가 변경될 때마다 자동 검색
+  useEffect(() => {
+    handleSearch({
+      sort: sortOption,
+      field: searchField,
+      keyword: searchKeyword,
+      page,
+      size: 2, // size를 2로 맞춰줍니다
+    });
+    // eslint-disable-next-line
+  }, [page]);
 
   return (
     <div
@@ -232,6 +247,47 @@ const FreeBoardPage = () => {
                 />
               ))
             )}
+            {/* 페이지네이션 버튼 */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "2rem",
+              }}
+            >
+              <Pagination
+                count={totalPages}
+                page={page + 1}
+                onChange={(_, value) => setPage(value - 1)}
+                color="primary"
+                shape="rounded"
+                size="large"
+                siblingCount={1}
+                boundaryCount={1}
+                showFirstButton
+                showLastButton
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    color: "#356849",
+                    fontWeight: 600,
+                    borderRadius: "24px !important",
+                    outline: "none",
+                  },
+                  "& .Mui-selected": {
+                    backgroundColor: "#bfccb185 !important",
+                    color: "#143622 !important",
+                    border: "none",
+                    borderRadius: "24px !important",
+                    outline: "none",
+                  },
+                  "& .MuiPaginationItem-root:hover": {
+                    backgroundColor: "#b5b9ae1c",
+                    borderRadius: "24px !important",
+                    outline: "none",
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
