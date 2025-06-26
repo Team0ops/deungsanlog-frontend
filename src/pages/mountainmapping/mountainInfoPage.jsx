@@ -76,12 +76,10 @@ const MountainInfoPage = () => {
   const fetchAllMountains = async () => {
     try {
       const response = await axiosInstance.get("/mountain-service/all");
-      const data = Array.isArray(response.data)
-        ? response.data
-        : response.data.data;
+      const data = response.data;
 
-      console.log("📍 가져온 산 데이터:", data?.length, "개");
-      setMountains(data || []);
+      console.log("📍 가져온 산 데이터:", data.length, "개");
+      setMountains(data);
     } catch (error) {
       console.error("산 데이터 조회 오류:", error);
     }
@@ -164,7 +162,7 @@ const MountainInfoPage = () => {
           <div style={legendItemsStyle}>
             <div style={legendItemStyle}>
               <img
-                src="/src/shared/assets/images/mountain-high.png"
+                src="/images/mountain-high.png"
                 alt="고산"
                 style={legendIconStyle}
               />
@@ -172,7 +170,7 @@ const MountainInfoPage = () => {
             </div>
             <div style={legendItemStyle}>
               <img
-                src="/src/shared/assets/images/mountain-medium.png"
+                src="/images/mountain-medium.png"
                 alt="중산"
                 style={legendIconStyle}
               />
@@ -180,7 +178,7 @@ const MountainInfoPage = () => {
             </div>
             <div style={legendItemStyle}>
               <img
-                src="/src/shared/assets/images/mountain-small.png"
+                src="/images/mountain-small.png"
                 alt="저산"
                 style={legendIconStyle}
               />

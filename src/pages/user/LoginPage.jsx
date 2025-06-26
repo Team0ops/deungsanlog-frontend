@@ -29,20 +29,20 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     setLoading(true);
     setLoadingProvider("google");
-    window.location.href = `/auth/google`;  // ⭐ BASE_URL 제거
+    window.location.href = "https://deungsanlog.site/auth/google"; 
   };
 
   const handleNaverLogin = () => {
     setLoading(true);
     setLoadingProvider("naver");
-    window.location.href = `/auth/naver`;   // ⭐ BASE_URL 제거
+    window.location.href = "https://deungsanlog.site/auth/naver";     // ⭐ BASE_URL 제거
   };
 
   // 🔥 카카오 로그인 핸들러 추가
   const handleKakaoLogin = () => {
     setLoading(true);
     setLoadingProvider("kakao");
-    window.location.href = `/auth/kakao`;   // ⭐ BASE_URL 제거
+    window.location.href = "https://deungsanlog.site/auth/kakao";   // ⭐ BASE_URL 제거
   };
 
 
