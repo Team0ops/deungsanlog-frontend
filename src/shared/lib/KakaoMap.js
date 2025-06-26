@@ -92,17 +92,17 @@ export function createMountainMarkerImage(elevation) {
 
   if (elevation >= 1500) {
     // 고산 (1500m 이상) - 큰 산 마커
-    imageSrc = '/src/shared/assets/images/mountain-high.png';
+    imageSrc = '/images/mountain-high.png';
     imageSize = new window.kakao.maps.Size(40, 40);
     imageOption = { offset: new window.kakao.maps.Point(20, 40) };
   } else if (elevation >= 800) {
     // 중산 (800m ~ 1500m) - 중간 산 마커  
-    imageSrc = '/src/shared/assets/images/mountain-medium.png';
+    imageSrc = '/images/mountain-medium.png';
     imageSize = new window.kakao.maps.Size(32, 32);
     imageOption = { offset: new window.kakao.maps.Point(16, 32) };
   } else {
     // 저산 (800m 미만) - 작은 산 마커
-    imageSrc = '/src/shared/assets/images/mountain-small.png';
+    imageSrc = '/images/mountain-small.png';
     imageSize = new window.kakao.maps.Size(24, 24);
     imageOption = { offset: new window.kakao.maps.Point(12, 24) };
   }

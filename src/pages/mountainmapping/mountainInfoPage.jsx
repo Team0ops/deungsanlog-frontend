@@ -159,15 +159,15 @@ const MountainInfoPage = () => {
           <h4 style={legendTitleStyle}>🏔️ 산 고도별 구분</h4>
           <div style={legendItemsStyle}>
             <div style={legendItemStyle}>
-              <img src="/src/shared/assets/images/mountain-high.png" alt="고산" style={legendIconStyle} />
+              <img src="/images/mountain-high.png" alt="고산" style={legendIconStyle} />
               <span>고산 (1500m 이상)</span>
             </div>
             <div style={legendItemStyle}>
-              <img src="/src/shared/assets/images/mountain-medium.png" alt="중산" style={legendIconStyle} />
+              <img src="/images/mountain-medium.png" alt="중산" style={legendIconStyle} />
               <span>중산 (800m ~ 1500m)</span>
             </div>
             <div style={legendItemStyle}>
-              <img src="/src/shared/assets/images/mountain-small.png" alt="저산" style={legendIconStyle} />
+              <img src="/images/mountain-small.png" alt="저산" style={legendIconStyle} />
               <span>저산 (800m 미만)</span>
             </div>
           </div>
