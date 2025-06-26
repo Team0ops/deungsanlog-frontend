@@ -277,7 +277,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
 
   return (
     <>
-      <div style={{ marginBottom: "1.2rem" }}>
+      <div style={{ marginBottom: "1.2rem", minHeight: "300px" }}>
         {/* 항상 구분선 표시 */}
         <div
           style={{
@@ -293,9 +293,15 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
               style={{
                 color: "#888",
                 textAlign: "center",
-                marginTop: "1.2rem",
+                marginTop: 0,
                 fontSize: "1rem",
                 lineHeight: 1.6,
+                minHeight: "220px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
               }}
             >
               🐿️ 아직 댓글이 없어요! <br />첫 도토리를 남겨볼까요? 🌰
@@ -322,7 +328,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
           placeholder="댓글로 마음을 나눠보세요!"
           style={{
             fontSize: "1.05rem",
-            flex: 1, // 👈 핵심
+            flex: 1,
             marginBottom: 0,
           }}
           maxLength={200}
