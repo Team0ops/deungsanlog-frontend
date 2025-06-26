@@ -127,6 +127,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                     <button
                       onClick={() => handleMenuClick(c.id)}
                       style={{
+                        outline: "none",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
@@ -158,13 +159,17 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                           }}
                           style={{
                             background: "none",
+                            fontSize: "1rem",
+                            outline: "none",
                             border: "none",
-                            color: "#e74c3c",
-                            fontWeight: 600,
+                            color: "#961c1c",
+                            fontWeight: 500,
                             padding: "0.7rem 1.2rem",
                             cursor: "pointer",
-                            width: "100%",
+                            width: "auto", // ← 수정: 100% → auto
                             textAlign: "left",
+                            whiteSpace: "nowrap", // ← 추가: 한 줄로 표시
+                            minWidth: "56px", // ← 추가: 너무 좁아지지 않게
                           }}
                         >
                           삭제
@@ -193,9 +198,10 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                 <button
                   onClick={() => toggleReplyInput(c.id)}
                   style={{
+                    outline: "none",
                     background: "none",
                     border: "none",
-                    color: "#27ae60",
+                    color: "#345e45",
                     fontSize: "0.85rem",
                     cursor: "pointer",
                   }}
@@ -213,10 +219,10 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                   marginTop: "0.6rem",
                   display: "flex",
                   gap: "0.5rem",
+                  width: "100%",
                 }}
               >
-                <input
-                  type="text"
+                <GreenInput
                   value={replyInputMap[c.id] || ""}
                   onChange={(e) =>
                     setReplyInputMap((prev) => ({
@@ -226,29 +232,38 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                   }
                   placeholder="대댓글을 입력하세요"
                   style={{
+                    fontSize: "1.05rem",
                     flex: 1,
-                    border: "1px solid #ccc",
-                    borderRadius: "6px",
-                    padding: "0.6rem",
-                    fontSize: "0.95rem",
-                    outline: "none",
+                    marginBottom: 0,
+                    background: "#fff",
+                    border: "1.5px solid #e0e0e0",
+                    transition: "border 0.2s",
+                    boxShadow: "none",
                   }}
+                  maxLength={200}
+                  onFocus={(e) =>
+                    (e.target.style.border = "1.5px solid #98ceae")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.border = "1.5px solid #e0e0e0")
+                  }
                 />
-                <button
+                <GreenButton
                   type="submit"
                   style={{
-                    background: "#27ae60",
-                    color: "#fff",
+                    padding: "0.7rem 1.5rem",
+                    fontWeight: 500,
+                    fontSize: "1.05rem",
+                    borderRadius: "8px",
+                    whiteSpace: "nowrap",
+                    background: "#688574",
+                    color: "#ffffff",
                     border: "none",
-                    borderRadius: "6px",
-                    padding: "0.6rem 1rem",
-                    fontWeight: 600,
-                    fontSize: "0.95rem",
-                    cursor: "pointer",
+                    boxShadow: "none",
                   }}
                 >
                   등록
-                </button>
+                </GreenButton>
               </form>
             )}
 
@@ -330,17 +345,27 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
             fontSize: "1.05rem",
             flex: 1,
             marginBottom: 0,
+            background: "#fff",
+            border: "1.5px solid #e0e0e0",
+            transition: "border 0.2s",
+            boxShadow: "none",
           }}
           maxLength={200}
+          onFocus={(e) => (e.target.style.border = "1.5px solid #98ceae")}
+          onBlur={(e) => (e.target.style.border = "1.5px solid #e0e0e0")}
         />
         <GreenButton
           type="submit"
           style={{
             padding: "0.7rem 1.5rem",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: "1.05rem",
             borderRadius: "8px",
             whiteSpace: "nowrap",
+            background: "#688574",
+            color: "#ffffff",
+            border: "none",
+            boxShadow: "none",
           }}
         >
           등록
