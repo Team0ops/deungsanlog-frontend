@@ -266,9 +266,22 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
   return (
     <div style={popupOverlayStyle}>
       <div style={popupContentStyle}>
-        <button onClick={onClose} style={closeButtonStyle}>
+        <button
+          onClick={onClose}
+          style={closeButtonStyle}
+          onMouseOver={(e) => {
+            e.target.style.border = "2px solid #d1d5db";
+            e.target.style.color = "#333333";
+            e.target.style.backgroundColor = "#e4e4e4ac";
+          }}
+          onMouseOut={(e) => {
+            e.target.style.border = "1px solid #e8eaed";
+          }}
+        >
           ✕
         </button>
+
+        <h2 style={mountainNameStyle}>{mountain.name}</h2>
 
         <div style={imageContainerStyle}>
           {mountain.thumbnailImgUrl ? (
@@ -295,27 +308,14 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
         </div>
 
         <div style={infoContainerStyle}>
-          <h2 style={mountainNameStyle}>
-            {gradeInfo.icon} {mountain.name}
-          </h2>
-
-          {/* ✅ 고도별 등급 표시 */}
-          <div style={{ ...gradeTagStyle, backgroundColor: gradeInfo.color }}>
-            {gradeInfo.type} - {mountain.elevation}m
-          </div>
-
           <div style={detailsStyle}>
             <div style={detailItemStyle}>
-              <span style={labelStyle}>📍 위치:</span>
+              <span style={labelStyle}>📍 소재지 :</span>
               <span style={valueStyle}>{mountain.location}</span>
             </div>
             <div style={detailItemStyle}>
-              <span style={labelStyle}>⛰️ 높이:</span>
+              <span style={labelStyle}>⛰️ 해발고도:</span>
               <span style={valueStyle}>{mountain.elevation}m</span>
-            </div>
-            <div style={detailItemStyle}>
-              <span style={labelStyle}>🏔️ 등급:</span>
-              <span style={valueStyle}>{gradeInfo.description}</span>
             </div>
           </div>
 
@@ -327,14 +327,20 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
                 )}`)
               }
               style={detailButtonStyle}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = "#649177";
+                e.target.style.color = "white";
+                e.target.style.outline = "2px solid #649177";
+                e.target.style.boxShadow = "0 4px 12px rgba(100,145,119,0.3)";
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = "#f3f7f4";
+                e.target.style.color = "#1f1f1f";
+                e.target.style.outline = "2px solid #649177";
+                e.target.style.boxShadow = "0 2px 8px rgba(67,226,125,0.15)";
+              }}
             >
-              🔍 상세보기
-            </button>
-            <button
-              onClick={() => (window.location.href = "/log/write")}
-              style={recordButtonStyle}
-            >
-              📝 등산기록
+              상세 페이지 이동
             </button>
           </div>
         </div>
@@ -397,17 +403,6 @@ const mapGuideStyle = {
   fontStyle: "italic",
 };
 
-const gradeTagStyle = {
-  display: "inline-block",
-  padding: "clamp(0.2rem, 0.5vw, 0.3rem) clamp(0.6rem, 1.2vw, 0.8rem)",
-  borderRadius: "clamp(0.8rem, 1.5vw, 1rem)",
-  color: "white",
-  fontSize: "clamp(0.7rem, 1.3vw, 0.8rem)",
-  fontWeight: "bold",
-  textAlign: "center",
-  marginBottom: "clamp(0.4rem, 0.8vw, 0.5rem)",
-};
-
 // 기존 팝업 스타일들...
 const popupOverlayStyle = {
   position: "fixed",
@@ -428,27 +423,52 @@ const popupContentStyle = {
   padding: "clamp(1rem, 2.5vw, 1.5rem)",
   maxWidth: "clamp(18rem, 50vw, 25rem)",
   width: "clamp(16rem, 90vw, 22rem)",
-  maxHeight: "80vh",
+  maxHeight: "85vh",
   overflow: "auto",
   position: "relative",
   boxShadow: "0 0.25rem 1.25rem rgba(0, 0, 0, 0.15)",
   zIndex: 10000,
+  // 스크롤바 스타일링
+  scrollbarWidth: "thin",
+  scrollbarColor: "#c1c1c1 #f1f1f1",
+  // Webkit 브라우저용 스크롤바 스타일
+  "&::-webkit-scrollbar": {
+    width: "8px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: "#f1f1f1",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: "#c1c1c1",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: "#a8a8a8",
+  },
 };
 
 const closeButtonStyle = {
   position: "absolute",
   top: "clamp(0.8rem, 1.5vw, 1rem)",
   right: "clamp(0.8rem, 1.5vw, 1rem)",
-  background: "none",
-  border: "none",
+  background: "rgba(255, 255, 255, 0.9)",
+  border: "1px solid #e8eaed",
+  borderRadius: "50%",
   fontSize: "clamp(1.2rem, 2.5vw, 1.5rem)",
   cursor: "pointer",
-  color: "#666",
-  width: "clamp(1.5rem, 3vw, 2rem)",
-  height: "clamp(1.5rem, 3vw, 2rem)",
+  color: "#5f6368",
+  width: "clamp(2rem, 3.5vw, 2.5rem)",
+  height: "clamp(2rem, 3.5vw, 2.5rem)",
+  minWidth: "clamp(2rem, 3.5vw, 2.5rem)",
+  minHeight: "clamp(2rem, 3.5vw, 2.5rem)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  transition: "all 0.2s ease",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  boxSizing: "border-box",
+  padding: 0,
 };
 
 const imageContainerStyle = {
@@ -488,6 +508,7 @@ const mountainNameStyle = {
   color: "#2c3e50",
   margin: 0,
   lineHeight: 1.2,
+  marginBottom: "clamp(1rem, 2vw, 1.5rem)",
 };
 
 const detailsStyle = {
@@ -499,7 +520,7 @@ const detailsStyle = {
 const detailItemStyle = {
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center",
+  alignItems: "flex-start",
   padding: "clamp(0.5rem, 1vw, 0.6rem) clamp(0.6rem, 1.2vw, 0.8rem)",
   backgroundColor: "#f8f9fa",
   borderRadius: "clamp(0.2rem, 0.5vw, 0.3rem)",
@@ -509,6 +530,7 @@ const labelStyle = {
   fontWeight: "600",
   color: "#495057",
   fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
+  whiteSpace: "nowrap",
 };
 
 const valueStyle = {
@@ -525,28 +547,17 @@ const actionButtonsStyle = {
 
 const detailButtonStyle = {
   flex: 1,
-  padding: "clamp(0.6rem, 1.2vw, 0.8rem) clamp(0.8rem, 1.5vw, 1rem)",
-  backgroundColor: "#007bff",
-  color: "white",
+  padding: "clamp(0.7rem, 1.3vw, 0.9rem) clamp(1rem, 1.8vw, 1.2rem)",
+  backgroundColor: "#f3f7f4",
+  color: "#1f1f1f",
   border: "none",
-  borderRadius: "clamp(0.3rem, 0.8vw, 0.5rem)",
+  outline: "2px solid #649177",
+  borderRadius: "clamp(0.5rem, 1vw, 0.7rem)",
   cursor: "pointer",
   fontWeight: "600",
-  fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
-  transition: "all 0.3s ease",
-};
-
-const recordButtonStyle = {
-  flex: 1,
-  padding: "clamp(0.6rem, 1.2vw, 0.8rem) clamp(0.8rem, 1.5vw, 1rem)",
-  backgroundColor: "#28a745",
-  color: "white",
-  border: "none",
-  borderRadius: "clamp(0.3rem, 0.8vw, 0.5rem)",
-  cursor: "pointer",
-  fontWeight: "600",
-  fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
-  transition: "all 0.3s ease",
+  fontSize: "clamp(0.85rem, 1.5vw, 0.95rem)",
+  transition: "all 0.2s ease",
+  boxShadow: "0 2px 8px rgba(67,226,125,0.15)",
 };
 
 export default MountainInfoPage;
