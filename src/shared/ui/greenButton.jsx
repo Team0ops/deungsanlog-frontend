@@ -23,6 +23,9 @@ const GreenButton = ({
         transition: "all 0.3s ease",
         whiteSpace: "nowrap",
         minWidth: "3.5em",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         ...style,
       }}
       onMouseEnter={(e) => {

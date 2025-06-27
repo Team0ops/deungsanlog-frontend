@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import GreenButton from "shared/ui/GreenButton";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +16,8 @@ const messages = [
 
 const FreeBoardMyHeader = ({ sortOption, setSortOption }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
   return (
@@ -23,8 +25,8 @@ const FreeBoardMyHeader = ({ sortOption, setSortOption }) => {
       width="100%"
       maxWidth="1000px"
       mx="auto"
-      mt={4}
-      px={2}
+      mt={{ xs: 2, md: 4 }}
+      px={{ xs: 1, md: 2 }}
       display="flex"
       justifyContent="center"
       alignItems="center"
@@ -32,53 +34,55 @@ const FreeBoardMyHeader = ({ sortOption, setSortOption }) => {
       <Box
         width="100%"
         display="flex"
-        flexDirection="row"
-        gap={3}
+        flexDirection={{ xs: "column", md: "row" }}
+        gap={{ xs: 2, md: 3 }}
         bgcolor="#fdfdfd"
         borderRadius={3}
         boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
-        p={3}
+        p={{ xs: 2, md: 3 }}
         alignItems="stretch"
       >
-        {/* 메시지/타이틀 (왼쪽) */}
+        {/* 메시지/타이틀 */}
         <Box
-          flex={2}
+          flex={isMobile ? "none" : 2}
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          px={2}
-          py={1}
+          px={{ xs: 1, md: 2 }}
+          py={{ xs: 1, md: 1 }}
           textAlign="center"
         >
           <Typography
-            variant="subtitle1"
+            variant={isMobile ? "body1" : "subtitle1"}
             fontWeight={700}
             mb={1}
             sx={{
               color: "#2b2b2b",
               letterSpacing: "0.01em",
+              fontSize: isMobile ? "0.95rem" : "1rem",
             }}
           >
             나의 자유게시판 활동
           </Typography>
           <Typography
-            variant="h5"
+            variant={isMobile ? "h6" : "h5"}
             fontWeight={900}
-            mb={2}
+            mb={{ xs: 1, md: 2 }}
             sx={{
               color: "#4b8161",
               background: "linear-gradient(transparent 60%, #fff7c9 60%)",
               borderRadius: 0,
               display: "inline",
               boxDecorationBreak: "clone",
+              fontSize: isMobile ? "1.1rem" : "1.5rem",
             }}
           >
             {randomMessage}
           </Typography>
         </Box>
 
-        {/* 구분선 */}
+        {/* 구분선 - 데스크탑에서만 표시 */}
         <Box
           width="2px"
           bgcolor="#e0e0e0"
@@ -87,23 +91,24 @@ const FreeBoardMyHeader = ({ sortOption, setSortOption }) => {
           display={{ xs: "none", md: "block" }}
         />
 
-        {/* 버튼/셀렉트 박스 (오른쪽) */}
+        {/* 버튼/셀렉트 박스 */}
         <Box
-          flex={1}
+          flex={isMobile ? "none" : 1}
           display="flex"
-          flexDirection="column"
+          flexDirection={{ xs: "row", md: "column" }}
           justifyContent="center"
           alignItems="center"
-          gap={2}
+          gap={{ xs: 1, md: 2 }}
+          width={isMobile ? "100%" : "auto"}
         >
           <GreenButton
             onClick={() => navigate("/community/free/write")}
             style={{
-              height: "50px",
-              width: "90%",
+              height: isMobile ? "44px" : "50px",
+              width: isMobile ? "50%" : "90%",
               color: "#4c7559",
               fontWeight: "bold",
-              fontSize: "1.1rem",
+              fontSize: isMobile ? "0.95rem" : "1.1rem",
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
@@ -114,14 +119,14 @@ const FreeBoardMyHeader = ({ sortOption, setSortOption }) => {
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
             style={{
-              height: "50px",
-              width: "90%",
+              height: isMobile ? "44px" : "50px",
+              width: isMobile ? "50%" : "90%",
               padding: "0 1rem",
               borderRadius: "12px",
               border: "1px solid #d0d0d0",
               background: "#fdfdfd",
               fontWeight: "bold",
-              fontSize: "1rem",
+              fontSize: isMobile ? "0.9rem" : "1rem",
               color: "#4c7559",
               outline: "none",
               cursor: "pointer",
@@ -131,7 +136,7 @@ const FreeBoardMyHeader = ({ sortOption, setSortOption }) => {
               backgroundRepeat: "no-repeat",
               backgroundPosition: "right 1rem center",
               backgroundSize: "16px 16px",
-              marginTop: "4px",
+              marginTop: isMobile ? "0" : "4px",
             }}
           >
             <option value="latest">최신순</option>

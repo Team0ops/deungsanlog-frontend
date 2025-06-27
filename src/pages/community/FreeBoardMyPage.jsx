@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Pagination } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Pagination,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardMyHeader from "widgets/community/board/FreeBoardMyHeader";
@@ -15,6 +21,8 @@ const FreeBoardMyPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetPost, setDeleteTargetPost] = useState(null);
   const [sortOption, setSortOption] = useState("latest");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const size = 6;
 
@@ -93,7 +101,9 @@ const FreeBoardMyPage = () => {
         flexDirection: "column",
         backgroundColor: "transparent",
         borderRadius: "20px",
-        padding: "clamp(1rem, 4vw, 1.5rem)",
+        padding: isMobile
+          ? "clamp(0.8rem, 3vw, 1rem)"
+          : "clamp(1rem, 4vw, 1.5rem)",
         position: "relative",
         height: "calc(100vh - 40px)",
       }}
@@ -105,7 +115,7 @@ const FreeBoardMyPage = () => {
           margin: "0 auto",
           display: "flex",
           flexDirection: "column",
-          gap: "1.2rem",
+          gap: isMobile ? "1rem" : "1.2rem",
           height: "100%",
           position: "relative",
         }}
@@ -127,8 +137,8 @@ const FreeBoardMyPage = () => {
             alignItems: "center",
             justifyContent: posts.length === 0 ? "center" : "flex-start",
             color: "#aaa",
-            fontSize: "1.1rem",
-            p: 3,
+            fontSize: isMobile ? "1rem" : "1.1rem",
+            p: isMobile ? 2 : 3,
             overflowY: "auto",
             maxHeight: "calc(100vh - 180px)",
           }}
@@ -142,7 +152,12 @@ const FreeBoardMyPage = () => {
                   key={post.id}
                   style={{
                     width: "100%",
-                    marginBottom: idx !== posts.length - 1 ? "1.2rem" : 0,
+                    marginBottom:
+                      idx !== posts.length - 1
+                        ? isMobile
+                          ? "1rem"
+                          : "1.2rem"
+                        : 0,
                   }}
                 >
                   <FeedCard
@@ -155,24 +170,27 @@ const FreeBoardMyPage = () => {
               ))}
         </Box>
         {/* 페이지네이션 버튼 */}
-        <Box display="flex" justifyContent="center" mt={2}>
+        <Box display="flex" justifyContent="center" mt={isMobile ? 1 : 2}>
           <Pagination
             count={totalPages}
             page={page + 1}
             onChange={(_, value) => setPage(value - 1)}
             color="primary"
             shape="rounded"
-            size="large"
-            siblingCount={1}
-            boundaryCount={1}
-            showFirstButton
-            showLastButton
+            size={isMobile ? "medium" : "large"}
+            siblingCount={isMobile ? 0 : 1}
+            boundaryCount={isMobile ? 1 : 1}
+            showFirstButton={!isMobile}
+            showLastButton={!isMobile}
             sx={{
               "& .MuiPaginationItem-root": {
                 color: "#356849",
                 fontWeight: 600,
                 borderRadius: "24px !important",
                 outline: "none",
+                fontSize: isMobile ? "0.9rem" : "1rem",
+                minWidth: isMobile ? "32px" : "40px",
+                height: isMobile ? "32px" : "40px",
               },
               "& .Mui-selected": {
                 backgroundColor: "#bfccb185 !important",

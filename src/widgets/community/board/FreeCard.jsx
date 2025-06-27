@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useNavigate } from "react-router-dom";
+import { useTheme, useMediaQuery } from "@mui/material";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import HeartIcon from "shared/assets/icons/heart_y.svg";
 import CommentIcon from "shared/assets/icons/Comment.svg";
 
 const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mountainName, setMountainName] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
-  const [isHover, setIsHover] = useState(false); // <-- 조건문 밖에서 선언
+  const [isHover, setIsHover] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +53,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   };
   const cardHoverActiveStyle = {
     boxShadow: "0 8px 32px 0 rgba(47, 66, 47, 0.18)",
-    transform: "translateY(-3px) scale(1.012)",
+    transform: isMobile ? "none" : "translateY(-3px) scale(1.012)",
     background: "#f6f7f6",
   };
 
@@ -62,7 +65,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           background: "#fff",
           borderRadius: "14px",
           boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-          padding: "1.2rem 2rem",
+          padding: isMobile ? "1rem 1.5rem" : "1.2rem 2rem",
           marginBottom: "1.2rem",
           width: "96%",
           maxWidth: "96%",
@@ -71,9 +74,9 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
-          minHeight: "140px",
+          minHeight: isMobile ? "120px" : "140px",
           justifyContent: "center",
-          margin: "30px auto", // ← 중앙 정렬
+          margin: isMobile ? "20px auto" : "30px auto",
           ...cardHoverStyle,
           ...(isHover ? cardHoverActiveStyle : {}),
         }}
@@ -98,7 +101,11 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           <NicknameWithBadge
             userId={post.userId}
             nickname={post.nickname}
-            style={{ fontSize: "1rem", fontWeight: 600, color: "#27ae60" }}
+            style={{
+              fontSize: isMobile ? "0.9rem" : "1rem",
+              fontWeight: 600,
+              color: "#27ae60",
+            }}
           />
           {isMine && (
             <div style={{ position: "relative" }}>
@@ -110,10 +117,11 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                 style={{
                   background: "none",
                   border: "none",
-                  fontSize: "1.4rem",
+                  fontSize: isMobile ? "1.2rem" : "1.4rem",
                   cursor: "pointer",
                   color: "#000000",
                   outline: "none",
+                  padding: "4px",
                 }}
                 title="메뉴"
               >
@@ -150,7 +158,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                       fontWeight: 500,
                       color: "#222222",
                       borderBottom: "1px solid #f0f0f0",
-                      fontSize: "0.97rem",
+                      fontSize: isMobile ? "0.9rem" : "0.97rem",
                     }}
                   >
                     수정
@@ -171,7 +179,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                       cursor: "pointer",
                       fontWeight: 500,
                       color: "#e74c3c",
-                      fontSize: "0.97rem",
+                      fontSize: isMobile ? "0.9rem" : "0.97rem",
                     }}
                   >
                     삭제
@@ -186,7 +194,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         <div
           style={{
             fontWeight: 700,
-            fontSize: "1.15rem",
+            fontSize: isMobile ? "1.05rem" : "1.15rem",
             marginBottom: "0.2rem",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -200,7 +208,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         {/* 글 */}
         <div
           style={{
-            fontSize: "1.02rem",
+            fontSize: isMobile ? "0.95rem" : "1.02rem",
             marginBottom: "0.2rem",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -208,6 +216,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             maxWidth: "100%",
+            lineHeight: isMobile ? "1.4" : "1.5",
           }}
         >
           {post.content}
@@ -217,47 +226,85 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            gap: "1.2rem",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "flex-start" : "center",
+            gap: isMobile ? "0.5rem" : "1.2rem",
             color: "#888",
-            fontSize: "0.97rem",
+            fontSize: isMobile ? "0.85rem" : "0.97rem",
             marginTop: "auto",
+            width: "100%",
           }}
         >
-          {mountainName && (
-            <span style={{ color: "#27ae60" }}>🏔️ {mountainName}</span>
-          )}
-          <span style={{ color: "#aaa" }}>
-            {new Date(post.createdAt).toLocaleString()}
-          </span>
-          <span
-            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          {/* 첫 번째 줄: 산명, 날짜 */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: isMobile ? "0.8rem" : "1.2rem",
+              flexWrap: "wrap",
+            }}
           >
-            <img
-              src={HeartIcon}
-              alt="좋아요"
-              style={{ width: 20, height: 20, verticalAlign: "middle" }}
-            />
-            <span
-              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
-            >
-              {post.likeCount}
+            {mountainName && (
+              <span style={{ color: "#27ae60" }}>🏔️ {mountainName}</span>
+            )}
+            <span style={{ color: "#aaa" }}>
+              {new Date(post.createdAt).toLocaleString()}
             </span>
-          </span>
-          <span
-            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          </div>
+
+          {/* 두 번째 줄: 좋아요, 댓글 (모바일에서만) */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+            }}
           >
-            <img
-              src={CommentIcon}
-              alt="댓글"
-              style={{ width: 19, height: 19, verticalAlign: "middle" }}
-            />
             <span
-              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+              style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
             >
-              {post.commentCount}
+              <img
+                src={HeartIcon}
+                alt="좋아요"
+                style={{
+                  width: isMobile ? 18 : 20,
+                  height: isMobile ? 18 : 20,
+                  verticalAlign: "middle",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: isMobile ? "0.85rem" : "0.97rem",
+                  fontWeight: 600,
+                  color: "#888",
+                }}
+              >
+                {post.likeCount}
+              </span>
             </span>
-          </span>
+            <span
+              style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+            >
+              <img
+                src={CommentIcon}
+                alt="댓글"
+                style={{
+                  width: isMobile ? 17 : 19,
+                  height: isMobile ? 17 : 19,
+                  verticalAlign: "middle",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: isMobile ? "0.85rem" : "0.97rem",
+                  fontWeight: 600,
+                  color: "#888",
+                }}
+              >
+                {post.commentCount}
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -270,18 +317,18 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         background: "#fff",
         borderRadius: "14px",
         boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-        padding: "1.2rem",
+        padding: isMobile ? "1rem" : "1.2rem",
         marginBottom: "1.2rem",
         width: "96%",
         maxWidth: "96%",
         position: "relative",
         cursor: "pointer",
         display: "flex",
-        flexDirection: "row",
-        gap: "2rem",
+        flexDirection: isMobile ? "column" : "row",
+        gap: isMobile ? "1rem" : "2rem",
         alignItems: "stretch",
-        minHeight: "220px",
-        margin: "30px auto", // ← 중앙 정렬
+        minHeight: isMobile ? "auto" : "220px",
+        margin: isMobile ? "20px auto" : "30px auto",
         ...cardHoverStyle,
         ...(isHover ? cardHoverActiveStyle : {}),
       }}
@@ -291,12 +338,12 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
-      {/* 왼쪽: 이미지 영역 */}
+      {/* 이미지 영역 */}
       <div
         style={{
-          flex: "0 0 240px",
-          minWidth: "200px",
-          maxWidth: "300px",
+          flex: isMobile ? "none" : "0 0 240px",
+          minWidth: isMobile ? "100%" : "200px",
+          maxWidth: isMobile ? "100%" : "300px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -304,7 +351,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           borderRadius: "10px",
           overflow: "hidden",
           background: "#f4f8f4",
-          height: "200px",
+          height: isMobile ? "200px" : "200px",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -330,7 +377,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                   transform: "translateY(-50%)",
                   background: "none",
                   border: "none",
-                  fontSize: "2rem",
+                  fontSize: isMobile ? "1.5rem" : "2rem",
                   color: "rgba(255,255,255,0.7)",
                   outline: "none",
                   cursor: "pointer",
@@ -351,7 +398,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                   transform: "translateY(-50%)",
                   background: "none",
                   border: "none",
-                  fontSize: "2rem",
+                  fontSize: isMobile ? "1.5rem" : "2rem",
                   color: "rgba(255,255,255,0.7)",
                   outline: "none",
                   cursor: "pointer",
@@ -394,10 +441,10 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         </>
       </div>
 
-      {/* 오른쪽: 본문 영역 */}
+      {/* 본문 영역 */}
       <div
         style={{
-          flex: "1 1 0",
+          flex: isMobile ? "none" : "1 1 0",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -416,7 +463,11 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
           <NicknameWithBadge
             userId={post.userId}
             nickname={post.nickname}
-            style={{ fontSize: "1rem", fontWeight: 600, color: "#27ae60" }}
+            style={{
+              fontSize: isMobile ? "0.9rem" : "1rem",
+              fontWeight: 600,
+              color: "#27ae60",
+            }}
           />
           {isMine && (
             <div style={{ position: "relative" }}>
@@ -428,10 +479,11 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                 style={{
                   background: "none",
                   border: "none",
-                  fontSize: "1.4rem",
+                  fontSize: isMobile ? "1.2rem" : "1.4rem",
                   cursor: "pointer",
                   color: "#000000",
                   outline: "none",
+                  padding: "4px",
                 }}
                 title="메뉴"
               >
@@ -467,7 +519,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                       fontWeight: 500,
                       color: "#222222",
                       borderBottom: "1px solid #f0f0f0",
-                      fontSize: "0.97rem", // 글씨 크기 줄임
+                      fontSize: isMobile ? "0.9rem" : "0.97rem",
                     }}
                   >
                     수정
@@ -487,7 +539,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                       cursor: "pointer",
                       fontWeight: 500,
                       color: "#e74c3c",
-                      fontSize: "0.97rem", // 글씨 크기 줄임
+                      fontSize: isMobile ? "0.9rem" : "0.97rem",
                     }}
                   >
                     삭제
@@ -502,7 +554,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         <div
           style={{
             fontWeight: 700,
-            fontSize: "1.15rem",
+            fontSize: isMobile ? "1.05rem" : "1.15rem",
             marginBottom: "0.2rem",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -516,7 +568,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         {/* 글 */}
         <div
           style={{
-            fontSize: "1.02rem",
+            fontSize: isMobile ? "0.95rem" : "1.02rem",
             marginBottom: "0.2rem",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -524,6 +576,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             maxWidth: "100%",
+            lineHeight: isMobile ? "1.4" : "1.5",
           }}
         >
           {post.content}
@@ -533,47 +586,85 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            gap: "1.2rem",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "flex-start" : "center",
+            gap: isMobile ? "0.5rem" : "1.2rem",
             color: "#888",
-            fontSize: "0.97rem",
+            fontSize: isMobile ? "0.85rem" : "0.97rem",
             marginTop: "auto",
+            width: "100%",
           }}
         >
-          {mountainName && (
-            <span style={{ color: "#27ae60" }}>🏔️ {mountainName}</span>
-          )}
-          <span style={{ color: "#aaa" }}>
-            {new Date(post.createdAt).toLocaleString()}
-          </span>
-          <span
-            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          {/* 첫 번째 줄: 산명, 날짜 */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: isMobile ? "0.8rem" : "1.2rem",
+              flexWrap: "wrap",
+            }}
           >
-            <img
-              src={HeartIcon}
-              alt="좋아요"
-              style={{ width: 20, height: 20, verticalAlign: "middle" }}
-            />
-            <span
-              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
-            >
-              {post.likeCount}
+            {mountainName && (
+              <span style={{ color: "#27ae60" }}>🏔️ {mountainName}</span>
+            )}
+            <span style={{ color: "#aaa" }}>
+              {new Date(post.createdAt).toLocaleString()}
             </span>
-          </span>
-          <span
-            style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+          </div>
+
+          {/* 두 번째 줄: 좋아요, 댓글 (모바일에서만) */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+            }}
           >
-            <img
-              src={CommentIcon}
-              alt="댓글"
-              style={{ width: 19, height: 19, verticalAlign: "middle" }}
-            />
             <span
-              style={{ fontSize: "0.97rem", fontWeight: 600, color: "#888" }}
+              style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
             >
-              {post.commentCount}
+              <img
+                src={HeartIcon}
+                alt="좋아요"
+                style={{
+                  width: isMobile ? 18 : 20,
+                  height: isMobile ? 18 : 20,
+                  verticalAlign: "middle",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: isMobile ? "0.85rem" : "0.97rem",
+                  fontWeight: 600,
+                  color: "#888",
+                }}
+              >
+                {post.likeCount}
+              </span>
             </span>
-          </span>
+            <span
+              style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}
+            >
+              <img
+                src={CommentIcon}
+                alt="댓글"
+                style={{
+                  width: isMobile ? 17 : 19,
+                  height: isMobile ? 17 : 19,
+                  verticalAlign: "middle",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: isMobile ? "0.85rem" : "0.97rem",
+                  fontWeight: 600,
+                  color: "#888",
+                }}
+              >
+                {post.commentCount}
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     </div>

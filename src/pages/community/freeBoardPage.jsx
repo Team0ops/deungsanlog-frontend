@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme, useMediaQuery } from "@mui/material";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardHeader from "widgets/community/board/FreeBoardHeader";
 import FreeBoardSearchSection from "widgets/community/board/FreeBoardSearchSection";
@@ -23,6 +24,8 @@ const FreeBoardPage = () => {
   const [deleteTargetPost, setDeleteTargetPost] = useState(null);
   const navigate = useNavigate();
   const cardAreaRef = useRef(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   // 로그인 정보 가져오기
   useEffect(() => {
@@ -132,7 +135,9 @@ const FreeBoardPage = () => {
         flexDirection: "column",
         backgroundColor: "transparent",
         borderRadius: "20px",
-        padding: "clamp(1rem, 4vw, 1.5rem)",
+        padding: isMobile
+          ? "clamp(0.8rem, 3vw, 1rem)"
+          : "clamp(1rem, 4vw, 1.5rem)",
         position: "relative",
         height: "calc(100vh - 40px)",
       }}
@@ -144,9 +149,9 @@ const FreeBoardPage = () => {
           margin: "0 auto",
           display: "flex",
           flexDirection: "column",
-          gap: "1.2rem", // ← 기존 2.5rem에서 1.2rem 등으로 줄이세요
+          gap: isMobile ? "1rem" : "1.2rem",
           height: "100%",
-          position: "relative", // 블러 오버레이용
+          position: "relative",
         }}
       >
         {/* 헤더 고정 */}
@@ -182,7 +187,7 @@ const FreeBoardPage = () => {
           style={{
             flex: 1,
             overflowY: "auto",
-            overflowX: "hidden", // ← 추가: 가로 스크롤 제거
+            overflowX: "hidden",
             minHeight: 0,
             paddingRight: "2px",
             position: "relative",
@@ -226,8 +231,8 @@ const FreeBoardPage = () => {
                   color: "#aaa",
                   textAlign: "center",
                   width: "100%",
-                  padding: "2rem 0",
-                  fontSize: "1.1rem",
+                  padding: isMobile ? "1.5rem 0" : "2rem 0",
+                  fontSize: isMobile ? "1rem" : "1.1rem",
                   fontFamily: "'GmarketSansMedium', sans-serif",
                   lineHeight: "1.6",
                 }}
@@ -240,8 +245,8 @@ const FreeBoardPage = () => {
                   color: "#aaa",
                   textAlign: "center",
                   width: "100%",
-                  padding: "2rem 0",
-                  fontSize: "1.1rem",
+                  padding: isMobile ? "1.5rem 0" : "2rem 0",
+                  fontSize: isMobile ? "1rem" : "1.1rem",
                   fontFamily: "'GmarketSansMedium', sans-serif",
                   lineHeight: "1.6",
                 }}
@@ -265,7 +270,8 @@ const FreeBoardPage = () => {
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginTop: "2rem",
+                marginTop: isMobile ? "1.5rem" : "2rem",
+                padding: isMobile ? "0 1rem" : "0",
               }}
             >
               <Pagination
@@ -274,17 +280,20 @@ const FreeBoardPage = () => {
                 onChange={(_, value) => setPage(value - 1)}
                 color="primary"
                 shape="rounded"
-                size="large"
-                siblingCount={1}
-                boundaryCount={1}
-                showFirstButton
-                showLastButton
+                size={isMobile ? "medium" : "large"}
+                siblingCount={isMobile ? 0 : 1}
+                boundaryCount={isMobile ? 1 : 1}
+                showFirstButton={!isMobile}
+                showLastButton={!isMobile}
                 sx={{
                   "& .MuiPaginationItem-root": {
                     color: "#356849",
                     fontWeight: 600,
                     borderRadius: "24px !important",
                     outline: "none",
+                    fontSize: isMobile ? "0.9rem" : "1rem",
+                    minWidth: isMobile ? "32px" : "40px",
+                    height: isMobile ? "32px" : "40px",
                   },
                   "& .Mui-selected": {
                     backgroundColor: "#bfccb185 !important",
