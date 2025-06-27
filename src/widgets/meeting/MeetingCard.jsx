@@ -1,6 +1,22 @@
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography, Divider, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "shared/lib/axiosInstance";
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+import weekday from "dayjs/plugin/weekday";
+import localeData from "dayjs/plugin/localeData";
+import { useNavigate } from "react-router-dom";
+
+dayjs.locale("ko");
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+
+const formatDateTime = (date, time) => {
+  if (!date || !time) return "-";
+  const dt = dayjs(`${date}T${time}`);
+  const dayOfWeek = dt.format("dd");
+  return dt.format(`YYYY년 M월 D일 (${dayOfWeek}) A h시 m분`);
+};
 
 const statusMap = {
   OPEN: { label: "모집중", color: "success" },
@@ -10,6 +26,8 @@ const statusMap = {
 };
 
 const MeetingCard = ({ meeting }) => {
+  const theme = useTheme();
+  const navigate = useNavigate();
   const [memberCount, setMemberCount] = useState(null);
 
   useEffect(() => {
@@ -20,7 +38,7 @@ const MeetingCard = ({ meeting }) => {
       .then((res) => {
         if (ignore) return;
         const joinedCount = Array.isArray(res.data)
-          ? res.data.filter((m) => m.status === "JOINED").length
+          ? res.data.filter((m) => m.status === "ACCEPTED").length
           : 1;
         setMemberCount(joinedCount);
       })
@@ -37,83 +55,116 @@ const MeetingCard = ({ meeting }) => {
     color: "default",
   };
 
+  const bgColor = theme.palette[status.color]?.main || theme.palette.grey[400];
+
   return (
     <Box
       sx={{
+        borderRadius: 4,
         border: "1px solid #e0e0e0",
-        borderRadius: 3,
-        p: 2.5,
+        p: 3,
         width: "100%",
-        bgcolor: "#fff",
-        boxShadow: 1,
-        display: "flex",
-        alignItems: "center",
-        gap: 2,
-        mb: 1.5,
-        transition: "all 0.3s ease",
-        cursor: "pointer",
+        bgcolor: "#fcfcfa",
+        boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+        mb: 2,
+        transition: "0.25s ease",
+        cursor: "pointer", // 추가
         "&:hover": {
-          transform: "translateY(-2px)",
-          boxShadow: "0 6px 12px rgba(76, 117, 89, 0.18)",
-          borderColor: "#87ac96",
-          background: "linear-gradient(135deg, #fdfdfd 100%)",
+          boxShadow: "0 8px 20px rgba(76, 117, 89, 0.2)",
+          transform: "translateY(-3px)",
+          borderColor: "#c8e0d0",
+          background: "linear-gradient(135deg, #ffffff 0%, #f7fbf9 100%)",
         },
       }}
+      onClick={() => navigate(`/meeting/detail/${meeting.id}`)} // 추가
     >
-      {/* 상태 뱃지 */}
-      <Chip
-        label={status.label}
-        color={status.color}
-        size="small"
-        sx={{ fontWeight: 600, fontSize: "0.95rem", minWidth: 70 }}
-      />
-
-      {/* 제목 및 산 이름 */}
+      {/* 상단 - 제목 & 상태 */}
       <Box
-        flex={1}
-        minWidth={0}
-        ml={2}
         display="flex"
-        flexDirection="column"
-        gap={0.5}
+        justifyContent="space-between"
+        alignItems="flex-start"
       >
-        <Typography variant="h6" fontWeight={700} noWrap>
-          {meeting.title}
-        </Typography>
-        {/* description */}
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mb: 0.5 }}
-          noWrap
+        <Box flex={1} minWidth={0}>
+          <Typography
+            variant="subtitle2"
+            fontWeight={700}
+            noWrap
+            sx={{
+              display: "inline",
+              background: "linear-gradient(transparent 60%, #fffaad 60%)",
+              boxDecorationBreak: "clone",
+              WebkitBoxDecorationBreak: "clone",
+              color: "#3b5f47",
+            }}
+          >
+            {meeting.mountainName}
+          </Typography>
+          <Typography variant="h6" fontWeight={800} color="#2c2c2c" noWrap>
+            {meeting.title}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="#666"
+            mt={0.5}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {meeting.description}
+          </Typography>
+        </Box>
+
+        {/* 모집 상태 + 인원 현황을 하나의 박스에 */}
+        <Box
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            mt: 0.5,
+            px: 1.5,
+            py: 0.4,
+            borderRadius: 2,
+            backgroundColor: `${bgColor}10`,
+            border: `1px solid ${bgColor}`,
+            color: bgColor,
+            fontSize: "0.8rem",
+            fontWeight: 600,
+          }}
         >
-          {meeting.description}
-        </Typography>
-        <Typography variant="body2" color="primary" fontWeight={600} noWrap>
-          {meeting.mountain_name}
-        </Typography>
+          <span>{status.label}</span>
+          {memberCount !== null && (
+            <span style={{ fontWeight: 500 }}>
+              {memberCount}/{meeting.maxParticipants}
+            </span>
+          )}
+        </Box>
       </Box>
 
-      {/* 일정/마감일 */}
-      <Box minWidth={120} textAlign="center">
-        <Typography variant="body2" color="text.secondary">
-          진행일: {meeting.scheduled_date || meeting.scheduledDate}{" "}
-          {meeting.scheduled_time?.slice(0, 5) ||
-            meeting.scheduledTime?.slice(0, 5)}
+      <Divider sx={{ my: 1.5 }} />
+      {/* 하단 - 날짜 & 기타 정보 */}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+        gap={1}
+      >
+        <Typography variant="caption" color="text.secondary">
+          📅 일정:{" "}
+          {formatDateTime(meeting.scheduledDate, meeting.scheduledTime)}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          모집마감일: {meeting.deadline_date || meeting.deadlineDate}
-        </Typography>
-      </Box>
 
-      {/* 인원/집결지 */}
-      <Box minWidth={110} textAlign="center">
-        <Typography variant="body2" color="text.secondary">
-          인원: {memberCount !== null ? memberCount : "…"}/
-          {meeting.maxParticipants}명
+        <Typography variant="caption" color="text.secondary">
+          ⏰ 모집 마감:{" "}
+          {formatDateTime(meeting.deadlineDate, meeting.scheduledTime)}
         </Typography>
-        <Typography variant="body2" color="text.secondary" noWrap>
-          {meeting.gatherLocation}
+
+        <Typography variant="caption" color="text.secondary" noWrap>
+          📍 {meeting.gatherLocation}
         </Typography>
       </Box>
     </Box>

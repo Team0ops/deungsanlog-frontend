@@ -40,6 +40,7 @@ import FreeBoardPage from "pages/community/freeBoardPage";
 import FreeBoardWritePage from "pages/community/freeBoardWritePage";
 import PostDetailPage from "pages/community/PostDetailPage";
 import MeetingPage from "pages/meeting/MeetingPage";
+import MeetingDetailPage from "pages/meeting/meetingDetailPage";
 import MeetingCreatePage from "pages/meeting/MeetingCreatePage";
 import OrmiPage from "pages/ormie/ormiPage";
 import NotificationPage from "pages/notificationPage";
@@ -52,6 +53,14 @@ function AppContent() {
   const { miniSidenav, direction, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
+
+  // ✅ Sidenav 동적 height (iOS 사파리 하단 짤림 방지)
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  useEffect(() => {
+    const handleResize = () => setViewportHeight(window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const isOrmiPage = pathname === "/ormi";
   const isRecordPage =
@@ -108,28 +117,44 @@ function AppContent() {
         />
       )}
       <div style={{ display: "flex", position: "relative", zIndex: 1 }}>
-        {/* ✅ Sidenav에 getRoutes 함수 사용 */}
-        <Sidenav
-          color={sidenavColor}
-          brand={brand}
-          brandName="등산 이야기"
-          routes={getRoutes()}
-          onMouseEnter={handleOnMouseEnter}
-          onMouseLeave={handleOnMouseLeave}
-        />
-        <SidenavToggleButton
-          miniSidenav={miniSidenav}
-          onClick={() => setMiniSidenav(dispatch, !miniSidenav)}
-        />
+        <div style={{ height: viewportHeight, minHeight: viewportHeight }}>
+          <Sidenav
+            color={sidenavColor}
+            brand={brand}
+            brandName="등산 이야기"
+            routes={getRoutes()}
+            onMouseEnter={handleOnMouseEnter}
+            onMouseLeave={handleOnMouseLeave}
+          />
+        </div>
+        {/* SidenavToggleButton 위치 반응형 */}
+        <div
+          style={
+            window.innerWidth < 600
+              ? {
+                  position: "fixed",
+                  bottom: "2rem",
+                  right: "2rem",
+                  zIndex: 2000,
+                }
+              : { position: "static" }
+          }
+        >
+          <SidenavToggleButton
+            miniSidenav={miniSidenav}
+            onClick={() => setMiniSidenav(dispatch, !miniSidenav)}
+          />
+        </div>
         <main
           style={{
             flex: 1,
-            padding: "clamp(1rem, 3vw, 2rem)",
-            marginLeft: miniSidenav ? "2em" : "5rem",
+            padding: "clamp(0.5rem, 4vw, 2rem)",
+            marginLeft: `max(0px, ${miniSidenav ? "2em" : "5rem"})`,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             minHeight: "100vh",
+            width: "100%",
             transition: "margin-left 0.3s ease",
           }}
         >
@@ -168,6 +193,10 @@ function AppContent() {
               element={<PostDetailPage />}
             />
             <Route path="/meeting" element={<MeetingPage />} />
+            <Route
+              path="/meeting/detail/:meetingId"
+              element={<MeetingDetailPage />}
+            />
             <Route path="/meeting/create" element={<MeetingCreatePage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />

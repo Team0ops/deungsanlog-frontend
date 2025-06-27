@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "shared/lib/axiosInstance";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
-import GreenButton from "shared/ui/GreenButton";
-import GreenInput from "shared/ui/GreenInput";
+import GreenButton from "shared/ui/greenButton";
+import GreenInput from "shared/ui/greenInput";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [comments, setComments] = useState([]);
@@ -10,6 +11,8 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [replyOpenMap, setReplyOpenMap] = useState({});
   const [replyInputMap, setReplyInputMap] = useState({});
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   // 댓글 목록 새로고침 함수
   const fetchComments = () => {
@@ -127,6 +130,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                     <button
                       onClick={() => handleMenuClick(c.id)}
                       style={{
+                        outline: "none",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
@@ -153,18 +157,22 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                       >
                         <button
                           onClick={() => {
-                            handleDelete(c.id);
+                            handleDeleteClick(c.id);
                             setMenuOpenId(null);
                           }}
                           style={{
                             background: "none",
+                            fontSize: "1rem",
+                            outline: "none",
                             border: "none",
-                            color: "#e74c3c",
-                            fontWeight: 600,
+                            color: "#961c1c",
+                            fontWeight: 500,
                             padding: "0.7rem 1.2rem",
                             cursor: "pointer",
-                            width: "100%",
+                            width: "auto", // ← 수정: 100% → auto
                             textAlign: "left",
+                            whiteSpace: "nowrap", // ← 추가: 한 줄로 표시
+                            minWidth: "56px", // ← 추가: 너무 좁아지지 않게
                           }}
                         >
                           삭제
@@ -193,9 +201,10 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                 <button
                   onClick={() => toggleReplyInput(c.id)}
                   style={{
+                    outline: "none",
                     background: "none",
                     border: "none",
-                    color: "#27ae60",
+                    color: "#345e45",
                     fontSize: "0.85rem",
                     cursor: "pointer",
                   }}
@@ -213,10 +222,10 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                   marginTop: "0.6rem",
                   display: "flex",
                   gap: "0.5rem",
+                  width: "100%",
                 }}
               >
-                <input
-                  type="text"
+                <GreenInput
                   value={replyInputMap[c.id] || ""}
                   onChange={(e) =>
                     setReplyInputMap((prev) => ({
@@ -226,29 +235,38 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                   }
                   placeholder="대댓글을 입력하세요"
                   style={{
+                    fontSize: "1.05rem",
                     flex: 1,
-                    border: "1px solid #ccc",
-                    borderRadius: "6px",
-                    padding: "0.6rem",
-                    fontSize: "0.95rem",
-                    outline: "none",
+                    marginBottom: 0,
+                    background: "#fff",
+                    border: "1.5px solid #e0e0e0",
+                    transition: "border 0.2s",
+                    boxShadow: "none",
                   }}
+                  maxLength={200}
+                  onFocus={(e) =>
+                    (e.target.style.border = "1.5px solid #98ceae")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.border = "1.5px solid #e0e0e0")
+                  }
                 />
-                <button
+                <GreenButton
                   type="submit"
                   style={{
-                    background: "#27ae60",
-                    color: "#fff",
+                    padding: "0.7rem 1.5rem",
+                    fontWeight: 500,
+                    fontSize: "1.05rem",
+                    borderRadius: "8px",
+                    whiteSpace: "nowrap",
+                    background: "#688574",
+                    color: "#ffffff",
                     border: "none",
-                    borderRadius: "6px",
-                    padding: "0.6rem 1rem",
-                    fontWeight: 600,
-                    fontSize: "0.95rem",
-                    cursor: "pointer",
+                    boxShadow: "none",
                   }}
                 >
                   등록
-                </button>
+                </GreenButton>
               </form>
             )}
 
@@ -259,25 +277,33 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
       });
   };
 
-  // 댓글 삭제
-  const handleDelete = async (commentId) => {
-    if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
-    try {
-      await axiosInstance.delete(`/community-service/comments/${commentId}`);
-      fetchComments();
-      onCommentsChanged?.(); // 댓글 개수 새로고침
-    } catch {
-      alert("댓글 삭제 실패");
-    }
+  const handleDeleteClick = (commentId) => {
+    setDeleteTargetId(commentId);
+    setShowConfirmModal(true);
   };
 
+  const handleDeleteConfirm = async () => {
+    try {
+      await axiosInstance.delete(
+        `/community-service/comments/${deleteTargetId}`
+      );
+      fetchComments();
+      onCommentsChanged?.();
+    } catch {
+      alert("댓글 삭제 실패");
+    } finally {
+      setShowConfirmModal(false);
+      setDeleteTargetId(null);
+      setMenuOpenId(null);
+    }
+  };
   const handleMenuClick = (commentId) => {
     setMenuOpenId(menuOpenId === commentId ? null : commentId);
   };
 
   return (
     <>
-      <div style={{ marginBottom: "1.2rem" }}>
+      <div style={{ marginBottom: "1.2rem", minHeight: "300px" }}>
         {/* 항상 구분선 표시 */}
         <div
           style={{
@@ -293,9 +319,15 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
               style={{
                 color: "#888",
                 textAlign: "center",
-                marginTop: "1.2rem",
+                marginTop: 0,
                 fontSize: "1rem",
                 lineHeight: 1.6,
+                minHeight: "220px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
               }}
             >
               🐿️ 아직 댓글이 없어요! <br />첫 도토리를 남겨볼까요? 🌰
@@ -322,24 +354,48 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
           placeholder="댓글로 마음을 나눠보세요!"
           style={{
             fontSize: "1.05rem",
-            flex: 1, // 👈 핵심
+            flex: 1,
             marginBottom: 0,
+            background: "#fff",
+            border: "1.5px solid #e0e0e0",
+            transition: "border 0.2s",
+            boxShadow: "none",
           }}
           maxLength={200}
+          onFocus={(e) => (e.target.style.border = "1.5px solid #98ceae")}
+          onBlur={(e) => (e.target.style.border = "1.5px solid #e0e0e0")}
         />
         <GreenButton
           type="submit"
           style={{
             padding: "0.7rem 1.5rem",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: "1.05rem",
             borderRadius: "8px",
             whiteSpace: "nowrap",
+            background: "#688574",
+            color: "#ffffff",
+            border: "none",
+            boxShadow: "none",
           }}
         >
           등록
         </GreenButton>
       </form>
+
+      {/* ConfirmModal 적용 */}
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        message={"삭제한 댓글은 복구되지 않습니다.\n댓글을 삭제하시겠습니까?"}
+        onCancel={() => {
+          setShowConfirmModal(false);
+          setDeleteTargetId(null);
+          setMenuOpenId(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        cancelText="취소"
+        confirmText="삭제"
+      />
     </>
   );
 };

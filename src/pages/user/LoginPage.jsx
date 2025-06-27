@@ -29,22 +29,20 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     setLoading(true);
     setLoadingProvider("google");
-    window.location.href = `/auth/google`;  // ⭐ BASE_URL 제거
+    window.location.href = `${BASE_URL}/auth/google`;  // 환경별 자동 적용
   };
 
   const handleNaverLogin = () => {
     setLoading(true);
     setLoadingProvider("naver");
-    window.location.href = `/auth/naver`;   // ⭐ BASE_URL 제거
+    window.location.href = `${BASE_URL}/auth/naver`;   // 환경별 자동 적용
   };
 
-  // 🔥 카카오 로그인 핸들러 추가
   const handleKakaoLogin = () => {
     setLoading(true);
     setLoadingProvider("kakao");
-    window.location.href = `/auth/kakao`;   // ⭐ BASE_URL 제거
+    window.location.href = `${BASE_URL}/auth/kakao`;   // 환경별 자동 적용
   };
-
 
   return (
     <div
@@ -187,7 +185,7 @@ const LoginPage = () => {
             transition: "all 0.3s ease",
             boxShadow: "0 0.125rem 0.25rem rgba(0, 0, 0, 0.1)",
             minHeight: "3rem",
-            marginBottom: "clamp(0.8rem, 2vw, 1rem)", // 🔥 카카오 버튼 추가로 간격 유지
+            marginBottom: "clamp(0.8rem, 2vw, 1rem)",
           }}
           onMouseOver={(e) => {
             if (!loading) {
@@ -232,7 +230,7 @@ const LoginPage = () => {
           </span>
         </button>
 
-        {/* 🔥 카카오 로그인 버튼 추가 */}
+        {/* 카카오 로그인 버튼 */}
         <button
           type="button"
           onClick={handleKakaoLogin}

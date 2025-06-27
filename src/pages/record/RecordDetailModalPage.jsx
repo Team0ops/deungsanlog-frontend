@@ -15,7 +15,6 @@ import defaultImage from "shared/assets/images/logo_mountain.png";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import html2canvas from "html2canvas"; // 이미지 저장용
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -56,36 +55,6 @@ const RecordDetailModalPage = () => {
     } catch (e) {
       alert("삭제에 실패했습니다.");
       console.error(e);
-    }
-  };
-
-  const handleImageDownload = async () => {
-    handleMenuClose();
-    // X, 메뉴 버튼 숨기기
-    const closeBtn = document.querySelector(".record-modal-close-btn");
-    const menuBtn = document.querySelector(".record-modal-menu-btn");
-    if (closeBtn) closeBtn.style.visibility = "hidden";
-    if (menuBtn) menuBtn.style.visibility = "hidden";
-
-    const modal = document.querySelector(".MuiDialog-paper");
-    if (!modal) return;
-    try {
-      const canvas = await html2canvas(modal, { useCORS: true, scale: 2 });
-      const dataUrl = canvas.toDataURL("image/jpeg", 1.0);
-      const link = document.createElement("a");
-      const now = new Date().toISOString().split("T")[0];
-      link.href = dataUrl;
-      link.download = `Deungsanlog_${now}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (err) {
-      console.error("이미지 저장 실패", err);
-      alert("이미지 저장에 실패했습니다.");
-    } finally {
-      // 다시 버튼 보이게
-      if (closeBtn) closeBtn.style.visibility = "visible";
-      if (menuBtn) menuBtn.style.visibility = "visible";
     }
   };
 
@@ -163,7 +132,6 @@ const RecordDetailModalPage = () => {
         <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
           <MenuItem onClick={handleEdit}>수정</MenuItem>
           <MenuItem onClick={handleDelete}>삭제</MenuItem>
-          <MenuItem onClick={handleImageDownload}>이미지 저장</MenuItem>
         </Menu>
         {/* 버튼 아래에 여백 추가 */}
         <Box sx={{ height: 48 }} />
