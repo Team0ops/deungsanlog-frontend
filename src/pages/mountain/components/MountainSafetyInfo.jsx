@@ -39,8 +39,7 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfo }) => {
   };
 
   const handleRecordClick = () => {
-    // TODO: 원하는 페이지로 이동하거나 기능 연결
-    alert("등산 기록 작성 기능은 추후 연결됩니다.");
+    window.location.href = "/record/form";
   };
 
   return (
@@ -122,14 +121,6 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfo }) => {
           )}
         </div>
       </div>
-      <button
-        style={actionButtonStyle}
-        onClick={handleRecordClick}
-        onMouseOver={(e) => (e.target.style.backgroundColor = "#0056b3")}
-        onMouseOut={(e) => (e.target.style.backgroundColor = "#007bff")}
-      >
-        📝 등산 기록 작성
-      </button>
     </div>
   );
 };

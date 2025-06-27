@@ -153,6 +153,23 @@ const MountainBasicInfo = ({ mountain, description }) => {
     }
   };
 
+  // difficulty 문자열에서 세부 정보 robust하게 추출 함수
+  const parseDifficulty = (difficultyStr) => {
+    if (!difficultyStr) return {};
+    // 모든 공백/줄바꿈을 없애고, 키워드로 split
+    const cleaned = difficultyStr.replace(/\s+/g, "");
+    const timeMatch = cleaned.match(/산행시간:([^산]+)?/);
+    const heightMatch = cleaned.match(/산높이:([^난]+)?/);
+    const levelMatch = cleaned.match(/난이도:(.+)?/);
+    return {
+      time: timeMatch ? timeMatch[1] : null,
+      height: heightMatch ? heightMatch[1] : null,
+      level: levelMatch ? levelMatch[1] : null,
+    };
+  };
+
+  const { time, height, level } = parseDifficulty(description?.difficulty);
+
   if (!mountain) return null;
 
   const headerStyle = {
@@ -280,9 +297,12 @@ const MountainBasicInfo = ({ mountain, description }) => {
         <div style={basicInfoStyle}>
           <span style={badgeStyle}>📍 {mountain.location}</span>
           <span style={badgeStyle}>⛰️ {mountain.elevation}m</span>
-          <span style={badgeStyle}>
-            🎯 {description?.difficulty || "정보 없음"}
-          </span>
+          {time && time !== "-" && (
+            <span style={badgeStyle}>🕒 산행시간: {time}</span>
+          )}
+          {level && level !== "-" && (
+            <span style={badgeStyle}>🎯 난이도: {level}</span>
+          )}
         </div>
       </div>
     </header>
