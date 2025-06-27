@@ -22,7 +22,9 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
 
   useEffect(() => {
     function handleMiniSidenav() {
-      setMiniSidenav(dispatch, window.innerWidth < 1200);
+      if (window.innerWidth >= 1200) {
+        setMiniSidenav(dispatch, false);
+      }
     }
 
     window.addEventListener("resize", handleMiniSidenav);

@@ -125,11 +125,11 @@ function AppContent() {
                   width: "100vw",
                   height: "100vh",
                   background: "rgba(0,0,0,0.3)",
-                  zIndex: 1299,
+                  zIndex: 1999,
                 }}
                 onClick={() => setMiniSidenav(dispatch, true)}
               />
-              <div style={{ position: "fixed", top: 0, left: 0, zIndex: 1300 }}>
+              <div style={{ position: "fixed", top: 0, left: 0, zIndex: 2000 }}>
                 <Sidenav
                   color={sidenavColor}
                   brand={brand}

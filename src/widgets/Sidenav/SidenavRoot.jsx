@@ -64,7 +64,7 @@ const SidenavRoot = styled(Drawer)(({ theme, ownerState }) => {
       maxHeight: "94vh",
       boxSizing: "border-box",
       overflowY: "auto",
-      zIndex: 1300,
+      zIndex: 2000,
       willChange: "transform",
       isolation: "isolate",
       boxShadow: theme.shadows[8],
