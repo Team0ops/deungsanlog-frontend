@@ -10,11 +10,11 @@ const MountainBasicInfo = ({ mountain, description }) => {
   // ✅ 인증 유틸을 사용하여 사용자 정보 추출
   useEffect(() => {
     console.log("🔍 사용자 인증 정보 확인 시작");
-    
+
     if (isAuthenticated()) {
       const userInfo = getUserInfo();
       console.log("👤 사용자 정보:", userInfo);
-      
+
       if (userInfo && userInfo.userId) {
         setUserId(userInfo.userId);
         console.log("✅ userId 설정 완료:", userInfo.userId);
@@ -30,15 +30,21 @@ const MountainBasicInfo = ({ mountain, description }) => {
   useEffect(() => {
     const checkFavoriteStatus = async () => {
       if (!userId || !mountain?.id) {
-        console.log("⏳ userId 또는 mountainId 없음:", { userId, mountainId: mountain?.id });
+        console.log("⏳ userId 또는 mountainId 없음:", {
+          userId,
+          mountainId: mountain?.id,
+        });
         return;
       }
 
       try {
-        console.log("📡 즐겨찾기 상태 확인 API 호출:", { userId, mountainId: mountain.id });
-        
+        console.log("📡 즐겨찾기 상태 확인 API 호출:", {
+          userId,
+          mountainId: mountain.id,
+        });
+
         const token = getToken();
-        
+
         const response = await axiosInstance.get(
           `/user-service/${userId}/favorites/${mountain.id}/check`,
           {
@@ -48,16 +54,19 @@ const MountainBasicInfo = ({ mountain, description }) => {
 
         console.log("✅ 즐겨찾기 상태 확인 성공:", response.data);
         setIsFavorite(response.data.isFavorite);
-
       } catch (error) {
         console.error("❌ 즐겨찾기 상태 확인 오류:", error);
-        
+
         if (error.response) {
-          console.error('응답 오류:', error.response.status, error.response.data);
+          console.error(
+            "응답 오류:",
+            error.response.status,
+            error.response.data
+          );
         } else if (error.request) {
-          console.error('요청 오류:', error.request);
+          console.error("요청 오류:", error.request);
         } else {
-          console.error('설정 오류:', error.message);
+          console.error("설정 오류:", error.message);
         }
       }
     };
@@ -93,14 +102,17 @@ const MountainBasicInfo = ({ mountain, description }) => {
     console.log("📡 즐겨찾기 토글 API 호출 시작:", {
       userId,
       mountainId: mountain.id,
-      currentFavorite: isFavorite
+      currentFavorite: isFavorite,
     });
 
     setIsLoading(true);
     try {
       const token = getToken();
 
-      console.log("🔑 사용할 토큰:", token ? token.substring(0, 20) + "..." : "null");
+      console.log(
+        "🔑 사용할 토큰:",
+        token ? token.substring(0, 20) + "..." : "null"
+      );
 
       // ✅ 올바른 경로로 수정 (/user-services/ → /user-service/)
       const response = await axiosInstance.post(
@@ -122,18 +134,17 @@ const MountainBasicInfo = ({ mountain, description }) => {
       } else {
         alert("즐겨찾기에서 삭제되었습니다.");
       }
-
     } catch (error) {
       console.error("❌ 즐겨찾기 토글 오류:", error);
-      
+
       if (error.response) {
-        console.error('토글 실패:', error.response.status, error.response.data);
+        console.error("토글 실패:", error.response.status, error.response.data);
         alert(`즐겨찾기 처리 실패: ${error.response.status}`);
       } else if (error.request) {
-        console.error('요청 오류:', error.request);
+        console.error("요청 오류:", error.request);
         alert("서버에 연결할 수 없습니다.");
       } else {
-        console.error('설정 오류:', error.message);
+        console.error("설정 오류:", error.message);
         alert("즐겨찾기 처리 중 오류가 발생했습니다.");
       }
     } finally {
@@ -146,7 +157,6 @@ const MountainBasicInfo = ({ mountain, description }) => {
 
   const headerStyle = {
     marginBottom: "clamp(1rem, 2vw, 1.5rem)",
-    borderBottom: "0.1rem solid #e0e0e0",
     paddingBottom: "clamp(0.8rem, 1.5vw, 1rem)",
   };
 
@@ -154,8 +164,9 @@ const MountainBasicInfo = ({ mountain, description }) => {
   const titleContainerStyle = {
     display: "flex",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: "clamp(0.8rem, 2vw, 1.2rem)",
-    marginBottom: "clamp(0.3rem, 0.8vw, 0.5rem)",
+    marginBottom: "1.2rem",
   };
 
   const mountainNameStyle = {
@@ -163,26 +174,53 @@ const MountainBasicInfo = ({ mountain, description }) => {
     fontWeight: "700",
     color: "#2c3e50",
     margin: 0,
+    flex: 1,
+    minWidth: 0,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   };
 
-  // 즐겨찾기 버튼 스타일
-  const favoriteButtonStyle = {
-    background: isFavorite ? "#fff3cd" : "#f8f9fa",
-    border: "2px solid #ffc107",
-    fontSize: "clamp(1.5rem, 3vw, 2rem)",
-    cursor: isLoading ? "not-allowed" : "pointer",
-    padding: "clamp(0.5rem, 1vw, 0.8rem)",
-    borderRadius: "50%",
-    transition: "all 0.2s ease",
-    opacity: isLoading ? 0.6 : 1,
-    transform: "scale(1)",
-    minWidth: "clamp(2.5rem, 4vw, 3rem)",
-    minHeight: "clamp(2.5rem, 4vw, 3rem)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  };
+  // 즐겨찾기 버튼 스타일 (pill형, 작고 심플, 노란색 강조)
+  const favoriteButtonStyle = isFavorite
+    ? {
+        background: "#fff3cd",
+        border: "1.5px solid #ffc107",
+        color: "#bfa100",
+        fontWeight: 700,
+        fontSize: "1.05rem",
+        borderRadius: "2em",
+        padding: "0.45rem 1.2rem 0.45rem 0.9rem",
+        cursor: isLoading ? "not-allowed" : "pointer",
+        transition: "all 0.2s",
+        opacity: isLoading ? 0.6 : 1,
+        boxShadow: "0 2px 8px rgba(200,180,80,0.08)",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.4rem",
+        outline: "none",
+        minWidth: "unset",
+        minHeight: "unset",
+      }
+    : {
+        background: "none",
+        border: "1.5px solid #ddd",
+        color: "#888",
+        fontWeight: 500,
+        fontSize: "1.05rem",
+        borderRadius: "2em",
+        padding: "0.45rem 1.2rem 0.45rem 1.2rem",
+        cursor: isLoading ? "not-allowed" : "pointer",
+        transition: "all 0.2s",
+        opacity: isLoading ? 0.6 : 1,
+        boxShadow: "none",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.4rem",
+        outline: "none",
+        minWidth: "unset",
+        minHeight: "unset",
+      };
 
   const basicInfoStyle = {
     display: "flex",
@@ -200,48 +238,8 @@ const MountainBasicInfo = ({ mountain, description }) => {
     color: "#495057",
   };
 
-  const summaryBoxStyle = {
-    backgroundColor: "#ffffff",
-    borderRadius: "1rem",
-    padding: "clamp(1rem, 2vw, 1.5rem)",
-    boxShadow: "0 0.2rem 1rem rgba(0,0,0,0.1)",
-    marginTop: "clamp(1rem, 2vw, 1.5rem)",
-  };
-
-  const summaryGridStyle = {
-    display: "grid",
-    gap: "clamp(0.5rem, 1vw, 0.8rem)",
-  };
-
-  const summaryItemStyle = {
-    display: "grid",
-    gridTemplateColumns: "1fr 2fr",
-    alignItems: "center",
-    padding: "clamp(0.3rem, 0.8vw, 0.5rem) 0",
-    borderBottom: "0.1rem solid #f1f3f4",
-  };
-
   return (
     <header style={headerStyle}>
-      {/* ✅ 디버깅 정보 (개발용) */}
-      <div style={{
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        background: 'rgba(0,0,0,0.8)',
-        color: 'white',
-        padding: '5px',
-        fontSize: '10px',
-        borderRadius: '3px',
-        zIndex: 1000
-      }}>
-        <div>🔍 Debug:</div>
-        <div>userId: {userId || '없음'}</div>
-        <div>mountainId: {mountain?.id || '없음'}</div>
-        <div>즐겨찾기: {isFavorite ? '★' : '☆'}</div>
-        <div>토큰: {getToken() ? '있음' : '없음'}</div>
-      </div>
-
       <div>
         {/* 산 이름과 즐겨찾기 버튼 */}
         <div style={titleContainerStyle}>
@@ -251,23 +249,31 @@ const MountainBasicInfo = ({ mountain, description }) => {
             style={favoriteButtonStyle}
             onClick={handleFavoriteToggle}
             disabled={isLoading}
-            title={
-              !userId
-                ? "로그인 후 즐겨찾기 사용 가능"
-                : isFavorite
-                ? "즐겨찾기 해제"
-                : "즐겨찾기 추가"
-            }
-            onMouseEnter={(e) => {
-              if (!isLoading) {
-                e.target.style.transform = "scale(1.1)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = "scale(1)";
-            }}
           >
-            {isLoading ? "⏳" : !userId ? "🔒" : isFavorite ? "★" : "☆"}
+            {isLoading ? (
+              <>
+                <span style={{ fontSize: "1.1rem", marginRight: "0.3rem" }}>
+                  ⏳
+                </span>
+                추가 중...
+              </>
+            ) : !userId ? (
+              <>
+                <span style={{ fontSize: "1.1rem", marginRight: "0.3rem" }}>
+                  🔒
+                </span>
+                로그인 필요
+              </>
+            ) : isFavorite ? (
+              <>
+                <span style={{ fontSize: "1.2rem", marginRight: "0.3rem" }}>
+                  🌟
+                </span>
+                즐겨찾는 산
+              </>
+            ) : (
+              <>즐겨찾기 추가</>
+            )}
           </button>
         </div>
 
@@ -277,40 +283,6 @@ const MountainBasicInfo = ({ mountain, description }) => {
           <span style={badgeStyle}>
             🎯 {description?.difficulty || "정보 없음"}
           </span>
-        </div>
-
-        {/* 산 요약 정보 */}
-        <div style={summaryBoxStyle}>
-          <h3
-            style={{
-              fontSize: "clamp(1.1rem, 2vw, 1.3rem)",
-              marginBottom: "clamp(1rem, 2vw, 1.5rem)",
-            }}
-          >
-            산 요약
-          </h3>
-          <div style={summaryGridStyle}>
-            <div style={summaryItemStyle}>
-              <span style={{ fontWeight: "600", color: "#495057" }}>
-                산 이름:
-              </span>
-              <span>{mountain.name}</span>
-            </div>
-            <div style={summaryItemStyle}>
-              <span style={{ fontWeight: "600", color: "#495057" }}>위치:</span>
-              <span>{mountain.location}</span>
-            </div>
-            <div style={summaryItemStyle}>
-              <span style={{ fontWeight: "600", color: "#495057" }}>고도:</span>
-              <span>{mountain.elevation}m</span>
-            </div>
-            <div style={summaryItemStyle}>
-              <span style={{ fontWeight: "600", color: "#495057" }}>
-                난이도:
-              </span>
-              <span>{description?.difficulty || "정보 없음"}</span>
-            </div>
-          </div>
         </div>
       </div>
     </header>
