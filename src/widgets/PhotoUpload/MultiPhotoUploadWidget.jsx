@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import GreenButton from "shared/ui/greenButton";
 
@@ -12,6 +12,9 @@ const MultiPhotoUploadWidget = ({
   setPhotoError,
   max = 3,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     // 반드시 File 객체만 누적
@@ -25,8 +28,8 @@ const MultiPhotoUploadWidget = ({
     <>
       <style>{shakeKeyframes}</style>
       <Box
-        mt={{ xs: "6vw", md: "15rem" }}
-        mb={{ xs: "4vw", md: "2rem" }}
+        mt={{ xs: "4vw", md: "15rem" }}
+        mb={{ xs: "3vw", md: "2rem" }}
         display="flex"
         flexDirection="column"
         alignItems="center"
@@ -34,23 +37,31 @@ const MultiPhotoUploadWidget = ({
         <Box
           sx={{
             display: "flex",
-            gap: "0.8rem",
+            gap: isMobile ? "0.4rem" : "0.8rem",
             flexWrap: "wrap",
             justifyContent: "center",
             animation: photoError ? "shake 0.6s" : "none",
+            width: "100%",
+            maxWidth: isMobile ? "100%" : "auto",
           }}
         >
           {[...Array(max)].map((_, i) => (
             <Box
               key={i}
               sx={{
-                width: { xs: "45vw", sm: "170px" },
-                height: { xs: "45vw", sm: "170px" },
+                width: isMobile
+                  ? "calc(33.33% - 0.27rem)"
+                  : { xs: "42vw", sm: "170px" },
+                height: isMobile
+                  ? "calc(33.33vw - 0.27rem)"
+                  : { xs: "42vw", sm: "170px" },
+                maxWidth: isMobile ? "120px" : "none",
+                maxHeight: isMobile ? "120px" : "none",
                 border:
                   photoError && photoPreviews.length === 0
                     ? "2px solid #dc3545"
                     : "2px dashed #bdbdbd",
-                borderRadius: "12px",
+                borderRadius: isMobile ? "8px" : "12px",
                 background: "#f8fff9",
                 display: "flex",
                 alignItems: "center",
@@ -68,7 +79,7 @@ const MultiPhotoUploadWidget = ({
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
-                      borderRadius: "12px",
+                      borderRadius: isMobile ? "8px" : "12px",
                     }}
                   />
                   <IconButton
@@ -76,14 +87,18 @@ const MultiPhotoUploadWidget = ({
                     onClick={() => onPhotoRemove(i)}
                     sx={{
                       position: "absolute",
-                      top: 6,
-                      right: 6,
-                      background: "rgba(255,255,255,0.8)",
+                      top: isMobile ? 2 : 6,
+                      right: isMobile ? 2 : 6,
+                      background: "rgba(255,255,255,0.9)",
                       "&:hover": { background: "rgba(255,255,255,1)" },
                       zIndex: 2,
+                      width: isMobile ? "20px" : "auto",
+                      height: isMobile ? "20px" : "auto",
+                      minWidth: "auto",
+                      minHeight: "auto",
                     }}
                   >
-                    <CloseIcon fontSize="small" />
+                    <CloseIcon fontSize={isMobile ? "small" : "medium"} />
                   </IconButton>
                 </>
               )}
@@ -92,12 +107,12 @@ const MultiPhotoUploadWidget = ({
         </Box>
 
         {/* ✅ 안내 문구를 여기에 위치시킴 */}
-        <Box mt="1.6rem" mb="0rem">
+        <Box mt={isMobile ? "1.2rem" : "1.6rem"} mb="0rem">
           <span
             style={{
               color: "#828a84",
               fontWeight: 500,
-              fontSize: "0.92rem",
+              fontSize: isMobile ? "0.85rem" : "0.92rem",
               textAlign: "center",
               display: "block",
             }}
@@ -106,16 +121,16 @@ const MultiPhotoUploadWidget = ({
           </span>
         </Box>
 
-        <Box height={{ xs: "4vw", md: "1.2rem" }} />
+        <Box height={{ xs: "3vw", md: "1.2rem" }} />
         <GreenButton
           component="label"
           style={{
             background: "#70a784",
             color: "#ffffff",
-            width: "min(90vw, 160px)",
-            height: "2.7rem",
-            borderRadius: "12px",
-            fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
+            width: isMobile ? "min(85vw, 140px)" : "min(90vw, 160px)",
+            height: isMobile ? "2.4rem" : "2.7rem",
+            borderRadius: isMobile ? "8px" : "12px",
+            fontSize: isMobile ? "0.9rem" : "clamp(0.9rem, 2.5vw, 1.1rem)",
             textAlign: "center",
             padding: 0,
             display: "flex",
