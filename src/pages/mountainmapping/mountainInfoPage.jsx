@@ -7,7 +7,7 @@ import {
   createMountainMarkers,
   getMountainGradeInfo,
   DEFAULT_MAP_SETTINGS,
-} from "shared/lib/kakaoMap";
+} from "shared/lib/KakaoMap";
 import ZoomControl from "shared/ui/ZoomControl";
 import MountainSearchModal from "./MountainSearchModal";
 import axiosInstance from "shared/lib/axiosInstance";
