@@ -25,10 +25,10 @@ export default defineConfig(({ mode }) => {
         workbox: {
           // 🔥 auth 경로는 SW가 처리하지 않도록 제외
           navigateFallbackDenylist: [
-            /^\/auth/,  // /auth로 시작하는 모든 경로
-            /^\/api/,   // /api로 시작하는 모든 경로 (추가 보안)
-          ]
-        }
+            /^\/auth/, // /auth로 시작하는 모든 경로
+            /^\/api/, // /api로 시작하는 모든 경로 (추가 보안)
+          ],
+        },
       }),
     ],
     resolve: {
@@ -49,6 +49,9 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
         },
       },
+    },
+    optimizeDeps: {
+      include: ["dayjs", "dayjs/plugin/localeData", "dayjs/plugin/weekday"],
     },
   };
 });
