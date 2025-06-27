@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "shared/lib/axiosInstance";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import mountainMessages from "shared/constants/mountainMessages";
-import GreenButton from "shared/ui/GreenButton";
+import GreenButton from "shared/ui/greenButton";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
 
