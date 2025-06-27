@@ -40,21 +40,27 @@ const MountainInfoPage = () => {
           setMapLoaded(true);
           console.log("🗺️ 지도 초기화 완료 - 한국 전체 영토 보기");
         });
+      } else {
+        alert("window.kakao가 없습니다! 카카오맵 SDK가 로드되지 않았습니다.");
       }
     };
 
     const existingScript = document.querySelector("script[src*='kakao.com']");
     if (!existingScript) {
       const script = document.createElement("script");
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoApiKey}&autoload=false`;
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoApiKey}&autoload=false`;
       script.async = true;
       script.onload = initMap;
+      script.onerror = () => alert("카카오맵 스크립트 로드 실패!");
       document.head.appendChild(script);
     } else {
       if (window.kakao?.maps) {
         initMap();
       } else {
         existingScript.addEventListener("load", initMap);
+        existingScript.addEventListener("error", () =>
+          alert("카카오맵 스크립트 로드 실패!")
+        );
       }
     }
   }, []);
@@ -199,7 +205,9 @@ const MountainInfoPage = () => {
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 10,
-          width: "clamp(20rem, 60vw, 31.25rem)",
+          width:
+            window.innerWidth < 600 ? "85vw" : "clamp(20rem, 60vw, 31.25rem)",
+          maxWidth: "95vw",
         }}
       >
         <div style={{ position: "relative" }}>
@@ -335,21 +343,26 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
   );
 };
 
-// ✅ 범례 스타일들 - 오른쪽 상단
+// ✅ 범례 스타일들 - 오른쪽 상단(데스크탑), 오른쪽 하단(모바일)
 const legendContainerStyle = {
   position: "fixed",
-  top: "clamp(1rem, 2vw, 1.5rem)",
-  right: "clamp(1rem, 2vw, 1.5rem)", // ✅ 오른쪽 상단으로 변경
+  top: window.innerWidth < 600 ? "unset" : "clamp(1rem, 2vw, 1.5rem)",
+  bottom: window.innerWidth < 600 ? "clamp(1rem, 2vw, 1.5rem)" : "unset",
+  right: "clamp(1rem, 2vw, 1.5rem)",
   zIndex: 100,
+  width: window.innerWidth < 600 ? "70vw" : "clamp(12rem, 25vw, 15rem)",
+  minWidth: window.innerWidth < 600 ? "8rem" : "10rem",
+  maxWidth: window.innerWidth < 600 ? "90vw" : "90vw",
 };
 
 const legendStyle = {
   backgroundColor: "rgba(255, 255, 255, 0.95)",
   borderRadius: "clamp(0.5rem, 1vw, 0.8rem)",
-  padding: "clamp(0.8rem, 1.5vw, 1rem)",
+  padding:
+    window.innerWidth < 600 ? "0.6rem 0.7rem" : "clamp(0.8rem, 1.5vw, 1rem)",
   boxShadow: "0 0.2rem 0.5rem rgba(0,0,0,0.1)",
-  maxWidth: "clamp(12rem, 25vw, 15rem)",
-  fontSize: "clamp(0.7rem, 1.3vw, 0.8rem)",
+  maxWidth: "100%",
+  fontSize: window.innerWidth < 600 ? "0.8rem" : "clamp(0.7rem, 1.3vw, 0.8rem)",
 };
 
 const legendTitleStyle = {
