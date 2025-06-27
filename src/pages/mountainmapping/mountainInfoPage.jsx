@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import SoftInput from "shared/ui/SoftInput";
 import SearchIcon from "@mui/icons-material/Search";
-import { 
-  loadKakaoMap, 
-  moveMapCenter, 
+import {
+  loadKakaoMap,
+  moveMapCenter,
   createMountainMarkers,
   getMountainGradeInfo,
-  DEFAULT_MAP_SETTINGS
+  DEFAULT_MAP_SETTINGS,
 } from "shared/lib/kakaoMap";
 import ZoomControl from "shared/ui/ZoomControl";
 import MountainSearchModal from "./MountainSearchModal";
@@ -17,12 +17,12 @@ const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
 const MountainInfoPage = () => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  
+
   // 🏔️ 산 마커 관련 상태
   const [mountains, setMountains] = useState([]);
   const [selectedMountain, setSelectedMountain] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  
+
   // ✅ 검색 관련 상태 추가
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -32,13 +32,13 @@ const MountainInfoPage = () => {
       if (window.kakao?.maps) {
         window.kakao.maps.load(() => {
           // ✅ 한국 전체 영토가 보이도록 변경
-          const map = loadKakaoMap({ 
+          const map = loadKakaoMap({
             containerId: "map",
-            ...DEFAULT_MAP_SETTINGS.KOREA_FULL_VIEW
+            ...DEFAULT_MAP_SETTINGS.KOREA_FULL_VIEW,
           });
           mapRef.current = map;
           setMapLoaded(true);
-          console.log('🗺️ 지도 초기화 완료 - 한국 전체 영토 보기');
+          console.log("🗺️ 지도 초기화 완료 - 한국 전체 영토 보기");
         });
       }
     };
@@ -110,10 +110,12 @@ const MountainInfoPage = () => {
 
   // ✅ 검색 결과에서 산 선택 시 - 상세 페이지로 이동
   const handleSelectMountain = (mountain) => {
-    console.log('🔍 검색에서 산 선택:', mountain.name);
-    
+    console.log("🔍 검색에서 산 선택:", mountain.name);
+
     // 상세 페이지로 이동 (가리산 → /mountain/detail/가리산)
-    window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`;
+    window.location.href = `/mountain/detail/${encodeURIComponent(
+      mountain.name
+    )}`;
   };
 
   // ✅ 검색창 외부 클릭 시 검색 결과 닫기
@@ -152,29 +154,43 @@ const MountainInfoPage = () => {
           zIndex: 0,
         }}
       />
-      
+
       {/* ✅ 범례 추가 - 오른쪽 상단 */}
       <div style={legendContainerStyle}>
         <div style={legendStyle}>
           <h4 style={legendTitleStyle}>🏔️ 산 고도별 구분</h4>
           <div style={legendItemsStyle}>
             <div style={legendItemStyle}>
-              <img src="/images/mountain-high.png" alt="고산" style={legendIconStyle} />
+              <img
+                src="/images/mountain-high.png"
+                alt="고산"
+                style={legendIconStyle}
+              />
               <span>고산 (1500m 이상)</span>
             </div>
             <div style={legendItemStyle}>
-              <img src="/images/mountain-medium.png" alt="중산" style={legendIconStyle} />
+              <img
+                src="/images/mountain-medium.png"
+                alt="중산"
+                style={legendIconStyle}
+              />
               <span>중산 (800m ~ 1500m)</span>
             </div>
             <div style={legendItemStyle}>
-              <img src="/images/mountain-small.png" alt="저산" style={legendIconStyle} />
+              <img
+                src="/images/mountain-small.png"
+                alt="저산"
+                style={legendIconStyle}
+              />
               <span>저산 (800m 미만)</span>
             </div>
           </div>
-          <p style={mapGuideStyle}>📍 마커를 클릭하면 산 정보를 볼 수 있습니다</p>
+          <p style={mapGuideStyle}>
+            📍 마커를 클릭하면 산 정보를 볼 수 있습니다
+          </p>
         </div>
       </div>
-      
+
       {/* 검색창 */}
       <div
         style={{
@@ -186,7 +202,7 @@ const MountainInfoPage = () => {
           width: "clamp(20rem, 60vw, 31.25rem)",
         }}
       >
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <SoftInput
             placeholder="산 이름을 검색하세요"
             icon={{ component: <SearchIcon />, direction: "right" }}
@@ -201,7 +217,7 @@ const MountainInfoPage = () => {
             }}
             fullWidth
           />
-          
+
           {/* ✅ 검색 결과 모달 */}
           {showSearchResults && (
             <MountainSearchModal
@@ -228,10 +244,7 @@ const MountainInfoPage = () => {
 
       {/* 🏔️ 산 정보 팝업 */}
       {showPopup && selectedMountain && (
-        <MountainInfoPopup 
-          mountain={selectedMountain} 
-          onClose={closePopup}
-        />
+        <MountainInfoPopup mountain={selectedMountain} onClose={closePopup} />
       )}
     </>
   );
@@ -258,7 +271,9 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
             />
           ) : (
             <div style={noImageStyle}>
-              <span style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}>{gradeInfo.icon}</span>
+              <span style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}>
+                {gradeInfo.icon}
+              </span>
               <p
                 style={{
                   fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
@@ -272,10 +287,12 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
         </div>
 
         <div style={infoContainerStyle}>
-          <h2 style={mountainNameStyle}>{gradeInfo.icon} {mountain.name}</h2>
+          <h2 style={mountainNameStyle}>
+            {gradeInfo.icon} {mountain.name}
+          </h2>
 
           {/* ✅ 고도별 등급 표시 */}
-          <div style={{...gradeTagStyle, backgroundColor: gradeInfo.color}}>
+          <div style={{ ...gradeTagStyle, backgroundColor: gradeInfo.color }}>
             {gradeInfo.type} - {mountain.elevation}m
           </div>
 
@@ -295,8 +312,12 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
           </div>
 
           <div style={actionButtonsStyle}>
-            <button 
-              onClick={() => window.location.href = `/mountain/detail/${encodeURIComponent(mountain.name)}`}
+            <button
+              onClick={() =>
+                (window.location.href = `/mountain/detail/${encodeURIComponent(
+                  mountain.name
+                )}`)
+              }
               style={detailButtonStyle}
             >
               🔍 상세보기
@@ -316,62 +337,62 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
 
 // ✅ 범례 스타일들 - 오른쪽 상단
 const legendContainerStyle = {
-  position: 'fixed',
-  top: 'clamp(1rem, 2vw, 1.5rem)',
-  right: 'clamp(1rem, 2vw, 1.5rem)', // ✅ 오른쪽 상단으로 변경
+  position: "fixed",
+  top: "clamp(1rem, 2vw, 1.5rem)",
+  right: "clamp(1rem, 2vw, 1.5rem)", // ✅ 오른쪽 상단으로 변경
   zIndex: 100,
 };
 
 const legendStyle = {
-  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-  borderRadius: 'clamp(0.5rem, 1vw, 0.8rem)',
-  padding: 'clamp(0.8rem, 1.5vw, 1rem)',
-  boxShadow: '0 0.2rem 0.5rem rgba(0,0,0,0.1)',
-  maxWidth: 'clamp(12rem, 25vw, 15rem)',
-  fontSize: 'clamp(0.7rem, 1.3vw, 0.8rem)',
+  backgroundColor: "rgba(255, 255, 255, 0.95)",
+  borderRadius: "clamp(0.5rem, 1vw, 0.8rem)",
+  padding: "clamp(0.8rem, 1.5vw, 1rem)",
+  boxShadow: "0 0.2rem 0.5rem rgba(0,0,0,0.1)",
+  maxWidth: "clamp(12rem, 25vw, 15rem)",
+  fontSize: "clamp(0.7rem, 1.3vw, 0.8rem)",
 };
 
 const legendTitleStyle = {
-  margin: '0 0 clamp(0.5rem, 1vw, 0.8rem) 0',
-  fontSize: 'clamp(0.9rem, 1.8vw, 1rem)',
-  fontWeight: 'bold',
-  color: '#333',
+  margin: "0 0 clamp(0.5rem, 1vw, 0.8rem) 0",
+  fontSize: "clamp(0.9rem, 1.8vw, 1rem)",
+  fontWeight: "bold",
+  color: "#333",
 };
 
 const legendItemsStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'clamp(0.2rem, 0.5vw, 0.3rem)',
-  marginBottom: 'clamp(0.5rem, 1vw, 0.8rem)',
+  display: "flex",
+  flexDirection: "column",
+  gap: "clamp(0.2rem, 0.5vw, 0.3rem)",
+  marginBottom: "clamp(0.5rem, 1vw, 0.8rem)",
 };
 
 const legendItemStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'clamp(0.3rem, 0.6vw, 0.5rem)',
+  display: "flex",
+  alignItems: "center",
+  gap: "clamp(0.3rem, 0.6vw, 0.5rem)",
 };
 
 const legendIconStyle = {
-  width: 'clamp(1rem, 2vw, 1.2rem)',
-  height: 'clamp(1rem, 2vw, 1.2rem)',
+  width: "clamp(1rem, 2vw, 1.2rem)",
+  height: "clamp(1rem, 2vw, 1.2rem)",
 };
 
 const mapGuideStyle = {
-  margin: 'clamp(0.5rem, 1vw, 0.8rem) 0 0 0',
-  fontSize: 'clamp(0.6rem, 1.2vw, 0.7rem)',
-  color: '#666',
-  fontStyle: 'italic',
+  margin: "clamp(0.5rem, 1vw, 0.8rem) 0 0 0",
+  fontSize: "clamp(0.6rem, 1.2vw, 0.7rem)",
+  color: "#666",
+  fontStyle: "italic",
 };
 
 const gradeTagStyle = {
-  display: 'inline-block',
-  padding: 'clamp(0.2rem, 0.5vw, 0.3rem) clamp(0.6rem, 1.2vw, 0.8rem)',
-  borderRadius: 'clamp(0.8rem, 1.5vw, 1rem)',
-  color: 'white',
-  fontSize: 'clamp(0.7rem, 1.3vw, 0.8rem)',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  marginBottom: 'clamp(0.4rem, 0.8vw, 0.5rem)',
+  display: "inline-block",
+  padding: "clamp(0.2rem, 0.5vw, 0.3rem) clamp(0.6rem, 1.2vw, 0.8rem)",
+  borderRadius: "clamp(0.8rem, 1.5vw, 1rem)",
+  color: "white",
+  fontSize: "clamp(0.7rem, 1.3vw, 0.8rem)",
+  fontWeight: "bold",
+  textAlign: "center",
+  marginBottom: "clamp(0.4rem, 0.8vw, 0.5rem)",
 };
 
 // 기존 팝업 스타일들...

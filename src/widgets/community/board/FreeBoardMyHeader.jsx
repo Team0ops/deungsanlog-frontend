@@ -1,15 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
-import GreenButton from "shared/ui/greenButton";
 
 const messages = [
-  "오늘은 어떤 이야기를 나눠볼까요?",
-  "등산 후기도 좋고, 아무 이야기나 환영이에요!",
-  "커뮤니티에서 함께 소통해요 😊",
+  "내가 남긴 이야기들을 한눈에 볼 수 있어요!",
+  "나의 자유게시판 활동을 모아봤어요.",
+  "내가 쓴 글, 다시 보면 또 새로워요 😊",
 ];
 
-const FreeBoardHeader = () => {
-  const navigate = useNavigate();
+const FreeBoardMyHeader = () => {
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
   return (
@@ -59,7 +56,7 @@ const FreeBoardHeader = () => {
             {randomMessage}
           </Typography>
           <Typography variant="body1" mt={1}>
-            당신의 글이 다른 사람에게 힘이 될 수 있어요 ✨
+            내가 작성한 자유게시판 글 목록입니다.
           </Typography>
         </Box>
         {/* 구분선 */}
@@ -70,7 +67,7 @@ const FreeBoardHeader = () => {
           borderRadius={1}
           display={{ xs: "none", md: "block" }}
         />
-        {/* 버튼/셀렉트 박스 (오른쪽) */}
+        {/* 오른쪽(버튼 없음, 공간만 맞춤) */}
         <Box
           flex={1}
           display="flex"
@@ -78,35 +75,10 @@ const FreeBoardHeader = () => {
           justifyContent="center"
           alignItems="center"
           gap={2}
-        >
-          <GreenButton
-            onClick={() => navigate("/community/free/write")}
-            style={{
-              height: "55px",
-              width: "100%",
-              color: "#4c7559",
-              background: "#fdfdfd",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            글쓰기
-          </GreenButton>
-          <GreenButton
-            onClick={() => navigate("/community/free/my")}
-            style={{
-              height: "55px",
-              width: "100%",
-              color: "#4c7559",
-              background: "#fdfdfd",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            나의 게시물
-          </GreenButton>
-        </Box>
+        />
       </Box>
     </Box>
   );
 };
 
-export default FreeBoardHeader;
+export default FreeBoardMyHeader;
