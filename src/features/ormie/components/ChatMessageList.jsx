@@ -24,24 +24,59 @@ const ChatMessageList = ({ messages, onSend }) => {
       {messages.length === 0 && (
         <OrmieBubble>
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.75rem",
+              alignItems: "flex-start",
+              width: "100%",
+            }}
           >
-            <div style={{ marginBottom: "0.5rem" }}></div>
+            <div
+              style={{
+                fontWeight: "bold",
+                color: "#bfa100",
+                fontSize: "1.05rem",
+                marginBottom: "0.25rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+              }}
+            >
+              <span style={{ fontSize: "1.2rem" }}>💡</span> 추천 질문
+            </div>
             {recommendedQuestions.map((q, idx) => (
               <button
                 key={idx}
                 onClick={() => onSend(q)}
                 style={{
-                  backgroundColor: "#eaf6ef",
-                  border: "1px solid #4b8161",
-                  color: "#4b8161",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "1rem",
-                  textAlign: "left",
+                  background: "#fff9d1",
+                  border: "1.5px solid #e6c200",
+                  color: "#bfa100",
+                  padding: "0.7rem 1.2rem",
+                  borderRadius: "2em",
+                  fontWeight: "500",
+                  fontSize: "1rem",
+                  boxShadow: "0 2px 8px rgba(200,180,80,0.08)",
                   cursor: "pointer",
-                  fontSize: "0.95rem",
-                  transition: "background 0.2s",
+                  transition: "background 0.2s, box-shadow 0.2s",
+                  outline: "none",
+                  margin: 0,
                 }}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.background = "#ffeeb0")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.background = "#fff9d1")
+                }
+                onMouseDown={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 1px 2px rgba(200,180,80,0.12)")
+                }
+                onMouseUp={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 2px 8px rgba(200,180,80,0.08)")
+                }
               >
                 {q}
               </button>

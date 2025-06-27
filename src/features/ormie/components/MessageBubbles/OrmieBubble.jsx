@@ -2,21 +2,30 @@ const OrmieBubble = ({ text, children }) => {
   const isOnlyChildren = !text && children;
 
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", margin: "8px 0" }}>
-      <div style={{ fontSize: "1.2rem", marginRight: "0.5rem" }}>🤖</div>
+    <div
+      style={{ display: "flex", alignItems: "flex-start", margin: "10px 0" }}
+    >
+      <div
+        style={{ fontSize: "1.4rem", marginRight: "0.6rem", marginTop: "2px" }}
+      >
+        🤖
+      </div>
       {/* text용 일반 말풍선 */}
       {text && (
         <div
           style={{
-            backgroundColor: "#F1F0F0",
-            borderRadius: "0px 16px 16px 16px",
-            padding: "10px 15px",
-            color: "#333",
-            fontSize: "0.95rem",
-            lineHeight: 1.4,
+            background: "#eaf6ef",
+            borderRadius: "18px",
+            padding: "12px 16px",
+            color: "#234d36",
+            fontSize: "1.02rem",
+            lineHeight: 1.6,
             maxWidth: "75%",
             whiteSpace: "pre-wrap",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
+            boxShadow: "0 2px 6px rgba(76, 129, 97, 0.06)",
+            border: "none",
+            position: "relative",
+            ...(window.innerWidth <= 600 ? { fontSize: "0.95rem" } : {}),
           }}
         >
           {text}
@@ -30,10 +39,13 @@ const OrmieBubble = ({ text, children }) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
-            backgroundColor: "#F1F0F0",
-            borderRadius: "0px 16px 16px 16px",
-            padding: "12px 15px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
+            background: "transparent",
+            borderRadius: "18px",
+            padding: "16px 16px 12px 16px",
+            border: "none",
+            position: "relative",
+            minWidth: "200px",
+            ...(window.innerWidth <= 600 ? { fontSize: "0.95rem" } : {}),
           }}
         >
           {children}

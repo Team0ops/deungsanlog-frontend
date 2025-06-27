@@ -22,20 +22,19 @@ const PageWrapper = styled.div`
 const ChatContainer = styled.div`
   width: 100%;
   max-width: 800px;
-  min-height: 80vh;
+  height: 90vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
-  padding: clamp(1rem, 4vw, 1.5rem);
+  padding: 0.5rem 0.5rem 0.75rem 0.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   margin: 0 auto;
 
   @media (max-width: 600px) {
     max-width: 100%;
-    min-height: 70vh;
-    padding: 1rem 0.5rem;
+    height: 90vh;
+    padding: 0.5rem 0.5rem 0.75rem 0.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin: 0;
@@ -43,16 +42,10 @@ const ChatContainer = styled.div`
 `;
 
 const MessageListWrapper = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  flex: 1 1 auto;
   min-height: 0;
-
-  @media (max-width: 600px) {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
+  overflow-y: auto;
+  margin: 0;
 `;
 
 const OrmiePage = () => {
@@ -64,9 +57,13 @@ const OrmiePage = () => {
     setUserProfile(answers);
   };
 
+  const chatContainerStyle = !profile
+    ? { justifyContent: "center", alignItems: "center" }
+    : { justifyContent: "space-between", alignItems: "stretch" };
+
   return (
     <PageWrapper>
-      <ChatContainer>
+      <ChatContainer style={chatContainerStyle}>
         {!profile ? (
           <OnboardingChat onComplete={handleOnboardingComplete} />
         ) : (
@@ -74,7 +71,17 @@ const OrmiePage = () => {
             <MessageListWrapper>
               <ChatMessageList messages={messages} onSend={handleSend} />
             </MessageListWrapper>
-            <ChatInput onSend={(text) => handleSend(text)} />
+            <div
+              style={{
+                height: "64px",
+                flexShrink: 0,
+                width: "100%",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              <ChatInput onSend={(text) => handleSend(text)} />
+            </div>
           </>
         )}
       </ChatContainer>
