@@ -40,10 +40,10 @@ const OnboardingChat = ({ onComplete }) => {
     return (
       <div
         style={{
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          width: "100%",
+          maxWidth: "400px",
+          padding: "1rem",
+          margin: "0 auto",
         }}
       >
         <div

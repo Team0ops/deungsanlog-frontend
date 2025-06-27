@@ -55,8 +55,15 @@ const SidenavRoot = styled(Drawer)(({ theme, ownerState }) => {
 
   return {
     "& .MuiDrawer-paper": {
-      overflow: "visible",
       position: "fixed",
+      top: 0,
+      left: 0,
+      right: "auto",
+      bottom: 0,
+      height: "100dvh",
+      maxHeight: "100dvh",
+      boxSizing: "border-box",
+      overflowY: "auto",
       zIndex: 1300,
       willChange: "transform",
       isolation: "isolate",
