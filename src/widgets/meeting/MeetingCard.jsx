@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
+import { useNavigate } from "react-router-dom";
 
 dayjs.locale("ko");
 dayjs.extend(weekday);
@@ -26,6 +27,7 @@ const statusMap = {
 
 const MeetingCard = ({ meeting }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [memberCount, setMemberCount] = useState(null);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const MeetingCard = ({ meeting }) => {
       .then((res) => {
         if (ignore) return;
         const joinedCount = Array.isArray(res.data)
-          ? res.data.filter((m) => m.status === "JOINED").length
+          ? res.data.filter((m) => m.status === "ACCEPTED").length
           : 1;
         setMemberCount(joinedCount);
       })
@@ -66,6 +68,7 @@ const MeetingCard = ({ meeting }) => {
         boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
         mb: 2,
         transition: "0.25s ease",
+        cursor: "pointer", // 추가
         "&:hover": {
           boxShadow: "0 8px 20px rgba(76, 117, 89, 0.2)",
           transform: "translateY(-3px)",
@@ -73,6 +76,7 @@ const MeetingCard = ({ meeting }) => {
           background: "linear-gradient(135deg, #ffffff 0%, #f7fbf9 100%)",
         },
       }}
+      onClick={() => navigate(`/meeting/detail/${meeting.id}`)} // 추가
     >
       {/* 상단 - 제목 & 상태 */}
       <Box
@@ -124,7 +128,7 @@ const MeetingCard = ({ meeting }) => {
             px: 1.5,
             py: 0.4,
             borderRadius: 2,
-            backgroundColor: `${bgColor}10`, // or '08'
+            backgroundColor: `${bgColor}10`,
             border: `1px solid ${bgColor}`,
             color: bgColor,
             fontSize: "0.8rem",
