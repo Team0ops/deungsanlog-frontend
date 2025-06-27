@@ -8,6 +8,11 @@ const VisitorView = ({ onApply }) => {
         variant="contained"
         color="primary"
         onClick={onApply}
+        sx={{
+          outline: "none",
+          boxShadow: "none",
+          "&:focus": { outline: "none" },
+        }}
       >
         참가 신청하기
       </Button>

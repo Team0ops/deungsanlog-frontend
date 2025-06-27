@@ -10,8 +10,7 @@ const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
   const [accepted, setAccepted] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [members, setMembers] = useState([]);
-  const myId = 12; // ✅ 임시 하드코딩
-
+  const myId = 11; // ✅ 임시 하드코딩
   useEffect(() => {
     if (!meetingId) return;
 
@@ -44,12 +43,30 @@ const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
   console.log("applicants:", applicants);
 
   // 핸들러
-  const handleAccept = (userId) => {
-    alert(`${userId} 수락`);
+  const handleAccept = async (userId) => {
+    try {
+      await axiosInstance.patch(
+        `/meeting-service/${meetingId}/members/${userId}/accept`
+      );
+      alert("수락 완료");
+      window.location.reload();
+    } catch (e) {
+      console.error("수락 실패:", e);
+      alert("수락 실패");
+    }
   };
 
-  const handleReject = (userId) => {
-    alert(`${userId} 거절`);
+  const handleReject = async (userId) => {
+    try {
+      await axiosInstance.patch(
+        `/meeting-service/${meetingId}/members/${userId}/reject`
+      );
+      alert("거절 완료");
+      window.location.reload();
+    } catch (e) {
+      console.error("거절 실패:", e);
+      alert("거절 실패");
+    }
   };
 
   const handleCancel = async () => {
@@ -82,9 +99,6 @@ const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
   if (String(myId) === String(hostId)) {
     return (
       <Box sx={boxStyle}>
-        <Typography variant="h6" fontWeight={700} mb={2}>
-          모임 관리 (개설자)
-        </Typography>
         <HostView
           meeting={meeting}
           members={members}

@@ -19,9 +19,14 @@ const ApplicantView = ({ onCancel }) => {
           backgroundColor: "white",
           borderColor: "grey.300",
           color: "error.main",
+          outline: "none",
           "&:hover": {
             borderColor: "#4caf50",
             backgroundColor: "#f6fff6",
+          },
+          "&:focus": {
+            outline: "none",
+            boxShadow: "none",
           },
           transition: "all 0.2s ease",
           borderRadius: 2,
