@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "shared/lib/axiosInstance";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import mountainMessages from "shared/constants/mountainMessages";
 import GreenButton from "shared/ui/GreenButton";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -12,6 +12,8 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
   const randomMessage =
     mountainMessages[Math.floor(Math.random() * mountainMessages.length)];
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const fetchBadgeInfo = async () => {
@@ -33,8 +35,8 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
       width="100%"
       maxWidth="1000px"
       mx="auto"
-      mt={4}
-      px={2}
+      mt={isMobile ? 2 : 4}
+      px={isMobile ? 1 : 2}
       display="flex"
       justifyContent="center"
       alignItems="center"
@@ -42,35 +44,35 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
       <Box
         width="100%"
         display="flex"
-        flexDirection="row"
-        gap={3}
+        flexDirection={isMobile ? "column" : "row"}
+        gap={isMobile ? 2 : 3}
         bgcolor="#fdfdfd"
         borderRadius={3}
         boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
-        p={3}
+        p={isMobile ? 2 : 3}
         alignItems="stretch"
       >
         {/* 메시지/배지 박스 (왼쪽) */}
         <Box
-          flex={2}
+          flex={isMobile ? "none" : 2}
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          px={2}
-          py={1}
+          px={isMobile ? 1 : 2}
+          py={isMobile ? 1 : 1}
           textAlign="center"
         >
           {/* (i) 아이콘 버튼 추가 */}
           <Box display="flex" justifyContent="flex-end" width="100%">
             <IconButton
-              size="small" // 더 크게
+              size="small"
               onClick={() => navigate("/log/badge-info")}
               sx={{
                 color: "#4b8161",
-                fontSize: 25, // 아이콘 자체 크기 키움
+                fontSize: isMobile ? 20 : 25,
                 outline: "none",
-                "&:focus": { outline: "none" }, // 포커스 아웃라인 제거
+                "&:focus": { outline: "none" },
                 "&:active": { outline: "none" },
               }}
               aria-label="배지 단계 설명"
@@ -78,23 +80,31 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
               disableRipple
               tabIndex={0}
             >
-              <InfoOutlinedIcon sx={{ fontSize: 32 }} />
+              <InfoOutlinedIcon sx={{ fontSize: isMobile ? 28 : 32 }} />
             </IconButton>
           </Box>
           {!badgeInfo ? (
-            <Typography>🧭 배지를 찾는 중... 조금만 기다려주세요!</Typography>
+            <Typography fontSize={isMobile ? "0.9rem" : "1rem"}>
+              🧭 배지를 찾는 중... 조금만 기다려주세요!
+            </Typography>
           ) : (
             <>
               <Typography
-                variant="h5"
+                variant={isMobile ? "h6" : "h5"}
                 fontWeight={900}
-                mb={2}
+                mb={isMobile ? 1 : 2}
                 sx={{
                   color: "#4b8161",
-                  background: "linear-gradient(transparent 60%, #fff7c9 60%)",
+                  background: isMobile
+                    ? "none"
+                    : "linear-gradient(transparent 60%, #fff7c9 60%)",
                   borderRadius: 0,
-                  display: "inline",
+                  display: "inline-block",
                   boxDecorationBreak: "clone",
+                  WebkitBoxDecorationBreak: "clone",
+                  fontSize: isMobile ? "1rem" : "inherit",
+                  lineHeight: isMobile ? 1.4 : 1.6,
+                  px: 0.5,
                 }}
               >
                 {randomMessage}
@@ -104,8 +114,8 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
                 justifyContent="center"
                 alignItems="center"
                 flexWrap="wrap"
-                gap={1}
-                mb={1}
+                gap={isMobile ? 0.5 : 1}
+                mb={isMobile ? 0.5 : 1}
               >
                 <Box display="flex" alignItems="center">
                   <Box
@@ -113,17 +123,28 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
                     src={`/assets/badges/Badge_0${badgeInfo.stage}.svg`}
                     alt="등산 배지"
                     sx={{
-                      width: 24,
-                      height: 24,
+                      width: isMobile ? 20 : 24,
+                      height: isMobile ? 20 : 24,
                       mr: "3px",
                       transform: "translateY(-2px)",
                     }}
                   />
-                  <Typography fontSize="1.2rem" component="span">
+                  <Typography
+                    fontSize={isMobile ? "1rem" : "1.2rem"}
+                    component="span"
+                    sx={{ whiteSpace: "nowrap" }}
+                  >
                     {badgeInfo.nickname} 님의
                   </Typography>
                 </Box>
-                <Typography fontSize="1.2rem" component="span">
+                <Typography
+                  fontSize={isMobile ? "1rem" : "1.2rem"}
+                  component="span"
+                  sx={{
+                    lineHeight: isMobile ? 1.3 : 1.5,
+                    wordBreak: "keep-all",
+                  }}
+                >
                   발걸음이 쌓여{" "}
                   <Box
                     component="span"
@@ -134,7 +155,11 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
                   가 되었어요!
                 </Typography>
               </Box>
-              <Typography fontSize="1.2rem" variant="body1">
+              <Typography
+                fontSize={isMobile ? "1rem" : "1.2rem"}
+                variant="body1"
+                sx={{ lineHeight: isMobile ? 1.3 : 1.5 }}
+              >
                 오늘도 멋진 기록 남겨볼까요? ✨
               </Typography>
             </>
@@ -142,22 +167,27 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
         </Box>
 
         {/* 구분선 */}
-        <Box
-          width="2px"
-          bgcolor="#e0e0e0"
-          mx={2}
-          borderRadius={1}
-          display={{ xs: "none", md: "block" }}
-        />
+        {!isMobile && (
+          <Box
+            width="2px"
+            height="auto"
+            bgcolor="#e0e0e0"
+            mx={2}
+            my={0}
+            borderRadius={1}
+            display={{ xs: "block", md: "block" }}
+          />
+        )}
 
         {/* 버튼/셀렉트 박스 (오른쪽) */}
         <Box
-          flex={1}
+          flex={isMobile ? "none" : 1}
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          gap={2}
+          gap={isMobile ? 1.5 : 2}
+          width={isMobile ? "100%" : "auto"}
         >
           <GreenButton
             onClick={() => {
@@ -165,11 +195,11 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
               navigate("/log/write");
             }}
             style={{
-              height: "50px",
-              width: "90%",
+              height: isMobile ? "45px" : "50px",
+              width: "100%",
               color: "#4c7559",
               fontWeight: "bold",
-              fontSize: "1.1rem",
+              fontSize: isMobile ? "1rem" : "1.1rem",
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
@@ -180,14 +210,14 @@ const LogHeader = ({ userId, sortOption, setSortOption }) => {
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
             style={{
-              height: "50px",
-              width: "90%",
+              height: isMobile ? "45px" : "50px",
+              width: "100%",
               padding: "0 1rem",
               borderRadius: "12px",
               border: "1px solid #d0d0d0",
               background: "#fdfdfd",
               fontWeight: "bold",
-              fontSize: "1rem",
+              fontSize: isMobile ? "0.9rem" : "1rem",
               color: "#4c7559",
               outline: "none",
               cursor: "pointer",

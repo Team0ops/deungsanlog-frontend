@@ -15,6 +15,7 @@ import defaultImage from "shared/assets/images/logo_mountain.png";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -24,6 +25,8 @@ const RecordDetailModalPage = () => {
   const [record, setRecord] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [resultModal, setResultModal] = useState({ open: false, message: "" });
 
   useEffect(() => {
     axiosInstance
@@ -47,13 +50,12 @@ const RecordDetailModalPage = () => {
 
   const handleDelete = async () => {
     handleMenuClose();
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    setConfirmOpen(false);
     try {
       await axiosInstance.delete(`/record-service/delete?recordId=${recordId}`);
-      alert("삭제되었습니다.");
-      navigate(-1);
+      setResultModal({ open: true, message: "삭제되었습니다." });
     } catch (e) {
-      alert("삭제에 실패했습니다.");
+      setResultModal({ open: true, message: "삭제에 실패했습니다." });
       console.error(e);
     }
   };
@@ -131,7 +133,7 @@ const RecordDetailModalPage = () => {
         </IconButton>
         <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
           <MenuItem onClick={handleEdit}>수정</MenuItem>
-          <MenuItem onClick={handleDelete}>삭제</MenuItem>
+          <MenuItem onClick={() => setConfirmOpen(true)}>삭제</MenuItem>
         </Menu>
         {/* 버튼 아래에 여백 추가 */}
         <Box sx={{ height: 48 }} />
@@ -219,6 +221,30 @@ const RecordDetailModalPage = () => {
           </Box>
         </DialogContent>
       </Box>
+      {/* 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={confirmOpen}
+        message={"정말 삭제하시겠습니까?"}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        cancelText="취소"
+        confirmText="삭제"
+      />
+      {/* 결과 안내 모달 */}
+      <ConfirmModal
+        isOpen={resultModal.open}
+        message={resultModal.message}
+        onCancel={() => {
+          setResultModal({ open: false, message: "" });
+          if (resultModal.message === "삭제되었습니다.") navigate(-1);
+        }}
+        onConfirm={() => {
+          setResultModal({ open: false, message: "" });
+          if (resultModal.message === "삭제되었습니다.") navigate(-1);
+        }}
+        cancelText="확인"
+        confirmText="확인"
+      />
     </Dialog>
   );
 };

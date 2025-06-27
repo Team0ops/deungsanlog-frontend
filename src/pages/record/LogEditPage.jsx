@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import LogWriteForm from "./form/LogWriteForm";
 import axiosInstance from "shared/lib/axiosInstance";
 import { getUserInfo, requireAuth } from "shared/lib/auth";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const LogEditPage = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -10,14 +11,16 @@ const LogEditPage = () => {
   const navigate = useNavigate();
   const [record, setRecord] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [isBlocked, setIsBlocked] = useState(false); // ✅
+  const [isBlocked, setIsBlocked] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const ok = requireAuth(
       "기록 수정을 위해 로그인이 필요합니다. 로그인하시겠습니까?"
     );
     if (!ok) {
-      setIsBlocked(true); // ✅ 렌더링 차단
+      setIsBlocked(true);
       return;
     }
 
@@ -43,22 +46,36 @@ const LogEditPage = () => {
       });
   }, [recordId, userId, navigate]);
 
-  if (isBlocked || !record) return null; // ✅ 렌더링 차단
+  if (isBlocked || !record) return null;
 
   return (
     <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: "100vw",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 10,
-        background: "transparent",
-      }}
+      style={
+        isMobile
+          ? {
+              minHeight: "100vh",
+              width: "100vw",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              background: "#f8f9fa",
+              padding: "1.2rem 0 2rem 0",
+              overflowY: "auto",
+            }
+          : {
+              position: "fixed",
+              top: 0,
+              left: 0,
+              height: "100vh",
+              width: "100vw",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 10,
+              background: "transparent",
+            }
+      }
     >
       <LogWriteForm
         userId={userId}
