@@ -52,7 +52,9 @@ const FreeBoardHeader = () => {
             mb={{ xs: 1, md: 2 }}
             sx={{
               color: "#2e2e2e",
-              background: "linear-gradient(transparent 60%, #d4f1db 60%)",
+              background: isMobile
+                ? "none"
+                : "linear-gradient(transparent 60%, #d4f1db 60%)",
               borderRadius: 0,
               display: "inline",
               boxDecorationBreak: "clone",

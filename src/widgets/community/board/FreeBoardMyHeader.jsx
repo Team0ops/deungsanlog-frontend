@@ -71,7 +71,9 @@ const FreeBoardMyHeader = ({ sortOption, setSortOption }) => {
             mb={{ xs: 1, md: 2 }}
             sx={{
               color: "#4b8161",
-              background: "linear-gradient(transparent 60%, #fff7c9 60%)",
+              background: isMobile
+                ? "none"
+                : "linear-gradient(transparent 60%, #fff7c9 60%)",
               borderRadius: 0,
               display: "inline",
               boxDecorationBreak: "clone",

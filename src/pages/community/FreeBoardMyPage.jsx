@@ -143,31 +143,102 @@ const FreeBoardMyPage = () => {
             maxHeight: "calc(100vh - 180px)",
           }}
         >
-          {loading
-            ? "불러오는 중..."
-            : getSortedPosts().length === 0
-            ? "작성한 게시글이 없습니다."
-            : getSortedPosts().map((post, idx) => (
+          {loading ? (
+            <div
+              style={{
+                color: "#666",
+                textAlign: "center",
+                fontSize: isMobile ? "1rem" : "1.1rem",
+                fontFamily: "'GmarketSansMedium', sans-serif",
+                lineHeight: "1.6",
+                minHeight: "200px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: isMobile ? "2.5rem" : "3rem",
+                  animation: "bounce 1.5s infinite",
+                }}
+              >
+                🐿️
+              </div>
+              <div>
+                <div style={{ marginBottom: "0.5rem" }}>
+                  내 게시글을 열심히 찾고 있어요!
+                </div>
                 <div
-                  key={post.id}
                   style={{
-                    width: "100%",
-                    marginBottom:
-                      idx !== posts.length - 1
-                        ? isMobile
-                          ? "1rem"
-                          : "1.2rem"
-                        : 0,
+                    fontSize: isMobile ? "0.9rem" : "1rem",
+                    color: "#888",
                   }}
                 >
-                  <FeedCard
-                    post={post}
-                    myUserId={userId}
-                    onEdit={() => handleEdit(post)}
-                    onDelete={() => handleDelete(post)}
-                  />
+                  잠시만 기다려주세요... 🌰
                 </div>
-              ))}
+              </div>
+              <style>
+                {`
+                  @keyframes bounce {
+                    0%, 20%, 50%, 80%, 100% {
+                      transform: translateY(0);
+                    }
+                    40% {
+                      transform: translateY(-10px);
+                    }
+                    60% {
+                      transform: translateY(-5px);
+                    }
+                  }
+                `}
+              </style>
+            </div>
+          ) : getSortedPosts().length === 0 ? (
+            <div
+              style={{
+                color: "#888",
+                textAlign: "center",
+                marginTop: 0,
+                fontSize: isMobile ? "1rem" : "1.1rem",
+                fontFamily: "'GmarketSansMedium', sans-serif",
+                lineHeight: "1.6",
+                minHeight: "220px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              🐿️ 아직 작성한 게시글이 없어요! <br />첫 번째 이야기를 남겨볼까요?
+              🌰
+            </div>
+          ) : (
+            getSortedPosts().map((post, idx) => (
+              <div
+                key={post.id}
+                style={{
+                  width: "100%",
+                  marginBottom:
+                    idx !== posts.length - 1
+                      ? isMobile
+                        ? "1rem"
+                        : "1.2rem"
+                      : 0,
+                }}
+              >
+                <FeedCard
+                  post={post}
+                  myUserId={userId}
+                  onEdit={() => handleEdit(post)}
+                  onDelete={() => handleDelete(post)}
+                />
+              </div>
+            ))
+          )}
         </Box>
         {/* 페이지네이션 버튼 */}
         <Box display="flex" justifyContent="center" mt={isMobile ? 1 : 2}>
