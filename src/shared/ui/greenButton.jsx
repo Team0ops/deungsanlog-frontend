@@ -21,6 +21,8 @@ const GreenButton = ({
         cursor: "pointer",
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         transition: "all 0.3s ease",
+        whiteSpace: "nowrap",
+        minWidth: "3.5em",
         ...style,
       }}
       onMouseEnter={(e) => {
