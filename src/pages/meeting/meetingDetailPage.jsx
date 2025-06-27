@@ -10,6 +10,7 @@ import {
   Paper,
 } from "@mui/material";
 import MeetingMemberStatusBox from "widgets/meeting/status/MeetingMemberStatusBox";
+import SoftBadge from "shared/ui/SoftBadge";
 
 const MeetingDetailPage = () => {
   const { meetingId } = useParams();
@@ -25,6 +26,18 @@ const MeetingDetailPage = () => {
 
   if (loading) return <CircularProgress />;
   if (!meeting) return <Typography>모임 정보를 불러올 수 없습니다.</Typography>;
+
+  // 상태 한글 변환 및 색상 매핑
+  const statusMap = {
+    OPEN: { label: "모집중", color: "info" },
+    FULL: { label: "정원마감", color: "warning" },
+    CLOSED: { label: "마감", color: "secondary" },
+    CANCELLED: { label: "취소", color: "error" },
+  };
+  const statusInfo = statusMap[meeting.status] || {
+    label: meeting.status,
+    color: "dark",
+  };
 
   return (
     <Box
@@ -42,59 +55,103 @@ const MeetingDetailPage = () => {
       }}
     >
       <Paper
-        elevation={2}
+        elevation={3}
         sx={{
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          gap: 4,
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1.2fr 1fr" },
+          gap: 6,
           width: "100%",
           maxWidth: 900,
           margin: "0 auto",
-          p: 4,
-          borderRadius: 4,
-          minHeight: 400,
+          p: 5,
+          borderRadius: "24px",
+          minHeight: 420,
+          background: "#fff",
         }}
       >
         {/* 왼쪽: 모임 정보 */}
         <Box flex={2} minWidth={0}>
-          <Typography variant="h4" fontWeight={700} mb={2}>
+          {/* 상태 뱃지 + 산이름 뱃지 가로 배치 */}
+          <Box display="flex" alignItems="center" mb={2.5} gap={1.5}>
+            <SoftBadge
+              color={statusInfo.color}
+              size="md"
+              variant="contained"
+              sx={{
+                borderRadius: "999px",
+                fontWeight: 700,
+                fontFamily: "'GmarketSansTTFBold', 'Pretendard', sans-serif",
+                fontSize: "1.08rem",
+                px: 2.5,
+                py: 1,
+                backgroundColor: "#e0f7fa",
+                color: "#4b8161",
+                boxShadow: "0 2px 8px 0 rgba(76, 129, 97, 0.08)",
+              }}
+            >
+              {statusInfo.label}
+            </SoftBadge>
+            <SoftBadge
+              color="success"
+              size="md"
+              variant="contained"
+              sx={{
+                borderRadius: "999px",
+                fontWeight: 700,
+                fontFamily: "'GmarketSansTTFBold', 'Pretendard', sans-serif",
+                fontSize: "1.05rem",
+                px: 2.5,
+                py: 1,
+                backgroundColor: "#d2f5c7",
+                color: "#3a5d2c",
+                boxShadow: "0 2px 8px 0 rgba(58, 93, 44, 0.08)",
+                display: "inline-block",
+              }}
+            >
+              🏔️ {meeting.mountainName}
+            </SoftBadge>
+          </Box>
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            mb={2.5}
+            mt={0}
+            sx={{
+              fontFamily: "'GmarketSansTTFBold', 'Pretendard', sans-serif",
+              textShadow: "0 2px 8px #e0f7fa",
+              color: "#4b8161",
+              fontSize: "1.18rem",
+            }}
+          >
             {meeting.title}
           </Typography>
-          <Typography variant="subtitle1" color="primary" mb={1}>
-            {meeting.mountainName}
-          </Typography>
-          <Typography variant="body1" mb={2}>
+          <Typography variant="body1" mb={3} sx={{ fontSize: "1.07rem" }}>
             {meeting.description}
           </Typography>
-          <Divider sx={{ my: 2 }} />
-          <Typography variant="body2" color="text.secondary" mb={1}>
+          <Divider sx={{ my: 3 }} />
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            mb={2}
+            sx={{ fontSize: "1.02rem" }}
+          >
             🗓️ 일정: {meeting.scheduledDate} {meeting.scheduledTime}
           </Typography>
-          <Typography variant="body2" color="text.secondary" mb={1}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            mb={2}
+            sx={{ fontSize: "1.02rem" }}
+          >
             ⏰ 모집 마감: {meeting.deadlineDate}
           </Typography>
-          <Typography variant="body2" color="text.secondary" mb={1}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            mb={2}
+            sx={{ fontSize: "1.02rem" }}
+          >
             📍 집결지: {meeting.gatherLocation}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" mb={1}>
-            👥 최대 인원: {meeting.maxParticipants}명
-          </Typography>
-          <Typography variant="body2" color="text.secondary" mb={1}>
-            🔗 오픈채팅:{" "}
-            {meeting.chatLink ? (
-              <a
-                href={meeting.chatLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {meeting.chatLink}
-              </a>
-            ) : (
-              "없음"
-            )}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" mb={1}>
-            상태: {meeting.status}
           </Typography>
         </Box>
 

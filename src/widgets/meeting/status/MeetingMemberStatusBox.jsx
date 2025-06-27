@@ -5,12 +5,14 @@ import HostView from "./HostView";
 import MemberView from "./MemberView";
 import ApplicantView from "./ApplicantView";
 import VisitorView from "./VisitorView";
+import { getUserInfo } from "shared/lib/auth";
 
 const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
   const [accepted, setAccepted] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [members, setMembers] = useState([]);
-  const myId = 11; // ✅ 임시 하드코딩
+  const userInfo = getUserInfo();
+  const myId = userInfo?.userId || null;
   useEffect(() => {
     if (!meetingId) return;
 
@@ -136,7 +138,8 @@ const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
 const boxStyle = {
   flex: 1,
   minWidth: 220,
-  bgcolor: "#f7faf7",
+  bgcolor: "#fff",
+  border: "1px solid #C8F2B5",
   borderRadius: 3,
   p: 3,
   display: "flex",
