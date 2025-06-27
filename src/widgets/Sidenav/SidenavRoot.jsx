@@ -60,8 +60,8 @@ const SidenavRoot = styled(Drawer)(({ theme, ownerState }) => {
       left: 0,
       right: "auto",
       bottom: 0,
-      height: "100dvh",
-      maxHeight: "100dvh",
+      height: "94vh",
+      maxHeight: "94vh",
       boxSizing: "border-box",
       overflowY: "auto",
       zIndex: 1300,
@@ -69,6 +69,10 @@ const SidenavRoot = styled(Drawer)(({ theme, ownerState }) => {
       isolation: "isolate",
       boxShadow: theme.shadows[8],
       border: "none",
+      "@media (max-width: 600px)": {
+        height: "94dvh",
+        maxHeight: "94dvh",
+      },
       ...(miniSidenav ? drawerCloseStyles() : drawerOpenStyles()),
     },
   };
