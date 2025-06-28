@@ -13,12 +13,22 @@ import SidenavRoot from "widgets/Sidenav/SidenavRoot";
 
 import { useSoftUIController, setMiniSidenav } from "context";
 
-function Sidenav({ color, brand, brandName, routes, ...rest }) {
+function Sidenav({
+  color,
+  brand,
+  brandName,
+  routes,
+  onMobileMenuClick,
+  ...rest
+}) {
   const [controller, dispatch] = useSoftUIController();
   const { miniSidenav, transparentSidenav } = controller;
   const location = useLocation();
   const { pathname } = location;
   const collapseName = pathname.split("/").slice(1)[0];
+
+  // 모바일 여부 체크
+  const isMobile = window.innerWidth < 600;
 
   useEffect(() => {
     function handleMiniSidenav() {
@@ -31,6 +41,13 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     handleMiniSidenav();
     return () => window.removeEventListener("resize", handleMiniSidenav);
   }, [dispatch, location]);
+
+  // ✅ 모바일에서 메뉴 클릭 시 sidenav 닫기
+  const handleMobileMenuClick = () => {
+    if (isMobile && onMobileMenuClick) {
+      onMobileMenuClick();
+    }
+  };
 
   // ✅ 액션 처리 함수 추가
   const handleActionClick = (action) => {
@@ -66,7 +83,11 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
                 />
               </Link>
             ) : (
-              <NavLink to={route} style={{ textDecoration: "none" }}>
+              <NavLink
+                to={route}
+                style={{ textDecoration: "none" }}
+                onClick={handleMobileMenuClick}
+              >
                 <SidenavCollapse
                   color={color}
                   name={name}
