@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import axiosInstance from "shared/lib/axiosInstance";
 import {
   Box,
@@ -16,13 +17,14 @@ import useMeetingDeadline from "../../hooks/useMeetingDeadline";
 
 const MeetingDetailPage = () => {
   const { meetingId } = useParams();
+  const navigate = useNavigate();
   const [meeting, setMeeting] = useState(null);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  // 마감일 체크 훅 사용
-  const { isDeadlinePassed, timeUntilDeadline } = useMeetingDeadline(meeting);
+  // 마감일 체크 훅 사용 (자동 마감 처리만)
+  useMeetingDeadline(meeting);
 
   // 날짜를 사용자 친화적으로 포맷팅하는 함수
   const formatDate = (dateString) => {
@@ -102,6 +104,47 @@ const MeetingDetailPage = () => {
           overflow: "hidden",
         }}
       >
+        {/* 뒤로가기 버튼 */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: isMobile ? "1.5rem" : "2rem",
+            left: isMobile ? "1.5rem" : "2rem",
+            zIndex: 10,
+          }}
+        >
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              background: "#f4f8f4",
+              border: "none",
+              color: "#27ae60",
+              fontSize: isMobile ? "1rem" : "1.15rem",
+              cursor: "pointer",
+              borderRadius: "50%",
+              width: isMobile ? "40px" : "44px",
+              height: isMobile ? "40px" : "44px",
+              minWidth: isMobile ? "40px" : "44px",
+              minHeight: isMobile ? "40px" : "44px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 600,
+              boxShadow: "0 2px 8px rgba(39,174,96,0.07)",
+              transition: "background 0.15s",
+              padding: 0,
+              gap: "0.3rem",
+            }}
+            aria-label="뒤로가기"
+            onMouseOver={(e) => (e.currentTarget.style.background = "#e6f6ec")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
+          >
+            <ArrowBackIosNewIcon
+              style={{ fontSize: isMobile ? "1rem" : "1.2rem" }}
+            />
+          </button>
+        </Box>
+
         {/* 왼쪽: 모임 정보 */}
         <Box
           flex={2}
@@ -110,6 +153,7 @@ const MeetingDetailPage = () => {
             overflowY: "auto",
             maxHeight: "100%",
             pr: 1,
+            pt: isMobile ? 6 : 7,
           }}
         >
           {/* 상태 뱃지 + 산이름 뱃지 가로 배치 */}
@@ -129,7 +173,7 @@ const MeetingDetailPage = () => {
             />
             <SoftBadge
               variant="gradient"
-              color="info"
+              color="success"
               size="lg"
               badgeContent={meeting.mountainName}
               container
@@ -181,17 +225,6 @@ const MeetingDetailPage = () => {
             }}
           >
             ⏰ 모집 마감: {formatDate(meeting.deadlineDate)}
-            {timeUntilDeadline && (
-              <span
-                style={{
-                  color: isDeadlinePassed ? "#f44336" : "#4caf50",
-                  fontWeight: 600,
-                  marginLeft: "0.5rem",
-                }}
-              >
-                ({timeUntilDeadline})
-              </span>
-            )}
           </Typography>
           <Typography
             variant="body2"

@@ -45,8 +45,8 @@ const MeetingCard = ({ meeting }) => {
   const userInfo = getUserInfo();
   const isLoggedIn = !!userInfo?.userId;
 
-  // 마감일 체크 훅 사용
-  const { isDeadlinePassed, timeUntilDeadline } = useMeetingDeadline(meeting);
+  // 마감일 체크 훅 사용 (자동 마감 처리만)
+  useMeetingDeadline(meeting);
 
   useEffect(() => {
     if (!meeting) return;
@@ -251,17 +251,6 @@ const MeetingCard = ({ meeting }) => {
           >
             ⏰ 모집 마감:{" "}
             {formatDateTime(meeting.deadlineDate, meeting.scheduledTime)}
-            {timeUntilDeadline && (
-              <span
-                style={{
-                  color: isDeadlinePassed ? "#f44336" : "#4caf50",
-                  fontWeight: 600,
-                  marginLeft: "0.5rem",
-                }}
-              >
-                ({timeUntilDeadline})
-              </span>
-            )}
           </Typography>
 
           <Typography
