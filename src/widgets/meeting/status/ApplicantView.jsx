@@ -1,8 +1,10 @@
 import { Typography, Button } from "@mui/material";
+import MeetingMemberOverview from "../MeetingMemberOverview";
 
-const ApplicantView = ({ onCancel }) => {
+const ApplicantView = ({ onCancel, meetingId }) => {
   return (
     <>
+      <MeetingMemberOverview meetingId={meetingId} />
       <Typography
         fontWeight={500}
         fontSize="0.95rem"

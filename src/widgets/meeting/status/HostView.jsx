@@ -1,9 +1,17 @@
 import { Box, Typography, Button, Divider } from "@mui/material";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
+import MeetingMemberOverview from "../MeetingMemberOverview";
 
-const HostView = ({ accepted = [], applicants = [], onAccept, onReject }) => {
+const HostView = ({
+  accepted = [],
+  applicants = [],
+  onAccept,
+  onReject,
+  meetingId,
+}) => {
   return (
     <Box p={2}>
+      <MeetingMemberOverview meetingId={meetingId} />
       <Box display="flex" flexDirection="column" gap={2}>
         {/* 참가자 목록 */}
         <Box

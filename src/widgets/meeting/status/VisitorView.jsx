@@ -1,8 +1,10 @@
 import { Box, Button } from "@mui/material";
+import MeetingMemberOverview from "../MeetingMemberOverview";
 
-const VisitorView = ({ onApply }) => {
+const VisitorView = ({ onApply, meetingId }) => {
   return (
     <Box>
+      <MeetingMemberOverview meetingId={meetingId} />
       <Button
         size="large"
         variant="contained"

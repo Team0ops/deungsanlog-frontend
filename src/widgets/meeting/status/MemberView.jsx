@@ -1,5 +1,7 @@
 import { Box, Typography, Divider } from "@mui/material";
-const MemberView = ({ meeting, members }) => {
+import MeetingMemberOverview from "../MeetingMemberOverview";
+
+const MemberView = ({ meeting, members, meetingId }) => {
   const accepted = members.filter(
     (m) => m.status === "ACCEPTED" && m.userId !== meeting.hostUserId
   );
@@ -7,6 +9,7 @@ const MemberView = ({ meeting, members }) => {
 
   return (
     <Box>
+      <MeetingMemberOverview meetingId={meetingId} />
       <Typography fontWeight={600} mb={1}>
         개설자
       </Typography>

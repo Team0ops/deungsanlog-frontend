@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Box, Modal, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Modal,
+  Typography,
+  Button,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import GreenInput from "shared/ui/greenInput";
 import GreenButton from "shared/ui/greenButton";
@@ -11,35 +18,42 @@ import { getUserInfo } from "shared/lib/auth";
 import MountainInputWidget from "widgets/mountain/MountainInputWidget";
 
 // 라벨+설명+필드 컴포넌트
-const LabeledField = ({ label, description, children, style }) => (
-  <div style={{ marginBottom: "1rem", ...style }}>
-    <label
-      style={{
-        fontWeight: 600,
-        fontSize: "1.07rem",
-        marginBottom: "0.18rem",
-        display: "block",
-      }}
-    >
-      {label}
-    </label>
-    {description && (
-      <div
+const LabeledField = ({ label, description, children, style }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <div style={{ marginBottom: "1rem", ...style }}>
+      <label
         style={{
-          color: "#6e6e6e",
-          fontSize: "0.8rem",
+          fontWeight: 600,
+          fontSize: isMobile ? "1rem" : "1.07rem",
           marginBottom: "0.18rem",
+          display: "block",
         }}
       >
-        {description}
-      </div>
-    )}
-    {children}
-  </div>
-);
+        {label}
+      </label>
+      {description && (
+        <div
+          style={{
+            color: "#6e6e6e",
+            fontSize: isMobile ? "0.75rem" : "0.8rem",
+            marginBottom: "0.18rem",
+          }}
+        >
+          {description}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+};
 
 const MeetingCreateForm = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mountain, setMountain] = useState({ id: "", name: "", location: "" });
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -209,9 +223,10 @@ const MeetingCreateForm = () => {
       borderRadius={3}
       bgcolor="#ffffff"
       sx={{
-        maxWidth: { xs: "100vw", md: "700px" },
+        maxWidth: { xs: "95vw", md: "700px" },
         margin: "0 auto",
         overflowY: "auto",
+        minHeight: isMobile ? "auto" : "fit-content",
       }}
     >
       <form onSubmit={handleSubmit}>
@@ -279,7 +294,7 @@ const MeetingCreateForm = () => {
               width: "100%",
               background: "#f8fff9",
               resize: "vertical",
-              fontSize: "1rem",
+              fontSize: isMobile ? "0.95rem" : "1rem",
               fontFamily: "inherit",
               fontWeight: 500,
               lineHeight: 1.5,
@@ -342,11 +357,11 @@ const MeetingCreateForm = () => {
             value={maxParticipants}
             onChange={(e) => setMaxParticipants(Number(e.target.value))}
             style={{
-              width: "30%",
+              width: isMobile ? "50%" : "30%",
               padding: "0.7em",
               borderRadius: 8,
               border: "2px solid #70a784",
-              fontSize: "1.05rem",
+              fontSize: isMobile ? "1rem" : "1.05rem",
               fontFamily: "inherit",
               fontWeight: 500,
               background: "#f8fff9",
@@ -403,7 +418,7 @@ const MeetingCreateForm = () => {
             background: "#72927f",
             color: "#ffffff",
             width: "100%",
-            fontSize: "1.05rem",
+            fontSize: isMobile ? "1rem" : "1.05rem",
             padding: "0.8rem 0",
             marginTop: "0.7rem",
           }}
@@ -424,23 +439,37 @@ const MeetingCreateForm = () => {
             bgcolor: "background.paper",
             borderRadius: 2,
             boxShadow: 24,
-            p: 4,
-            minWidth: 320,
+            p: isMobile ? 3 : 4,
+            minWidth: isMobile ? "280px" : "320px",
+            maxWidth: isMobile ? "90vw" : "400px",
             textAlign: "center",
           }}
         >
-          <Typography variant="h6" mb={2}>
+          <Typography
+            variant="h6"
+            mb={2}
+            sx={{
+              fontSize: isMobile ? "1.1rem" : "1.25rem",
+              lineHeight: 1.4,
+            }}
+          >
             모임 진행일, 예정 시간은 등록 후 변경이 불가합니다.
             <br />
             계속 진행하시겠습니까?
           </Typography>
-          <Box display="flex" gap={2} justifyContent="center" mt={2}>
+          <Box
+            display="flex"
+            gap={isMobile ? 1 : 2}
+            justifyContent="center"
+            mt={2}
+            flexDirection={isMobile ? "column" : "row"}
+          >
             <GreenButton
               type="button"
               style={{
-                minWidth: 120,
+                minWidth: isMobile ? "100%" : 120,
                 fontWeight: 700,
-                fontSize: "1.08rem",
+                fontSize: isMobile ? "1rem" : "1.08rem",
                 border: "2px solid #70a784",
                 background: "#fff",
                 color: "#70a784",
@@ -453,9 +482,9 @@ const MeetingCreateForm = () => {
             <GreenButton
               type="button"
               style={{
-                minWidth: 120,
+                minWidth: isMobile ? "100%" : 120,
                 fontWeight: 700,
-                fontSize: "1.08rem",
+                fontSize: isMobile ? "1rem" : "1.08rem",
               }}
               onClick={handleConfirmSubmit}
             >
