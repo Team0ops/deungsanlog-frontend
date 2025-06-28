@@ -6,6 +6,27 @@ import axiosInstance from "shared/lib/axiosInstance";
 import html2canvas from "html2canvas";
 import ConfirmModal from "../Modal/ConfirmModal";
 
+// ✅ 날짜 형식 변환 함수
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+
+  // "2020-00-00" 형식을 "2000년 00월 00일" 형식으로 변환
+  const parts = dateString.split("-");
+  if (parts.length === 3) {
+    const year = parts[0];
+    const month = parts[1];
+    const day = parts[2];
+
+    // 월과 일이 00인 경우 처리
+    const formattedMonth = month === "00" ? "00" : month;
+    const formattedDay = day === "00" ? "00" : day;
+
+    return `${year}년 ${formattedMonth}월 ${formattedDay}일`;
+  }
+
+  return dateString; // 변환할 수 없는 경우 원본 반환
+};
+
 const RecordCard = ({
   image,
   mountainName,
@@ -233,7 +254,7 @@ const RecordCard = ({
             fontSize="0.8rem"
             fontWeight="semibold"
           >
-            {date}
+            {formatDate(date)}
           </Typography>
         </Box>
       </Box>

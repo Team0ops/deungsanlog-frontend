@@ -140,28 +140,28 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
         {/* 날씨 카드 */}
         <div style={cardStyle}>
           <h3 style={cardTitleStyle}>
-            {getWeatherIcon(weatherInfo?.weather)} 실시간 날씨
+            {getWeatherIcon(weatherInfo?.currentWeather?.weather)} 실시간 날씨
           </h3>
-          {weatherInfo && !weatherInfo.error ? (
+          {weatherInfo?.currentWeather && !weatherInfo.error ? (
             <div>
               <div
                 style={{
                   fontSize: "clamp(1.5rem, 3vw, 2rem)",
                   fontWeight: "700",
-                  color: getWeatherColor(weatherInfo.weather),
+                  color: getWeatherColor(weatherInfo.currentWeather.weather),
                 }}
               >
-                {weatherInfo.temperature}
+                {weatherInfo.currentWeather.temperature}
               </div>
               <div
                 style={{
                   fontSize: "clamp(1rem, 1.5vw, 1.1rem)",
                   fontWeight: "600",
-                  color: getWeatherColor(weatherInfo.weather),
+                  color: getWeatherColor(weatherInfo.currentWeather.weather),
                   marginBottom: "0.5rem",
                 }}
               >
-                {weatherInfo.weather}
+                {weatherInfo.currentWeather.weather}
               </div>
               <div
                 style={{
@@ -169,14 +169,14 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
                   color: "#6c757d",
                 }}
               >
-                <div>습도: {weatherInfo.humidity}</div>
-                <div>바람: {weatherInfo.windSpeed}</div>
+                <div>습도: {weatherInfo.currentWeather.humidity}</div>
+                <div>바람: {weatherInfo.currentWeather.windSpeed}</div>
                 <div>
                   강수:{" "}
-                  {weatherInfo.precipitation === "0" ||
-                  weatherInfo.precipitation === 0
+                  {weatherInfo.currentWeather.precipitation === "0" ||
+                  weatherInfo.currentWeather.precipitation === 0
                     ? "없음"
-                    : `${weatherInfo.precipitation}mm`}
+                    : `${weatherInfo.currentWeather.precipitation}mm`}
                 </div>
               </div>
             </div>
@@ -234,8 +234,10 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
                     .replace(")", "")}
                 </div>
                 <div style={todayTimeStyle}>
-                  <div>🌅일출: {formatTime(sunDataArray[0]?.sunriseTime)}</div>
-                  <div>🌇일몰: {formatTime(sunDataArray[0]?.sunsetTime)}</div>
+                  <div>
+                    🌅 일출 : {formatTime(sunDataArray[0]?.sunriseTime)}
+                  </div>
+                  <div>🌇 일몰 : {formatTime(sunDataArray[0]?.sunsetTime)}</div>
                 </div>
               </div>
 

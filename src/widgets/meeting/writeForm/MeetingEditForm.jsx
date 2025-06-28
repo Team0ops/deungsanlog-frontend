@@ -7,15 +7,11 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GreenInput from "shared/ui/greenInput";
 import GreenButton from "shared/ui/greenButton";
-import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
 import DatePickerYMDWidget from "widgets/DatePick/DatePickerYMDWidget";
-import TimePickerHMWidget from "widgets/DatePick/TimePickerHMWidget";
 import axiosInstance from "shared/lib/axiosInstance";
-import { getUserInfo } from "shared/lib/auth";
-import MountainInputWidget from "widgets/mountain/MountainInputWidget";
 
 // 라벨+설명+필드 컴포넌트
 const LabeledField = ({ label, description, children, style }) => {
@@ -50,57 +46,53 @@ const LabeledField = ({ label, description, children, style }) => {
   );
 };
 
-const MeetingCreateForm = () => {
+const MeetingEditForm = () => {
   const navigate = useNavigate();
+  const { meetingId } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [mountain, setMountain] = useState({ id: "", name: "", location: "" });
-  const [mountainModalOpen, setMountainModalOpen] = useState(false);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [scheduledDate, setScheduledDate] = useState("");
-  const [scheduledTime, setScheduledTime] = useState("");
   const [deadlineDate, setDeadlineDate] = useState("");
-  const [gatherLocation, setGatherLocation] = useState("");
-  const [maxParticipants, setMaxParticipants] = useState(8);
-  const [chatLink, setChatLink] = useState("");
+  const [scheduledDate, setScheduledDate] = useState("");
 
-  const [mountainError, setMountainError] = useState(false);
   const [titleError, setTitleError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
-  const [scheduledDateError, setScheduledDateError] = useState(false);
-  const [scheduledDateErrorMsg, setScheduledDateErrorMsg] = useState("");
-  const [scheduledTimeError, setScheduledTimeError] = useState(false);
-  const [gatherLocationError, setGatherLocationError] = useState(false);
-  const [chatLinkError, setChatLinkError] = useState(false);
   const [deadlineDateError, setDeadlineDateError] = useState(false);
   const [deadlineDateErrorMsg, setDeadlineDateErrorMsg] = useState("");
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = getUserInfo();
-    if (userInfo?.userId) {
-      setUserId(userInfo.userId);
-    } else {
-      setUserId(null);
+    const fetchMeetingData = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/meeting-service/${meetingId}`
+        );
+        const meetingData = response.data;
+
+        setTitle(meetingData.title || "");
+        setDescription(meetingData.description || "");
+        setDeadlineDate(meetingData.deadlineDate || "");
+        setScheduledDate(meetingData.scheduledDate || "");
+        setLoading(false);
+      } catch (error) {
+        console.error("모임 정보 조회 실패:", error);
+        alert("모임 정보를 불러올 수 없습니다.");
+        navigate(-1);
+      }
+    };
+
+    if (meetingId) {
+      fetchMeetingData();
     }
-  }, []);
+  }, [meetingId, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     let hasError = false;
-
-    if (!mountain) {
-      setMountainError(true);
-      hasError = true;
-    } else if (!mountain.name || !mountain.name.trim()) {
-      setMountainError(true);
-      hasError = true;
-    } else {
-      setMountainError(false);
-    }
 
     if (!title.trim()) {
       setTitleError(true);
@@ -114,42 +106,6 @@ const MeetingCreateForm = () => {
       hasError = true;
     } else {
       setDescriptionError(false);
-    }
-
-    if (!scheduledDate) {
-      setScheduledDateError(true);
-      setScheduledDateErrorMsg("모임 진행일을 선택해주세요.");
-      hasError = true;
-    } else if (
-      new Date(scheduledDate) <= new Date(new Date().setHours(0, 0, 0, 0))
-    ) {
-      setScheduledDateError(true);
-      setScheduledDateErrorMsg("오늘 이후의 날짜를 선택해주세요.");
-      hasError = true;
-    } else {
-      setScheduledDateError(false);
-      setScheduledDateErrorMsg("");
-    }
-
-    if (!scheduledTime) {
-      setScheduledTimeError(true);
-      hasError = true;
-    } else {
-      setScheduledTimeError(false);
-    }
-
-    if (!gatherLocation.trim()) {
-      setGatherLocationError(true);
-      hasError = true;
-    } else {
-      setGatherLocationError(false);
-    }
-
-    if (!chatLink.trim()) {
-      setChatLinkError(true);
-      hasError = true;
-    } else {
-      setChatLinkError(false);
     }
 
     const today = new Date();
@@ -182,37 +138,42 @@ const MeetingCreateForm = () => {
 
     if (hasError) return;
 
-    // 등록 전 확인 모달 오픈
+    // 수정 전 확인 모달 오픈
     setConfirmModalOpen(true);
   };
 
-  // 실제 등록 처리 함수
+  // 실제 수정 처리 함수
   const handleConfirmSubmit = async () => {
     setConfirmModalOpen(false);
 
     const payload = {
-      hostUserId: userId,
-      mountainId: mountain?.id || "",
-      mountainName: mountain?.name || "",
-      location: mountain?.location || "",
       title,
       description,
-      scheduledDate,
-      scheduledTime,
       deadlineDate,
-      gatherLocation,
-      maxParticipants,
-      chatLink,
     };
 
     try {
-      await axiosInstance.post("/meeting-service/post", payload);
-      navigate("/meeting");
+      await axiosInstance.patch(`/meeting-service/${meetingId}`, payload);
+      alert("모임 정보가 수정되었습니다.");
+      navigate(`/meeting/${meetingId}`);
     } catch (e) {
-      console.error("모임 등록 실패", e);
-      alert("모임 등록에 실패했습니다.");
+      console.error("모임 수정 실패", e);
+      alert("모임 수정에 실패했습니다.");
     }
   };
+
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="200px"
+      >
+        <Typography>로딩 중...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -229,44 +190,26 @@ const MeetingCreateForm = () => {
         minHeight: isMobile ? "auto" : "fit-content",
       }}
     >
-      <form onSubmit={handleSubmit}>
-        <LabeledField label="산">
-          <MountainInputWidget
-            value={mountain}
-            onChange={(mountainObjOrEvent) => {
-              if (mountainObjOrEvent?.target?.value) {
-                setMountain({
-                  id: "",
-                  name:
-                    mountainObjOrEvent.target.value.name ||
-                    mountainObjOrEvent.target.value,
-                  location: "",
-                });
-              } else {
-                setMountain(mountainObjOrEvent);
-              }
-              setMountainError(false);
-            }}
-            onSearchClick={() => setMountainModalOpen(true)}
-            error={mountainError}
-            errorMessage="산을 선택해주세요."
-          />
-        </LabeledField>
-        <LogMountainSearchModal
-          open={mountainModalOpen}
-          onClose={() => setMountainModalOpen(false)}
-          onSelect={(mountainObj) => {
-            setMountain(mountainObj);
-            setMountainError(false); // 에러 해제
-          }}
-        />
+      <Typography
+        variant="h5"
+        fontWeight={700}
+        mb={3}
+        sx={{
+          fontSize: isMobile ? "1.3rem" : "1.5rem",
+          color: "#4b8161",
+          textAlign: "center",
+        }}
+      >
+        모임 정보 수정
+      </Typography>
 
+      <form onSubmit={handleSubmit}>
         <LabeledField label="모임 제목">
           <GreenInput
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              setTitleError(false); // 입력 시 에러 해제
+              setTitleError(false);
             }}
             maxLength={30}
             placeholder="제목을 입력해주세요"
@@ -284,7 +227,7 @@ const MeetingCreateForm = () => {
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
-              setDescriptionError(false); // 입력 시 에러 해제
+              setDescriptionError(false);
             }}
             maxLength={100}
             placeholder="간단한 모임 소개글 (100자 이내)"
@@ -299,96 +242,6 @@ const MeetingCreateForm = () => {
               fontWeight: 500,
               lineHeight: 1.5,
             }}
-          />
-        </LabeledField>
-
-        <LabeledField
-          label="모임 진행일"
-          description="모임이 진행될 날짜를 선택하세요"
-        >
-          <DatePickerYMDWidget
-            value={scheduledDate}
-            onChange={(date) => {
-              setScheduledDate(date);
-              setScheduledDateError(false);
-              setScheduledDateErrorMsg("");
-            }}
-            error={scheduledDateError}
-            errorMessage={scheduledDateErrorMsg}
-          />
-        </LabeledField>
-
-        <LabeledField
-          label="예정 시간"
-          description="모임 시작 시간을 선택하세요."
-        >
-          <TimePickerHMWidget
-            value={scheduledTime}
-            onChange={(val) => {
-              setScheduledTime(val);
-              setScheduledTimeError(false); // 입력 시 에러 해제
-            }}
-            error={scheduledTimeError}
-            errorMessage="예정 시간을 선택해주세요."
-          />
-        </LabeledField>
-
-        <LabeledField
-          label="집결 장소"
-          description="모임 당일 집결할 장소를 입력하세요."
-        >
-          <GreenInput
-            value={gatherLocation}
-            onChange={(e) => {
-              setGatherLocation(e.target.value);
-              setGatherLocationError(false); // 입력 시 에러 해제
-            }}
-            placeholder="ex) 남산 공영주차장 입구"
-            error={gatherLocationError}
-            errorMessage="집결 장소를 입력해주세요."
-          />
-        </LabeledField>
-
-        <LabeledField
-          label="모임 인원"
-          description="최소 3명, 최대 8명 중에서 선택하세요."
-        >
-          <select
-            value={maxParticipants}
-            onChange={(e) => setMaxParticipants(Number(e.target.value))}
-            style={{
-              width: isMobile ? "50%" : "30%",
-              padding: "0.7em",
-              borderRadius: 8,
-              border: "2px solid #70a784",
-              fontSize: isMobile ? "1rem" : "1.05rem",
-              fontFamily: "inherit",
-              fontWeight: 500,
-              background: "#f8fff9",
-              marginBottom: "0.5rem",
-            }}
-          >
-            {[3, 4, 5, 6, 7, 8].map((num) => (
-              <option key={num} value={num}>
-                {num}명
-              </option>
-            ))}
-          </select>
-        </LabeledField>
-
-        <LabeledField
-          label="오픈채팅 링크"
-          description="참여자들이 소통할 카카오 오픈채팅 링크를 생성해 넣어주세요."
-        >
-          <GreenInput
-            value={chatLink}
-            onChange={(e) => {
-              setChatLink(e.target.value);
-              setChatLinkError(false); // 입력 시 에러 해제
-            }}
-            placeholder="오픈채팅 링크"
-            error={chatLinkError}
-            errorMessage="오픈채팅 링크를 입력해주세요."
           />
         </LabeledField>
 
@@ -409,7 +262,7 @@ const MeetingCreateForm = () => {
         </LabeledField>
 
         <GreenButton type="submit" style={{ width: "100%" }}>
-          모임 등록하기
+          모임 정보 수정하기
         </GreenButton>
 
         <GreenButton
@@ -428,7 +281,7 @@ const MeetingCreateForm = () => {
         </GreenButton>
       </form>
 
-      {/* 등록 전 확인 모달 */}
+      {/* 수정 전 확인 모달 */}
       <Modal open={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
         <Box
           sx={{
@@ -453,9 +306,7 @@ const MeetingCreateForm = () => {
               lineHeight: 1.4,
             }}
           >
-            모임 진행일, 예정 시간은 등록 후 변경이 불가합니다.
-            <br />
-            계속 진행하시겠습니까?
+            모임 정보를 수정하시겠습니까?
           </Typography>
           <Box
             display="flex"
@@ -477,7 +328,7 @@ const MeetingCreateForm = () => {
               }}
               onClick={() => setConfirmModalOpen(false)}
             >
-              뒤로가기
+              취소
             </GreenButton>
             <GreenButton
               type="button"
@@ -488,7 +339,7 @@ const MeetingCreateForm = () => {
               }}
               onClick={handleConfirmSubmit}
             >
-              등록하기
+              수정하기
             </GreenButton>
           </Box>
         </Box>
@@ -497,4 +348,4 @@ const MeetingCreateForm = () => {
   );
 };
 
-export default MeetingCreateForm;
+export default MeetingEditForm;

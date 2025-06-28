@@ -1,11 +1,9 @@
-// pages/meeting/MeetingCreatePage.jsx
-
 import { useEffect, useState } from "react";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { getUserInfo } from "shared/lib/auth";
-import MeetingCreateForm from "widgets/meeting/writeForm/MeetingCreateForm";
+import MeetingEditForm from "widgets/meeting/writeForm/MeetingEditForm";
 
-const MeetingCreatePage = () => {
+const MeetingEditPage = () => {
   const [userId, setUserId] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -15,7 +13,7 @@ const MeetingCreatePage = () => {
     if (userInfo?.userId) {
       setUserId(userInfo.userId);
     } else {
-      setUserId(null); // 비로그인 시 null
+      setUserId(null);
     }
   }, []);
 
@@ -37,9 +35,9 @@ const MeetingCreatePage = () => {
         zIndex: 10,
       }}
     >
-      <MeetingCreateForm userId={userId} />
+      <MeetingEditForm userId={userId} />
     </div>
   );
 };
 
-export default MeetingCreatePage;
+export default MeetingEditPage;

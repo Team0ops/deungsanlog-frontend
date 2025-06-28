@@ -47,9 +47,10 @@ const MeetingSearchSection = ({
       >
         {/* 모집 상태 필터 */}
         <Box
-          flex={isMobile ? undefined : 3}
+          flex={isMobile ? 1 : 3}
           minWidth={isMobile ? "0" : "120px"}
-          maxWidth={isMobile ? "100%" : "200px"}
+          maxWidth={isMobile ? "50%" : "200px"}
+          width={isMobile ? "50%" : "auto"}
         >
           <select
             style={{
@@ -92,9 +93,10 @@ const MeetingSearchSection = ({
         </Box>
         {/* 정렬 기준 */}
         <Box
-          flex={isMobile ? undefined : 3}
+          flex={isMobile ? 1 : 3}
           minWidth={isMobile ? "0" : "120px"}
-          maxWidth={isMobile ? "100%" : "200px"}
+          maxWidth={isMobile ? "50%" : "200px"}
+          width={isMobile ? "50%" : "auto"}
         >
           <select
             style={{

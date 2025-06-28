@@ -174,7 +174,7 @@ const FreeBoardPage = () => {
             position: "sticky",
             top: 0,
             zIndex: 10,
-            background: "#f9f9f9",
+            background: "transparent",
           }}
         >
           <FreeBoardHeader
@@ -210,40 +210,6 @@ const FreeBoardPage = () => {
             position: "relative",
           }}
         >
-          {/* 위쪽 블러 */}
-          {!showLoginModal && (
-            <div
-              style={{
-                position: "sticky",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "10px",
-                zIndex: 20,
-                pointerEvents: "none",
-                background:
-                  "linear-gradient(to bottom, rgba(249,249,249,0.95) 70%, rgba(249,249,249,0.01) 100%)",
-                backdropFilter: "blur(6px)",
-              }}
-            />
-          )}
-          {/* 아래쪽 블러 */}
-          {!showLoginModal && (
-            <div
-              style={{
-                position: "sticky",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                height: "32px",
-                zIndex: 20,
-                pointerEvents: "none",
-                background:
-                  "linear-gradient(to top, rgba(249,249,249,0.95) 70%, rgba(249,249,249,0.01) 100%)",
-                backdropFilter: "blur(6px)",
-              }}
-            />
-          )}
           {/* 카드 리스트 */}
           <div>
             {loading ? (

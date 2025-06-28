@@ -42,6 +42,8 @@ import PostDetailPage from "pages/community/PostDetailPage";
 import MeetingPage from "pages/meeting/meetingPage";
 import MeetingDetailPage from "pages/meeting/meetingDetailPage";
 import MeetingCreatePage from "pages/meeting/meetingCreatePage";
+import MeetingEditPage from "pages/meeting/meetingEditPage";
+import MyMeetingPage from "pages/meeting/MyMeetingPage";
 import OrmiPage from "pages/ormie/ormiPage";
 import MyPage from "pages/mypage/mypage";
 import LoginPage from "pages/user/LoginPage";
@@ -94,6 +96,13 @@ function AppContent() {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
+
+  useEffect(() => {
+    // 모바일에서만 첫 진입 시 sidenav 닫힘
+    if (window.innerWidth < 600) {
+      setMiniSidenav(dispatch, true);
+    }
+  }, []);
 
   const handleOnMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {
@@ -242,11 +251,16 @@ function AppContent() {
               element={<PostDetailPage />}
             />
             <Route path="/meeting" element={<MeetingPage />} />
+            <Route path="/meeting/create" element={<MeetingCreatePage />} />
+            <Route
+              path="/meeting/edit/:meetingId"
+              element={<MeetingEditPage />}
+            />
             <Route
               path="/meeting/detail/:meetingId"
               element={<MeetingDetailPage />}
             />
-            <Route path="/meeting/create" element={<MeetingCreatePage />} />
+            <Route path="/meeting/my" element={<MyMeetingPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/mypage" element={<MyPage />} />

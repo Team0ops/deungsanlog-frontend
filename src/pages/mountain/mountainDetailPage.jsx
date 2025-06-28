@@ -21,14 +21,33 @@ const MountainDetailPage = () => {
 
         const token = localStorage.getItem("X-AUTH-TOKEN");
 
-        // ✅ axios 방식으로 수정
-        const response = await axiosInstance.get("/mountain-service/search", {
-          params: { name: mountainName },
-          headers: token ? { "X-AUTH-TOKEN": token } : {},
-        });
+        // 1단계: mountainName으로 mountainId 조회
+        const searchResponse = await axiosInstance.get(
+          "/mountain-service/search",
+          {
+            params: { name: mountainName },
+            headers: token ? { "X-AUTH-TOKEN": token } : {},
+          }
+        );
 
-        console.log("✅ 산 정보 조회 성공:", response.data);
-        setMountainData(response.data);
+        if (!searchResponse.data || !searchResponse.data.mountain) {
+          throw new Error("산 정보를 찾을 수 없습니다.");
+        }
+
+        const mountainId = searchResponse.data.mountain.id;
+        console.log("✅ mountainId 조회 성공:", mountainId);
+
+        // 2단계: mountainId로 상세 정보 조회 (1주일치 날씨 포함)
+        const detailResponse = await axiosInstance.get(
+          "/mountain-service/detail",
+          {
+            params: { mountainId: mountainId },
+            headers: token ? { "X-AUTH-TOKEN": token } : {},
+          }
+        );
+
+        console.log("✅ 산 상세 정보 조회 성공:", detailResponse.data);
+        setMountainData(detailResponse.data);
         setError(null);
       } catch (error) {
         console.error("❌ API 호출 오류:", error);
