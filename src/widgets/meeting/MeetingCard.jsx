@@ -12,6 +12,7 @@ import "dayjs/locale/ko";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import { useNavigate } from "react-router-dom";
+import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 
 dayjs.locale("ko");
 dayjs.extend(weekday);
@@ -174,14 +175,30 @@ const MeetingCard = ({ meeting }) => {
       <Divider sx={{ my: isMobile ? 1 : 1.5 }} />
 
       {/* 하단 - 날짜 & 기타 정보 */}
-      <Box
-        display="flex"
-        flexDirection={isMobile ? "column" : "row"}
-        justifyContent="space-between"
-        alignItems={isMobile ? "flex-start" : "center"}
-        flexWrap="wrap"
-        gap={isMobile ? 0.5 : 1}
-      >
+      <Box display="flex" flexDirection="column" gap={1}>
+        {meeting.hostUserId && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              fontSize: isMobile ? "clamp(0.75rem, 2.5vw, 0.8rem)" : "inherit",
+              lineHeight: 1.4,
+            }}
+          >
+            👤 개설자:{" "}
+            <NicknameWithBadge
+              userId={meeting.hostUserId}
+              style={{
+                fontSize: isMobile
+                  ? "clamp(0.75rem, 2.5vw, 0.8rem)"
+                  : "inherit",
+                color: "#4c7559",
+                fontWeight: 600,
+              }}
+            />
+          </Typography>
+        )}
+
         <Typography
           variant="caption"
           color="text.secondary"

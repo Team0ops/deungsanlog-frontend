@@ -31,7 +31,7 @@ const FreeBoardSearchSection = ({
   return (
     <Box
       mt={{ xs: 2, md: 3 }}
-      mb={{ xs: 3, md: 4 }}
+      mb={{ xs: 1, md: 1.5 }}
       px={{ xs: 1, md: 2 }}
       display="flex"
       flexDirection={{ xs: "column", md: "row" }}

@@ -29,7 +29,7 @@ const MeetingSearchSection = ({
   return (
     <Box
       mt={isMobile ? 2 : 3}
-      mb={isMobile ? 2 : 4}
+      mb={isMobile ? 1 : 1.5}
       px={isMobile ? 1 : 2}
       display="flex"
       flexDirection={isMobile ? "column" : "row"}

@@ -71,7 +71,7 @@ const MeetingListContainer = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: isMobile ? "1rem" : "1.2rem",
+        gap: isMobile ? "0.5rem" : "0.8rem",
         height: "100%",
         overflow: "hidden",
       }}
