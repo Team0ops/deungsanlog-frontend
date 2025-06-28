@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import MeetingMemberStatusBox from "widgets/meeting/status/MeetingMemberStatusBox";
 import SoftBadge from "shared/ui/SoftBadge";
+import useMeetingDeadline from "../../hooks/useMeetingDeadline";
 
 const MeetingDetailPage = () => {
   const { meetingId } = useParams();
@@ -19,6 +20,9 @@ const MeetingDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // 마감일 체크 훅 사용
+  const { isDeadlinePassed, timeUntilDeadline } = useMeetingDeadline(meeting);
 
   // 날짜를 사용자 친화적으로 포맷팅하는 함수
   const formatDate = (dateString) => {
@@ -117,57 +121,33 @@ const MeetingDetailPage = () => {
             alignItems={isMobile ? "flex-start" : "center"}
           >
             <SoftBadge
+              variant="gradient"
               color={statusInfo.color}
-              size="md"
-              variant="contained"
-              sx={{
-                borderRadius: "999px",
-                fontWeight: 700,
-                fontFamily: "'GmarketSansTTFBold', 'Pretendard', sans-serif",
-                fontSize: isMobile ? "0.95rem" : "1.08rem",
-                px: isMobile ? 2 : 2.5,
-                py: isMobile ? 0.8 : 1,
-                backgroundColor: "#e0f7fa",
-                color: "#4b8161",
-                boxShadow: "0 2px 8px 0 rgba(76, 129, 97, 0.08)",
-              }}
-            >
-              {statusInfo.label}
-            </SoftBadge>
+              size="lg"
+              badgeContent={statusInfo.label}
+              container
+            />
             <SoftBadge
-              color="success"
-              size="md"
-              variant="contained"
-              sx={{
-                borderRadius: "999px",
-                fontWeight: 700,
-                fontFamily: "'GmarketSansTTFBold', 'Pretendard', sans-serif",
-                fontSize: isMobile ? "0.9rem" : "1.05rem",
-                px: isMobile ? 2 : 2.5,
-                py: isMobile ? 0.8 : 1,
-                backgroundColor: "#d2f5c7",
-                color: "#3a5d2c",
-                boxShadow: "0 2px 8px 0 rgba(58, 93, 44, 0.08)",
-                display: "inline-block",
-              }}
-            >
-              🏔️ {meeting.mountainName}
-            </SoftBadge>
+              variant="gradient"
+              color="info"
+              size="lg"
+              badgeContent={meeting.mountainName}
+              container
+            />
           </Box>
+
           <Typography
-            variant="h5"
-            fontWeight={700}
-            mb={isMobile ? 2 : 2.5}
-            mt={0}
+            variant={isMobile ? "h5" : "h4"}
+            fontWeight={800}
+            mb={isMobile ? 1.5 : 2}
             sx={{
-              fontFamily: "'GmarketSansTTFBold', 'Pretendard', sans-serif",
-              textShadow: "0 2px 8px #e0f7fa",
-              color: "#4b8161",
-              fontSize: isMobile ? "1.1rem" : "1.18rem",
+              fontSize: isMobile ? "clamp(1.3rem, 5vw, 1.5rem)" : "inherit",
+              lineHeight: 1.3,
             }}
           >
             {meeting.title}
           </Typography>
+
           <Typography
             variant="body1"
             mb={isMobile ? 2 : 3}
@@ -201,6 +181,17 @@ const MeetingDetailPage = () => {
             }}
           >
             ⏰ 모집 마감: {formatDate(meeting.deadlineDate)}
+            {timeUntilDeadline && (
+              <span
+                style={{
+                  color: isDeadlinePassed ? "#f44336" : "#4caf50",
+                  fontWeight: 600,
+                  marginLeft: "0.5rem",
+                }}
+              >
+                ({timeUntilDeadline})
+              </span>
+            )}
           </Typography>
           <Typography
             variant="body2"

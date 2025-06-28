@@ -43,6 +43,7 @@ import MeetingPage from "pages/meeting/meetingPage";
 import MeetingDetailPage from "pages/meeting/meetingDetailPage";
 import MeetingCreatePage from "pages/meeting/meetingCreatePage";
 import MeetingEditPage from "pages/meeting/meetingEditPage";
+import MyMeetingPage from "pages/meeting/MyMeetingPage";
 import OrmiPage from "pages/ormie/ormiPage";
 import NotificationPage from "pages/notificationPage";
 import MyPage from "pages/mypage/mypage";
@@ -259,6 +260,7 @@ function AppContent() {
               path="/meeting/detail/:meetingId"
               element={<MeetingDetailPage />}
             />
+            <Route path="/meeting/my" element={<MyMeetingPage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/mypage" element={<MyPage />} />

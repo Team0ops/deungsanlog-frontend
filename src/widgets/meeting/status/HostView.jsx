@@ -10,8 +10,9 @@ import {
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import MeetingMemberOverview from "../MeetingMemberOverview";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "shared/lib/axiosInstance";
+import dayjs from "dayjs";
 
 const HostView = ({
   applicants = [],
@@ -25,6 +26,39 @@ const HostView = ({
   const navigate = useNavigate();
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+
+  // 마감일 체크 및 자동 마감 처리
+  useEffect(() => {
+    const checkDeadline = async () => {
+      if (!meeting || meeting.status !== "OPEN") return;
+
+      const now = dayjs();
+      const deadline = dayjs(
+        `${meeting.deadlineDate}T${meeting.scheduledTime}`
+      );
+
+      // 마감일이 지났고 아직 OPEN 상태라면 자동 마감
+      if (now.isAfter(deadline)) {
+        try {
+          console.log("🕐 마감일이 지나서 자동 마감 처리 중...");
+          await axiosInstance.patch(`/meeting-service/${meetingId}/closed`);
+          console.log("✅ 자동 마감 처리 완료");
+          // 페이지 새로고침으로 상태 업데이트
+          window.location.reload();
+        } catch (error) {
+          console.error("❌ 자동 마감 처리 실패:", error);
+        }
+      }
+    };
+
+    // 페이지 로드 시 체크
+    checkDeadline();
+
+    // 1분마다 마감일 체크 (선택사항)
+    const interval = setInterval(checkDeadline, 60000);
+
+    return () => clearInterval(interval);
+  }, [meeting, meetingId]);
 
   const handleCloseMeeting = async () => {
     try {
@@ -52,6 +86,28 @@ const HostView = ({
 
   const isClosed = meeting?.status === "CLOSED";
   const isCanceled = meeting?.status === "CANCELED";
+
+  // 마감일까지 남은 시간 계산
+  const getTimeUntilDeadline = () => {
+    if (!meeting || meeting.status !== "OPEN") return null;
+
+    const now = dayjs();
+    const deadline = dayjs(`${meeting.deadlineDate}T${meeting.scheduledTime}`);
+    const diff = deadline.diff(now, "minute");
+
+    if (diff <= 0) return "마감됨";
+
+    const hours = Math.floor(diff / 60);
+    const minutes = diff % 60;
+
+    if (hours > 0) {
+      return `${hours}시간 ${minutes}분 남음`;
+    } else {
+      return `${minutes}분 남음`;
+    }
+  };
+
+  const timeUntilDeadline = getTimeUntilDeadline();
 
   return (
     <Box p={isMobile ? 1 : 2}>
@@ -87,14 +143,43 @@ const HostView = ({
               display="flex"
               flexDirection="column"
             >
-              <Typography
-                fontWeight={700}
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
                 mb={1}
-                fontSize={isMobile ? "0.9rem" : "1rem"}
-                color="#4b8161"
               >
-                신청자 목록
-              </Typography>
+                <Typography
+                  fontWeight={700}
+                  fontSize={isMobile ? "0.9rem" : "1rem"}
+                  color="#4b8161"
+                >
+                  신청자 목록
+                </Typography>
+                {timeUntilDeadline && (
+                  <Typography
+                    fontSize={isMobile ? "0.8rem" : "0.9rem"}
+                    color={
+                      timeUntilDeadline === "마감됨" ? "#f44336" : "#ff9800"
+                    }
+                    fontWeight={600}
+                    sx={{
+                      backgroundColor:
+                        timeUntilDeadline === "마감됨"
+                          ? "rgba(244, 67, 54, 0.1)"
+                          : "rgba(255, 152, 0, 0.1)",
+                      px: 1,
+                      py: 0.3,
+                      borderRadius: "12px",
+                      border: `1px solid ${
+                        timeUntilDeadline === "마감됨" ? "#f44336" : "#ff9800"
+                      }`,
+                    }}
+                  >
+                    ⏰ {timeUntilDeadline}
+                  </Typography>
+                )}
+              </Box>
               <Box
                 sx={{
                   flex: 1,
@@ -141,18 +226,19 @@ const HostView = ({
                         ml={isMobile ? 1 : 2}
                       >
                         <Button
-                          size={isMobile ? "small" : "small"}
+                          size="small"
                           variant="outlined"
                           sx={{
                             minWidth: "auto",
-                            px: isMobile ? 1.5 : 2,
-                            py: isMobile ? 0.5 : 1,
-                            borderRadius: "8px",
+                            px: isMobile ? 1 : 1.5,
+                            py: isMobile ? 0.3 : 0.5,
+                            borderRadius: "6px",
                             fontWeight: 600,
                             color: "#4caf50",
                             borderColor: "#4caf50",
                             whiteSpace: "nowrap",
-                            fontSize: isMobile ? "0.75rem" : "inherit",
+                            fontSize: isMobile ? "0.7rem" : "0.8rem",
+                            height: isMobile ? "24px" : "28px",
                             "&:hover": {
                               backgroundColor: "rgba(76, 175, 80, 0.1)",
                               borderColor: "#43a047",
@@ -164,19 +250,20 @@ const HostView = ({
                         </Button>
 
                         <Button
-                          size={isMobile ? "small" : "small"}
+                          size="small"
                           variant="outlined"
                           sx={{
                             ml: isMobile ? 0.5 : 1,
                             minWidth: "auto",
-                            px: isMobile ? 1.5 : 2,
-                            py: isMobile ? 0.5 : 1,
-                            borderRadius: "8px",
+                            px: isMobile ? 1 : 1.5,
+                            py: isMobile ? 0.3 : 0.5,
+                            borderRadius: "6px",
                             fontWeight: 600,
                             color: "#f44336",
                             borderColor: "#f44336",
                             whiteSpace: "nowrap",
-                            fontSize: isMobile ? "0.75rem" : "inherit",
+                            fontSize: isMobile ? "0.7rem" : "0.8rem",
+                            height: isMobile ? "24px" : "28px",
                             "&:hover": {
                               backgroundColor: "rgba(244, 67, 54, 0.1)",
                               borderColor: "#d32f2f",
