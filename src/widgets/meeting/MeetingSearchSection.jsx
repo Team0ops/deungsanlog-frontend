@@ -32,20 +32,25 @@ const MeetingSearchSection = ({
       mb={isMobile ? 2 : 4}
       px={isMobile ? 1 : 2}
       display="flex"
-      flexDirection="column"
+      flexDirection={isMobile ? "column" : "row"}
       gap={isMobile ? 1.5 : 2}
+      alignItems={isMobile ? "stretch" : "center"}
+      width="100%"
     >
-      {/* 필터와 정렬을 같은 줄에 - 위쪽 */}
+      {/* 모바일: select 2개 한 줄, input 아래 / 데스크탑: select 2개+input 한 줄 */}
       <Box
         display="flex"
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
+        flexDirection={isMobile ? "row" : "row"}
         gap={isMobile ? 1 : 2}
-        width="100%"
+        flex={isMobile ? undefined : 3}
+        width={isMobile ? "100%" : "auto"}
       >
         {/* 모집 상태 필터 */}
-        <Box flex="1">
+        <Box
+          flex={1}
+          minWidth={isMobile ? "0" : "120px"}
+          maxWidth={isMobile ? "100%" : "200px"}
+        >
           <select
             style={{
               width: "100%",
@@ -69,7 +74,6 @@ const MeetingSearchSection = ({
             value={filter}
             onChange={(e) => {
               setFilter(e.target.value);
-              // 값이 바뀌면 바로 검색 실행
               if (onSearch) {
                 onSearch({
                   status: e.target.value,
@@ -86,9 +90,12 @@ const MeetingSearchSection = ({
             <option value="cancelled">취소</option>
           </select>
         </Box>
-
         {/* 정렬 기준 */}
-        <Box flex="1">
+        <Box
+          flex={1}
+          minWidth={isMobile ? "0" : "120px"}
+          maxWidth={isMobile ? "100%" : "200px"}
+        >
           <select
             style={{
               width: "100%",
@@ -112,7 +119,6 @@ const MeetingSearchSection = ({
             value={sort}
             onChange={(e) => {
               setSort(e.target.value);
-              // 값이 바뀌면 바로 검색 실행
               if (onSearch) {
                 onSearch({
                   status: filter,
@@ -129,9 +135,13 @@ const MeetingSearchSection = ({
           </select>
         </Box>
       </Box>
-
-      {/* 검색 입력창 - 아래쪽 */}
-      <Box width="100%">
+      {/* 검색 입력창 */}
+      <Box
+        flex={isMobile ? undefined : 5}
+        minWidth={isMobile ? "100%" : "220px"}
+        width={isMobile ? "100%" : "auto"}
+        mt={isMobile ? 1 : 0}
+      >
         <SoftInput
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}

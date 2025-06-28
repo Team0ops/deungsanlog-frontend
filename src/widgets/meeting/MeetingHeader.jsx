@@ -1,6 +1,7 @@
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import GreenButton from "shared/ui/greenButton";
 import { useNavigate } from "react-router-dom";
+import { getUserInfo } from "shared/lib/auth";
 
 const messages = [
   "오늘 어떤 모임을 찾고 계신가요?",
@@ -8,11 +9,28 @@ const messages = [
   "새로운 사람들과의 만남을 기대해요 💬",
 ];
 
-const MeetingHeader = () => {
+const MeetingHeader = ({ setShowLoginModal, setModalAction }) => {
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // 로그인 상태 확인
+  const userInfo = getUserInfo();
+  const isLoggedIn = !!userInfo?.userId;
+
+  const handleButtonClick = (action) => {
+    if (!isLoggedIn) {
+      setModalAction(action);
+      setShowLoginModal(true);
+    } else {
+      if (action === "create") {
+        navigate("/meeting/create");
+      } else if (action === "my") {
+        navigate("/meeting/my");
+      }
+    }
+  };
 
   return (
     <Box
@@ -52,7 +70,9 @@ const MeetingHeader = () => {
             mb={isMobile ? 1 : 2}
             sx={{
               color: "#2e2e2e",
-              background: "linear-gradient(transparent 60%, #d4f1db 60%)",
+              background: isMobile
+                ? "none"
+                : "linear-gradient(transparent 60%, #d4f1db 60%)",
               borderRadius: 0,
               display: "inline",
               boxDecorationBreak: "clone",
@@ -74,15 +94,16 @@ const MeetingHeader = () => {
           </Typography>
         </Box>
 
-        {/* 구분선 */}
-        <Box
-          width={isMobile ? "100%" : "2px"}
-          height={isMobile ? "2px" : "auto"}
-          bgcolor="#e0e0e0"
-          mx={isMobile ? 0 : 2}
-          my={isMobile ? 1 : 0}
-          borderRadius={1}
-        />
+        {/* 구분선 - 데스크탑에서만 표시 */}
+        {!isMobile && (
+          <Box
+            width="2px"
+            bgcolor="#e0e0e0"
+            mx={2}
+            borderRadius={1}
+            display={{ xs: "none", md: "block" }}
+          />
+        )}
 
         {/* 버튼들 */}
         <Box
@@ -103,7 +124,7 @@ const MeetingHeader = () => {
               fontSize: isMobile ? "clamp(0.9rem, 3vw, 1rem)" : "inherit",
               fontWeight: "500",
             }}
-            onClick={() => navigate("/meeting/create")}
+            onClick={() => handleButtonClick("create")}
           >
             새로운 모임 만들기
           </GreenButton>
@@ -117,7 +138,7 @@ const MeetingHeader = () => {
               fontSize: isMobile ? "clamp(0.9rem, 3vw, 1rem)" : "inherit",
               fontWeight: "500",
             }}
-            onClick={() => navigate("/meeting/my")}
+            onClick={() => handleButtonClick("my")}
           >
             나의 모임 참여 현황
           </GreenButton>
