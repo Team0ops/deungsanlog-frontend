@@ -6,6 +6,7 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import HeartIcon from "shared/assets/icons/heart_y.svg";
 import CommentIcon from "shared/assets/icons/Comment.svg";
+import DefaultImage from "shared/assets/images/mountain-medium.png";
 
 const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -15,6 +16,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
   const [isHover, setIsHover] = useState(false);
+  const [imageError, setImageError] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,6 +40,17 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
     post.imageUrls[idx].startsWith("http")
       ? post.imageUrls[idx]
       : `${baseUrl}${post.imageUrls[idx]}`;
+
+  const handleImageError = (idx) => {
+    setImageError((prev) => ({ ...prev, [idx]: true }));
+  };
+
+  const getDisplayImage = (idx) => {
+    if (imageError[idx]) {
+      return DefaultImage;
+    }
+    return getPhotoUrl(idx);
+  };
 
   const handlePrev = (e) => {
     e.stopPropagation();
@@ -357,7 +370,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
       >
         <>
           <img
-            src={getPhotoUrl(photoIdx)}
+            src={getDisplayImage(photoIdx)}
             alt={`피드 이미지 ${photoIdx + 1}`}
             style={{
               width: "100%",
@@ -365,6 +378,7 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
               objectFit: "cover",
               display: "block",
             }}
+            onError={() => handleImageError(photoIdx)}
           />
           {totalPhotos > 1 && (
             <>
@@ -429,10 +443,15 @@ const FeedCard = ({ post, myUserId, onEdit, onDelete }) => {
                       width: "8px",
                       height: "8px",
                       borderRadius: "50%",
-                      background:
-                        idx === photoIdx ? "#fff" : "rgba(255, 255, 255, 0.5)",
+                      background: imageError[idx]
+                        ? "#ff6b6b"
+                        : idx === photoIdx
+                        ? "#fff"
+                        : "rgba(255, 255, 255, 0.5)",
                       transition: "background 0.3s",
+                      border: imageError[idx] ? "1px solid #fff" : "none",
                     }}
+                    title={imageError[idx] ? "이미지 로드 실패" : ""}
                   />
                 ))}
               </div>
