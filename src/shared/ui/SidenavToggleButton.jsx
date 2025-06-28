@@ -30,7 +30,7 @@ const SidenavToggleButton = ({ miniSidenav, onClick }) => {
         cursor: "pointer",
         transition: "left 0.3s ease, background-color 0.3s ease",
         backgroundColor: "rgba(255, 255, 255, 0.8)",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
         color: "#363636",
       })}
     >
