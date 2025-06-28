@@ -157,6 +157,7 @@ function AppContent() {
                   routes={getRoutes()}
                   onMouseEnter={handleOnMouseEnter}
                   onMouseLeave={handleOnMouseLeave}
+                  onMobileMenuClick={() => setMiniSidenav(dispatch, true)}
                 />
               </div>
             </>

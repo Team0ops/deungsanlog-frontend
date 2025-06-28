@@ -9,12 +9,12 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 8vw;
-  min-height: 70vh;
+  padding: 1rem 4vw;
+  min-height: 60vh;
   box-sizing: border-box;
 
   @media (max-width: 600px) {
-    padding: 1rem 0.5rem;
+    padding: 0.5rem 0.5rem;
     align-items: center;
   }
 `;
@@ -22,7 +22,7 @@ const PageWrapper = styled.div`
 const ChatContainer = styled.div`
   width: 100%;
   max-width: 800px;
-  height: 90vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   background-color: rgba(255, 255, 255, 0.95);
@@ -33,7 +33,7 @@ const ChatContainer = styled.div`
 
   @media (max-width: 600px) {
     max-width: 100%;
-    height: 90vh;
+    height: 75vh;
     padding: 0.5rem 0.5rem 0.75rem 0.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
