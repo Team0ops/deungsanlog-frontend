@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const years = [2025, 2026]; // 년도 2025, 2026만 선택 가능
 const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -18,6 +19,9 @@ const DatePickerYMDWidget = ({
   minYear,
   maxYear,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const [year, setYear] = useState();
   const [month, setMonth] = useState();
   const [day, setDay] = useState();
@@ -46,13 +50,33 @@ const DatePickerYMDWidget = ({
     }
   };
 
+  const selectStyle = {
+    border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
+    borderRadius: isMobile ? "12px" : "8px",
+    padding: isMobile ? "0.8em 1em" : "0.4em 0.7em",
+    fontSize: isMobile ? "clamp(1rem, 4vw, 1.1rem)" : "1.05rem",
+    width: isMobile ? "100%" : "auto",
+    minHeight: isMobile ? "48px" : "auto",
+    cursor: "pointer",
+    backgroundColor: "#fdfdfd",
+    outline: "none",
+    appearance: "none",
+    backgroundImage:
+      "url(\"data:image/svg+xml;utf8,<svg fill='Green' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>\")",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 1rem center",
+    backgroundSize: "16px 16px",
+  };
+
   return (
     <div
       style={{
         display: "flex",
-        gap: "0.7rem",
+        gap: isMobile ? "0.5rem" : "0.7rem",
         marginBottom: "1rem",
         alignItems: "center",
+        flexDirection: isMobile ? "column" : "row",
+        width: "100%",
       }}
     >
       <select
@@ -63,12 +87,7 @@ const DatePickerYMDWidget = ({
           updateDate(y, month, day);
         }}
         required={required}
-        style={{
-          border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
-          borderRadius: 8,
-          padding: "0.4em 0.7em",
-          fontSize: "1.05rem",
-        }}
+        style={selectStyle}
       >
         <option value="">년도</option>
         {years
@@ -90,12 +109,7 @@ const DatePickerYMDWidget = ({
           updateDate(year, m, day);
         }}
         required={required}
-        style={{
-          border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
-          borderRadius: 8,
-          padding: "0.4em 0.7em",
-          fontSize: "1.05rem",
-        }}
+        style={selectStyle}
       >
         <option value="">월</option>
         {months.map((m) => (
@@ -113,12 +127,7 @@ const DatePickerYMDWidget = ({
           updateDate(year, month, d);
         }}
         required={required}
-        style={{
-          border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
-          borderRadius: 8,
-          padding: "0.4em 0.7em",
-          fontSize: "1.05rem",
-        }}
+        style={selectStyle}
       >
         <option value="">일</option>
         {getDays(year, month).map((d) => (
@@ -132,8 +141,11 @@ const DatePickerYMDWidget = ({
         <span
           style={{
             color: "#dc3545",
-            fontSize: "0.97rem",
-            marginLeft: "0.7rem",
+            fontSize: isMobile ? "clamp(0.9rem, 3vw, 0.97rem)" : "0.97rem",
+            marginLeft: isMobile ? "0" : "0.7rem",
+            marginTop: isMobile ? "0.5rem" : "0",
+            textAlign: isMobile ? "center" : "left",
+            width: "100%",
           }}
         >
           {errorMessage}
