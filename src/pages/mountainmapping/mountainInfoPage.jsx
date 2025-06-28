@@ -176,31 +176,19 @@ const MountainInfoPage = () => {
         map: mapRef.current,
       });
 
-      // 마커 스타일 설정 (파란색 원형 마커)
+      // 마커 스타일 설정 (빨간색 압정 마커)
       const markerImage = new window.kakao.maps.MarkerImage(
         "data:image/svg+xml;base64," +
           btoa(`
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="8" fill="#4285F4" stroke="white" stroke-width="2"/>
-            <circle cx="12" cy="12" r="3" fill="white"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#86b881" stroke="white" stroke-width="2"/>
+            <circle cx="12" cy="12" r="4" fill="white"/>
+            <circle cx="12" cy="12" r="2" fill="#488543"/>
           </svg>
         `),
-        new window.kakao.maps.Size(24, 24)
+        new window.kakao.maps.Size(48, 48)
       );
       marker.setImage(markerImage);
-
-      // 마커 클릭 시 정보창 표시
-      const infowindow = new window.kakao.maps.InfoWindow({
-        content: `
-          <div style="padding: 8px; text-align: center; font-size: 14px; font-weight: bold; color: #4285F4;">
-            📍 현재 위치
-          </div>
-        `,
-      });
-
-      window.kakao.maps.event.addListener(marker, "click", function () {
-        infowindow.open(mapRef.current, marker);
-      });
 
       setUserLocationMarker(marker);
 

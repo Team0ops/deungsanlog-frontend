@@ -1,9 +1,9 @@
 export function loadKakaoMap({
   containerId = "map",
-  lat = 36.0,     // ✅ 한국 전체 중심 (제주도까지 포함)
-  lng = 127.8,    // ✅ 한국 중앙 경도
-  level = 12,     // ✅ 한국 전체가 보이는 레벨 (10-11)
-}){
+  lat = 36.0, // ✅ 한국 전체 중심 (제주도까지 포함)
+  lng = 127.8, // ✅ 한국 중앙 경도
+  level = 12, // ✅ 한국 전체가 보이는 레벨 (10-11)
+}) {
   const container = document.getElementById(containerId);
   if (!container || !window.kakao?.maps) return;
 
@@ -44,10 +44,10 @@ export function setMapLevel(map, level) {
  */
 export function moveMapCenter(map, lat, lng, level = 10) {
   if (!map || !lat || !lng) return;
-  
+
   const moveLatLon = new window.kakao.maps.LatLng(lat, lng);
   map.setCenter(moveLatLon);
-  
+
   if (level) {
     map.setLevel(level);
   }
@@ -72,11 +72,11 @@ export function fitMapToBounds(map, positions) {
   if (!map || !positions || positions.length === 0) return;
 
   const bounds = new window.kakao.maps.LatLngBounds();
-  
-  positions.forEach(pos => {
+
+  positions.forEach((pos) => {
     bounds.extend(new window.kakao.maps.LatLng(pos.lat, pos.lng));
   });
-  
+
   map.setBounds(bounds);
 }
 
@@ -92,17 +92,17 @@ export function createMountainMarkerImage(elevation) {
 
   if (elevation >= 1500) {
     // 고산 (1500m 이상) - 큰 산 마커
-    imageSrc = '/images/mountain-high.png';
+    imageSrc = "/images/mountain-high.png";
     imageSize = new window.kakao.maps.Size(40, 40);
     imageOption = { offset: new window.kakao.maps.Point(20, 40) };
   } else if (elevation >= 800) {
-    // 중산 (800m ~ 1500m) - 중간 산 마커  
-    imageSrc = '/images/mountain-medium.png';
+    // 중산 (800m ~ 1500m) - 중간 산 마커
+    imageSrc = "/images/mountain-medium.png";
     imageSize = new window.kakao.maps.Size(32, 32);
     imageOption = { offset: new window.kakao.maps.Point(16, 32) };
   } else {
     // 저산 (800m 미만) - 작은 산 마커
-    imageSrc = '/images/mountain-small.png';
+    imageSrc = "/images/mountain-small.png";
     imageSize = new window.kakao.maps.Size(24, 24);
     imageOption = { offset: new window.kakao.maps.Point(12, 24) };
   }
@@ -117,26 +117,26 @@ export function createMountainMarkerImage(elevation) {
  */
 export function getMountainGradeInfo(elevation) {
   if (elevation >= 1500) {
-    return { 
-      type: '고산', 
-      color: '#dc3545', 
-      icon: '🏔️', 
-      description: '1500m 이상의 높은 산' 
+    return {
+      type: "고산",
+      color: "#dc3545",
+      icon: "🏔️",
+      description: "1500m 이상의 높은 산",
     };
   }
   if (elevation >= 800) {
-    return { 
-      type: '중산', 
-      color: '#fd7e14', 
-      icon: '⛰️', 
-      description: '800m~1500m의 중간 높이 산' 
+    return {
+      type: "중산",
+      color: "#fd7e14",
+      icon: "⛰️",
+      description: "800m~1500m의 중간 높이 산",
     };
   }
-  return { 
-    type: '저산', 
-    color: '#198754', 
-    icon: '🗻', 
-    description: '800m 미만의 낮은 산' 
+  return {
+    type: "저산",
+    color: "#198754",
+    icon: "🗻",
+    description: "800m 미만의 낮은 산",
   };
 }
 
@@ -148,7 +148,8 @@ export function getMountainGradeInfo(elevation) {
  * @returns {object} 생성된 마커 객체
  */
 export function createMountainMarker(map, mountain, onClickCallback) {
-  if (!map || !mountain || !mountain.latitude || !mountain.longitude) return null;
+  if (!map || !mountain || !mountain.latitude || !mountain.longitude)
+    return null;
 
   const markerPosition = new window.kakao.maps.LatLng(
     mountain.latitude,
@@ -161,17 +162,75 @@ export function createMountainMarker(map, mountain, onClickCallback) {
   const marker = new window.kakao.maps.Marker({
     position: markerPosition,
     title: `${mountain.name} (${mountain.elevation}m)`,
-    image: markerImage
+    image: markerImage,
   });
 
   marker.setMap(map);
 
   // 클릭 이벤트 등록
   if (onClickCallback) {
-    window.kakao.maps.event.addListener(marker, 'click', () => {
+    window.kakao.maps.event.addListener(marker, "click", () => {
       onClickCallback(mountain);
     });
   }
+
+  // ====== 라벨 색상 설정 ======
+  let labelBg = "#e8f5e9";
+  let labelColor = "#198754";
+  if (mountain.elevation >= 1500) {
+    labelBg = "#ffe5e5";
+    labelColor = "#dc3545";
+  } else if (mountain.elevation >= 800) {
+    labelBg = "#fff3e0";
+    labelColor = "#fd7e14";
+  }
+
+  // ====== 커스텀 오버레이(라벨) 추가 ======
+  const labelDiv = document.createElement("div");
+  labelDiv.innerText = `${mountain.name}\n(${mountain.elevation}m)`;
+  labelDiv.style.cssText = `
+    padding: 1px 4px;
+    background: ${labelBg};
+    border-radius: 4px;
+    border: 1px solid #bbb;
+    font-size: 11px;
+    color: ${labelColor};
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(219, 236, 192, 0.16);
+    margin-top: 6px;
+    white-space: nowrap;
+    cursor: pointer;
+  `;
+
+  // ✅ 라벨 클릭도 onClickCallback 호출
+  labelDiv.addEventListener("click", () => {
+    if (onClickCallback) {
+      onClickCallback(mountain);
+    }
+  });
+
+  const labelOverlay = new window.kakao.maps.CustomOverlay({
+    position: markerPosition,
+    content: labelDiv,
+    xAnchor: 0.5,
+    yAnchor: 1,
+    zIndex: 10,
+  });
+
+  // 지도 레벨이 10 이하일 때만 표시
+  function updateLabelVisibility() {
+    if (map.getLevel() <= 10) {
+      labelOverlay.setMap(map);
+    } else {
+      labelOverlay.setMap(null);
+    }
+  }
+  updateLabelVisibility();
+  window.kakao.maps.event.addListener(
+    map,
+    "zoom_changed",
+    updateLabelVisibility
+  );
 
   return marker;
 }
@@ -186,38 +245,42 @@ export function createMountainMarker(map, mountain, onClickCallback) {
 export function createMountainMarkers(map, mountains, onClickCallback) {
   if (!map || !mountains || mountains.length === 0) return [];
 
-  console.log('🏔️ 마커 생성 시작:', mountains.length, '개의 산');
+  console.log("🏔️ 마커 생성 시작:", mountains.length, "개의 산");
 
-  const markers = mountains.map(mountain => {
-    const marker = createMountainMarker(map, mountain, onClickCallback);
-    
-    if (marker) {
-      const gradeInfo = getMountainGradeInfo(mountain.elevation);
-      console.log(`📍 마커 생성: ${mountain.name} (${mountain.elevation}m) - ${gradeInfo.type}`);
-    }
-    
-    return marker;
-  }).filter(marker => marker !== null);
+  const markers = mountains
+    .map((mountain) => {
+      const marker = createMountainMarker(map, mountain, onClickCallback);
 
-  console.log('✅ 마커 생성 완료:', markers.length, '개');
+      if (marker) {
+        const gradeInfo = getMountainGradeInfo(mountain.elevation);
+        console.log(
+          `📍 마커 생성: ${mountain.name} (${mountain.elevation}m) - ${gradeInfo.type}`
+        );
+      }
+
+      return marker;
+    })
+    .filter((marker) => marker !== null);
+
+  console.log("✅ 마커 생성 완료:", markers.length, "개");
   return markers;
 }
 
 // ✅ 상수 정의
 export const MOUNTAIN_GRADE_THRESHOLDS = {
-  HIGH: 1500,  // 고산
-  MEDIUM: 800  // 중산
+  HIGH: 1500, // 고산
+  MEDIUM: 800, // 중산
 };
 
 export const DEFAULT_MAP_SETTINGS = {
   KOREA_CENTER: {
-    lat: 36.2,   // 한국 중앙 (대전 근처)
-    lng: 127.8,  // 한국 중앙
-    level: 7     // 적절한 확대 레벨
+    lat: 36.2, // 한국 중앙 (대전 근처)
+    lng: 127.8, // 한국 중앙
+    level: 7, // 적절한 확대 레벨
   },
   JEJU_CENTER: {
     lat: 33.450701,
     lng: 126.570667,
-    level: 3
-  }
+    level: 3,
+  },
 };
