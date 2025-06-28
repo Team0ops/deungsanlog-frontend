@@ -95,6 +95,13 @@ function AppContent() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
+  useEffect(() => {
+    // 모바일에서만 첫 진입 시 sidenav 닫힘
+    if (window.innerWidth < 600) {
+      setMiniSidenav(dispatch, true);
+    }
+  }, []);
+
   const handleOnMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {
       setMiniSidenav(dispatch, false);
