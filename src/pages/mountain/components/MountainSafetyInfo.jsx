@@ -59,16 +59,6 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
     return `${period} ${displayHour}시 ${minute}분`;
   };
 
-  // 요일 포맷팅 함수 (간단한 형태)
-  const formatDayOfWeek = (dateStr) => {
-    if (!dateStr) return "-";
-    const date = new Date(dateStr);
-    const dayOfWeek = ["일", "월", "화", "수", "목", "금", "토"][date.getDay()];
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${month}/${day} (${dayOfWeek})`;
-  };
-
   const realtimeCardsStyle = {
     display: "grid",
     gridTemplateColumns:
@@ -144,21 +134,16 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
   const sunDataArray = Array.isArray(sunInfoList) ? sunInfoList : [];
   const dayLabels = ["오늘", "내일", "모레", "글피", "그글피", "사흘", "나흘"];
 
-  // 1주일치 날씨 데이터 확인
-  const weeklyWeather = weatherInfo?.weeklyWeather || [];
-
   return (
     <div>
       <div style={realtimeCardsStyle}>
-        {/* 날씨 카드 (실시간 + 1주일 예보 통합) */}
+        {/* 날씨 카드 */}
         <div style={cardStyle}>
           <h3 style={cardTitleStyle}>
-            {getWeatherIcon(weatherInfo?.currentWeather?.weather)} 날씨 정보
+            {getWeatherIcon(weatherInfo?.currentWeather?.weather)} 실시간 날씨
           </h3>
-
-          {/* 실시간 날씨 */}
           {weatherInfo?.currentWeather && !weatherInfo.error ? (
-            <div style={{ marginBottom: "1rem" }}>
+            <div>
               <div
                 style={{
                   fontSize: "clamp(1.5rem, 3vw, 2rem)",
@@ -196,70 +181,7 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
               </div>
             </div>
           ) : (
-            <div style={{ color: "#6c757d", marginBottom: "1rem" }}>
-              날씨 정보 없음
-            </div>
-          )}
-
-          {/* 1주일치 날씨 예보 */}
-          {weeklyWeather.length > 0 && (
-            <div>
-              <div
-                style={{
-                  fontSize: "clamp(0.9rem, 1.4vw, 1rem)",
-                  fontWeight: "600",
-                  color: "#495057",
-                  marginBottom: "0.5rem",
-                  borderTop: "1px solid #e9ecef",
-                  paddingTop: "0.5rem",
-                }}
-              >
-                📅 1주일 예보
-              </div>
-              <div style={tableContainerStyle}>
-                <table style={tableStyle}>
-                  <thead>
-                    <tr>
-                      <th style={thStyle}>날짜</th>
-                      <th style={thStyle}>날씨</th>
-                      <th style={thStyle}>기온</th>
-                      <th style={thStyle}>강수</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {weeklyWeather.map((day, index) => (
-                      <tr key={index}>
-                        <td style={tdStyle}>{formatDayOfWeek(day.date)}</td>
-                        <td style={tdStyle}>
-                          <span style={{ fontSize: "1.2rem" }}>
-                            {getWeatherIcon(day.weather)}
-                          </span>
-                          <br />
-                          <span style={{ fontSize: "0.7rem" }}>
-                            {day.weather}
-                          </span>
-                        </td>
-                        <td style={tdStyle}>
-                          <span
-                            style={{
-                              fontWeight: "600",
-                              color: getWeatherColor(day.weather),
-                            }}
-                          >
-                            {day.temperature}
-                          </span>
-                        </td>
-                        <td style={tdStyle}>
-                          {day.precipitation === "0" || day.precipitation === 0
-                            ? "없음"
-                            : `${day.precipitation}mm`}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <div style={{ color: "#6c757d" }}>날씨 정보 없음</div>
           )}
         </div>
 
