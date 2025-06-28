@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Typography, Button } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 
 const LoginRequiredModal = ({
@@ -12,133 +11,121 @@ const LoginRequiredModal = ({
   if (!isOpen) return null;
 
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-        zIndex: 9999,
+        justifyContent: "center",
+        zIndex: 20000,
       }}
       onClick={onClose}
     >
-      <Box
-        sx={{
-          backgroundColor: "white",
-          borderRadius: "16px",
-          padding: "clamp(1.5rem, 4vw, 2.5rem)",
-          maxWidth: "clamp(20rem, 90vw, 28rem)",
-          width: "clamp(18rem, 85vw, 25rem)",
+      <div
+        style={{
+          background: "#f0f8f5",
+          padding: "2rem 1.5rem",
+          borderRadius: "20px",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+          width: "90%",
+          maxWidth: "360px",
           textAlign: "center",
-          boxShadow: "0 0.5rem 2rem rgba(0, 0, 0, 0.15)",
-          position: "relative",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* 아이콘 */}
-        <Box
-          sx={{
-            width: "clamp(3rem, 8vw, 4rem)",
-            height: "clamp(3rem, 8vw, 4rem)",
-            backgroundColor: "#f8f9fa",
+        <div
+          style={{
+            width: "60px",
+            height: "60px",
+            backgroundColor: "#d9eae1",
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            margin: "0 auto 1.5rem",
-            color: "#6c757d",
+            margin: "0 auto 1rem",
+            color: "#355f4e",
           }}
         >
-          <LoginIcon sx={{ fontSize: "clamp(1.5rem, 4vw, 2rem)" }} />
-        </Box>
+          <LoginIcon style={{ fontSize: "1.8rem" }} />
+        </div>
 
         {/* 제목 */}
-        <Typography
-          variant="h6"
-          sx={{
-            fontSize: "clamp(1.1rem, 3vw, 1.3rem)",
-            fontWeight: "600",
-            color: "#2c3e50",
+        <h3
+          style={{
+            color: "#3b5f47",
             marginBottom: "0.8rem",
+            fontSize: "1.1rem",
+            fontWeight: "600",
             lineHeight: 1.3,
           }}
         >
           {title}
-        </Typography>
+        </h3>
 
         {/* 메시지 */}
-        <Typography
-          variant="body1"
-          sx={{
-            fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
-            color: "#6c757d",
-            marginBottom: "clamp(1.5rem, 4vw, 2rem)",
-            lineHeight: 1.5,
+        <p
+          style={{
+            whiteSpace: "pre-line",
+            color: "#3b5f47",
+            marginBottom: "1.5rem",
+            fontSize: "1rem",
+            lineHeight: 1.6,
           }}
         >
           {message}
-        </Typography>
+        </p>
 
-        {/* 버튼들 */}
-        <Box
-          sx={{
-            display: "flex",
-            gap: "0.8rem",
-            justifyContent: "center",
-            flexDirection: { xs: "column", sm: "row" },
-          }}
+        {/* 버튼 */}
+        <div
+          style={{ display: "flex", justifyContent: "center", gap: "0.8rem" }}
         >
-          {/* 로그인 버튼 */}
-          <Button
-            variant="contained"
-            onClick={onLogin}
-            startIcon={<LoginIcon />}
-            sx={{
-              backgroundColor: "#4285f4",
-              color: "white",
-              padding: "clamp(0.6rem, 2vw, 0.8rem) clamp(1.2rem, 3vw, 1.5rem)",
-              fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
-              fontWeight: "500",
-              borderRadius: "8px",
-              textTransform: "none",
-              minWidth: "clamp(8rem, 25vw, 10rem)",
-              "&:hover": {
-                backgroundColor: "#3367d6",
-              },
-            }}
-          >
-            로그인 하러가기
-          </Button>
-
-          {/* 취소 버튼 */}
-          <Button
-            variant="outlined"
+          <button
             onClick={onClose}
-            sx={{
-              borderColor: "#dee2e6",
-              color: "#6c757d",
-              padding: "clamp(0.6rem, 2vw, 0.8rem) clamp(1.2rem, 3vw, 1.5rem)",
-              fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
-              fontWeight: "500",
+            style={{
+              padding: "0.55rem 1.3rem",
+              background: "#d9eae1",
+              color: "#355f4e",
+              border: "none",
               borderRadius: "8px",
-              textTransform: "none",
-              minWidth: "clamp(8rem, 25vw, 10rem)",
-              "&:hover": {
-                borderColor: "#adb5bd",
-                backgroundColor: "#f8f9fa",
-              },
+              fontWeight: 500,
+              fontSize: "0.95rem",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              outline: "none",
             }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#cde2d8")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#d9eae1")}
           >
             취소
-          </Button>
-        </Box>
-      </Box>
-    </Box>
+          </button>
+          <button
+            onClick={onLogin}
+            style={{
+              padding: "0.55rem 1.3rem",
+              background: "#5c9475",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: 500,
+              fontSize: "0.95rem",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              outline: "none",
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#4e7f64")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#5c9475")}
+          >
+            로그인 하러가기
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

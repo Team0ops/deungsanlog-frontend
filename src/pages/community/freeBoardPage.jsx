@@ -8,6 +8,7 @@ import { getUserInfo } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
 import { Pagination } from "@mui/material";
 import ConfirmModal from "widgets/Modal/ConfirmModal";
+import LoginRequiredModal from "shared/components/LoginRequiredModal";
 
 const PAGE_SIZE = 6;
 
@@ -22,6 +23,8 @@ const FreeBoardPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetPost, setDeleteTargetPost] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [modalAction, setModalAction] = useState("");
   const navigate = useNavigate();
   const cardAreaRef = useRef(null);
   const theme = useTheme();
@@ -125,6 +128,17 @@ const FreeBoardPage = () => {
     // eslint-disable-next-line
   }, [page]);
 
+  // 로그인 모달 핸들러
+  const handleLogin = () => {
+    setShowLoginModal(false);
+    setModalAction("");
+    navigate("/login");
+  };
+  const handleCloseModal = () => {
+    setShowLoginModal(false);
+    setModalAction("");
+  };
+
   return (
     <div
       style={{
@@ -163,10 +177,13 @@ const FreeBoardPage = () => {
             background: "#f9f9f9",
           }}
         >
-          {/* 정렬 옵션 props 추가 */}
           <FreeBoardHeader
             sortOption={sortOption}
             setSortOption={setSortOption}
+            showLoginModal={showLoginModal}
+            setShowLoginModal={setShowLoginModal}
+            modalAction={modalAction}
+            setModalAction={setModalAction}
           />
 
           <FreeBoardSearchSection
@@ -194,35 +211,39 @@ const FreeBoardPage = () => {
           }}
         >
           {/* 위쪽 블러 */}
-          <div
-            style={{
-              position: "sticky",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "10px",
-              zIndex: 20,
-              pointerEvents: "none",
-              background:
-                "linear-gradient(to bottom, rgba(249,249,249,0.95) 70%, rgba(249,249,249,0.01) 100%)",
-              backdropFilter: "blur(6px)",
-            }}
-          />
+          {!showLoginModal && (
+            <div
+              style={{
+                position: "sticky",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "10px",
+                zIndex: 20,
+                pointerEvents: "none",
+                background:
+                  "linear-gradient(to bottom, rgba(249,249,249,0.95) 70%, rgba(249,249,249,0.01) 100%)",
+                backdropFilter: "blur(6px)",
+              }}
+            />
+          )}
           {/* 아래쪽 블러 */}
-          <div
-            style={{
-              position: "sticky",
-              bottom: 0,
-              left: 0,
-              width: "100%",
-              height: "32px",
-              zIndex: 20,
-              pointerEvents: "none",
-              background:
-                "linear-gradient(to top, rgba(249,249,249,0.95) 70%, rgba(249,249,249,0.01) 100%)",
-              backdropFilter: "blur(6px)",
-            }}
-          />
+          {!showLoginModal && (
+            <div
+              style={{
+                position: "sticky",
+                bottom: 0,
+                left: 0,
+                width: "100%",
+                height: "32px",
+                zIndex: 20,
+                pointerEvents: "none",
+                background:
+                  "linear-gradient(to top, rgba(249,249,249,0.95) 70%, rgba(249,249,249,0.01) 100%)",
+                backdropFilter: "blur(6px)",
+              }}
+            />
+          )}
           {/* 카드 리스트 */}
           <div>
             {loading ? (
@@ -313,6 +334,18 @@ const FreeBoardPage = () => {
           </div>
         </div>
       </div>
+      {/* 로그인 안내 모달 */}
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onClose={handleCloseModal}
+        onLogin={handleLogin}
+        title="로그인이 필요한 서비스입니다"
+        message={
+          modalAction === "write"
+            ? "게시글을 작성하려면 로그인이 필요해요!"
+            : "나의 게시물을 확인하려면 로그인이 필요해요!"
+        }
+      />
       <ConfirmModal
         isOpen={showDeleteModal}
         message={
