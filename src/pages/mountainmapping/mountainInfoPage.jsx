@@ -11,6 +11,8 @@ import {
 import ZoomControl from "shared/ui/ZoomControl";
 import MountainSearchModal from "./MountainSearchModal";
 import axiosInstance from "shared/lib/axiosInstance";
+import SoftButton from "shared/ui/SoftButton";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
 
 const kakaoApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
 
@@ -26,6 +28,9 @@ const MountainInfoPage = () => {
   // ✅ 검색 관련 상태 추가
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
+
+  // 📍 GPS 위치 마커 관련 상태
+  const [userLocationMarker, setUserLocationMarker] = useState(null);
 
   useEffect(() => {
     const initMap = () => {
@@ -146,6 +151,55 @@ const MountainInfoPage = () => {
     }
   };
 
+  // 🗺️ GPS 위치로 이동 및 마커 표시
+  const handleLocationClick = (latitude, longitude) => {
+    if (mapRef.current) {
+      console.log("📍 GPS 위치로 이동:", latitude, longitude);
+
+      // 기존 사용자 위치 마커 제거
+      if (userLocationMarker) {
+        userLocationMarker.setMap(null);
+      }
+
+      // 새로운 사용자 위치 마커 생성
+      const marker = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(latitude, longitude),
+        map: mapRef.current,
+      });
+
+      // 마커 스타일 설정 (파란색 원형 마커)
+      const markerImage = new window.kakao.maps.MarkerImage(
+        "data:image/svg+xml;base64," +
+          btoa(`
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="8" fill="#4285F4" stroke="white" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" fill="white"/>
+          </svg>
+        `),
+        new window.kakao.maps.Size(24, 24)
+      );
+      marker.setImage(markerImage);
+
+      // 마커 클릭 시 정보창 표시
+      const infowindow = new window.kakao.maps.InfoWindow({
+        content: `
+          <div style="padding: 8px; text-align: center; font-size: 14px; font-weight: bold; color: #4285F4;">
+            📍 현재 위치
+          </div>
+        `,
+      });
+
+      window.kakao.maps.event.addListener(marker, "click", function () {
+        infowindow.open(mapRef.current, marker);
+      });
+
+      setUserLocationMarker(marker);
+
+      // 지도 중심 이동 - 더 가까이서 보기
+      moveMapCenter(mapRef.current, latitude, longitude, 10);
+    }
+  };
+
   return (
     <>
       {/* 지도 */}
@@ -161,41 +215,43 @@ const MountainInfoPage = () => {
         }}
       />
 
-      {/* ✅ 범례 추가 - 오른쪽 상단 */}
-      <div style={legendContainerStyle}>
-        <div style={legendStyle}>
-          <h4 style={legendTitleStyle}>🏔️ 산 고도별 구분</h4>
-          <div style={legendItemsStyle}>
-            <div style={legendItemStyle}>
-              <img
-                src="/images/mountain-high.png"
-                alt="고산"
-                style={legendIconStyle}
-              />
-              <span>고산 (1500m 이상)</span>
+      {/* ✅ 범례 추가 - 데스크탑: 오른쪽 상단, 모바일: 오른쪽 상단 */}
+      {window.innerWidth >= 600 && (
+        <div style={legendContainerStyle}>
+          <div style={legendStyle}>
+            <h4 style={legendTitleStyle}>🏔️ 산 고도별 구분</h4>
+            <div style={legendItemsStyle}>
+              <div style={legendItemStyle}>
+                <img
+                  src="/images/mountain-high.png"
+                  alt="고산"
+                  style={legendIconStyle}
+                />
+                <span>고산 (1500m 이상)</span>
+              </div>
+              <div style={legendItemStyle}>
+                <img
+                  src="/images/mountain-medium.png"
+                  alt="중산"
+                  style={legendIconStyle}
+                />
+                <span>중산 (800m ~ 1500m)</span>
+              </div>
+              <div style={legendItemStyle}>
+                <img
+                  src="/images/mountain-small.png"
+                  alt="저산"
+                  style={legendIconStyle}
+                />
+                <span>저산 (800m 미만)</span>
+              </div>
             </div>
-            <div style={legendItemStyle}>
-              <img
-                src="/images/mountain-medium.png"
-                alt="중산"
-                style={legendIconStyle}
-              />
-              <span>중산 (800m ~ 1500m)</span>
-            </div>
-            <div style={legendItemStyle}>
-              <img
-                src="/images/mountain-small.png"
-                alt="저산"
-                style={legendIconStyle}
-              />
-              <span>저산 (800m 미만)</span>
-            </div>
+            <p style={mapGuideStyle}>
+              📍 마커를 클릭하면 산 정보를 볼 수 있습니다
+            </p>
           </div>
-          <p style={mapGuideStyle}>
-            📍 마커를 클릭하면 산 정보를 볼 수 있습니다
-          </p>
         </div>
-      </div>
+      )}
 
       {/* 검색창 */}
       <div
@@ -236,8 +292,221 @@ const MountainInfoPage = () => {
         </div>
       </div>
 
-      {/* 줌 컨트롤 */}
-      {mapLoaded && (
+      {/* 모바일 범례 + 줌 컨트롤 - 우상단에 모두 배치 */}
+      {window.innerWidth < 600 && mapLoaded && (
+        <div
+          style={{
+            position: "absolute",
+            top: "clamp(5rem, 12vw, 7rem)",
+            right: "clamp(1rem, 3vw, 2rem)",
+            zIndex: 10,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: "0.5rem",
+          }}
+        >
+          {/* 모바일 범례 */}
+          <div
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              borderRadius: "8px",
+              padding: "0.4rem 0.5rem",
+              boxShadow: "0 0.2rem 0.5rem rgba(0,0,0,0.1)",
+              fontSize: "0.6rem",
+              maxWidth: "120px",
+            }}
+          >
+            <h4
+              style={{
+                margin: "0 0 0.2rem 0",
+                fontSize: "0.7rem",
+                fontWeight: "bold",
+                color: "#333",
+                textAlign: "center",
+              }}
+            >
+              🏔️ 산 고도별
+            </h4>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.1rem",
+                marginBottom: "0.2rem",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.2rem",
+                  justifyContent: "center",
+                }}
+              >
+                <img
+                  src="/images/mountain-high.png"
+                  alt="고산"
+                  style={{ width: "0.6rem", height: "0.6rem" }}
+                />
+                <span>고산</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.2rem",
+                  justifyContent: "center",
+                }}
+              >
+                <img
+                  src="/images/mountain-medium.png"
+                  alt="중산"
+                  style={{ width: "0.6rem", height: "0.6rem" }}
+                />
+                <span>중산</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.2rem",
+                  justifyContent: "center",
+                }}
+              >
+                <img
+                  src="/images/mountain-small.png"
+                  alt="저산"
+                  style={{ width: "0.6rem", height: "0.6rem" }}
+                />
+                <span>저산</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 모바일 줌 컨트롤 */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: "0.3rem",
+              width: "120px",
+            }}
+          >
+            {/* +/- 버튼 세로로 배치 */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.2rem",
+                alignItems: "flex-end",
+              }}
+            >
+              <button
+                onClick={handleZoomIn}
+                style={{
+                  backgroundColor: "#ffffffcc",
+                  color: "#000000",
+                  fontWeight: "bold",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  width: "40px",
+                  height: "40px",
+                  padding: "0",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: "none",
+                }}
+              >
+                +
+              </button>
+
+              <button
+                onClick={handleZoomOut}
+                style={{
+                  backgroundColor: "#ffffffcc",
+                  color: "#000000",
+                  fontWeight: "bold",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  width: "40px",
+                  height: "40px",
+                  padding: "0",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: "none",
+                }}
+              >
+                −
+              </button>
+            </div>
+
+            {/* GPS 버튼 - 오른쪽에 붙이기 */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                onClick={() => {
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      (position) => {
+                        const { latitude, longitude } = position.coords;
+                        handleLocationClick(latitude, longitude);
+                      },
+                      (error) => {
+                        console.error("위치 정보를 가져올 수 없습니다:", error);
+                        alert(
+                          "위치 정보를 가져올 수 없습니다. 브라우저 설정에서 위치 권한을 허용해주세요."
+                        );
+                      },
+                      {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000,
+                      }
+                    );
+                  } else {
+                    alert("이 브라우저에서는 위치 정보를 지원하지 않습니다.");
+                  }
+                }}
+                style={{
+                  backgroundColor: "#ffffffcc",
+                  color: "#000000",
+                  fontWeight: "bold",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
+                  width: "32px",
+                  height: "32px",
+                  padding: "0",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: "none",
+                }}
+              >
+                <MyLocationIcon sx={{ fontSize: "1rem" }} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 줌 컨트롤 + GPS 버튼 - 데스크탑만 */}
+      {mapLoaded && window.innerWidth >= 600 && (
         <div
           style={{
             position: "fixed",
@@ -246,7 +515,11 @@ const MountainInfoPage = () => {
             zIndex: 10,
           }}
         >
-          <ZoomControl onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
+          <ZoomControl
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onLocationClick={handleLocationClick}
+          />
         </div>
       )}
 
@@ -349,31 +622,33 @@ const MountainInfoPopup = ({ mountain, onClose }) => {
   );
 };
 
-// ✅ 범례 스타일들 - 오른쪽 상단(데스크탑), 오른쪽 하단(모바일)
+// ✅ 범례 스타일들 - 상단에 작게 배치
 const legendContainerStyle = {
   position: "fixed",
-  top: window.innerWidth < 600 ? "unset" : "clamp(1rem, 2vw, 1.5rem)",
-  bottom: window.innerWidth < 600 ? "clamp(1rem, 2vw, 1.5rem)" : "unset",
+  top: "clamp(1rem, 2vw, 1.5rem)",
   right: "clamp(1rem, 2vw, 1.5rem)",
   zIndex: 100,
-  width: window.innerWidth < 600 ? "70vw" : "clamp(12rem, 25vw, 15rem)",
-  minWidth: window.innerWidth < 600 ? "8rem" : "10rem",
-  maxWidth: window.innerWidth < 600 ? "90vw" : "90vw",
+  width:
+    window.innerWidth < 600
+      ? "clamp(8rem, 25vw, 12rem)"
+      : "clamp(12rem, 25vw, 16rem)",
+  minWidth: window.innerWidth < 600 ? "6rem" : "10rem",
+  maxWidth: window.innerWidth < 600 ? "80vw" : "18rem",
 };
 
 const legendStyle = {
   backgroundColor: "rgba(255, 255, 255, 0.95)",
   borderRadius: "clamp(0.5rem, 1vw, 0.8rem)",
   padding:
-    window.innerWidth < 600 ? "0.6rem 0.7rem" : "clamp(0.8rem, 1.5vw, 1rem)",
+    window.innerWidth < 600 ? "0.5rem 0.6rem" : "clamp(0.6rem, 1.2vw, 0.8rem)",
   boxShadow: "0 0.2rem 0.5rem rgba(0,0,0,0.1)",
   maxWidth: "100%",
-  fontSize: window.innerWidth < 600 ? "0.8rem" : "clamp(0.7rem, 1.3vw, 0.8rem)",
+  fontSize: window.innerWidth < 600 ? "0.7rem" : "clamp(0.6rem, 1.2vw, 0.7rem)",
 };
 
 const legendTitleStyle = {
-  margin: "0 0 clamp(0.5rem, 1vw, 0.8rem) 0",
-  fontSize: "clamp(0.9rem, 1.8vw, 1rem)",
+  margin: "0 0 clamp(0.3rem, 0.8vw, 0.5rem) 0",
+  fontSize: window.innerWidth < 600 ? "0.8rem" : "clamp(0.8rem, 1.5vw, 0.9rem)",
   fontWeight: "bold",
   color: "#333",
 };
@@ -381,24 +656,24 @@ const legendTitleStyle = {
 const legendItemsStyle = {
   display: "flex",
   flexDirection: "column",
-  gap: "clamp(0.2rem, 0.5vw, 0.3rem)",
-  marginBottom: "clamp(0.5rem, 1vw, 0.8rem)",
+  gap: "clamp(0.1rem, 0.3vw, 0.2rem)",
+  marginBottom: "clamp(0.3rem, 0.8vw, 0.5rem)",
 };
 
 const legendItemStyle = {
   display: "flex",
   alignItems: "center",
-  gap: "clamp(0.3rem, 0.6vw, 0.5rem)",
+  gap: "clamp(0.2rem, 0.4vw, 0.3rem)",
 };
 
 const legendIconStyle = {
-  width: "clamp(1rem, 2vw, 1.2rem)",
-  height: "clamp(1rem, 2vw, 1.2rem)",
+  width: "clamp(0.8rem, 1.5vw, 1rem)",
+  height: "clamp(0.8rem, 1.5vw, 1rem)",
 };
 
 const mapGuideStyle = {
-  margin: "clamp(0.5rem, 1vw, 0.8rem) 0 0 0",
-  fontSize: "clamp(0.6rem, 1.2vw, 0.7rem)",
+  margin: "clamp(0.3rem, 0.8vw, 0.5rem) 0 0 0",
+  fontSize: window.innerWidth < 600 ? "0.6rem" : "clamp(0.5rem, 1vw, 0.6rem)",
   color: "#666",
   fontStyle: "italic",
 };
