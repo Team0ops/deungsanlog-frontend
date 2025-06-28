@@ -234,8 +234,10 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
                     .replace(")", "")}
                 </div>
                 <div style={todayTimeStyle}>
-                  <div>🌅일출: {formatTime(sunDataArray[0]?.sunriseTime)}</div>
-                  <div>🌇일몰: {formatTime(sunDataArray[0]?.sunsetTime)}</div>
+                  <div>
+                    🌅 일출 : {formatTime(sunDataArray[0]?.sunriseTime)}
+                  </div>
+                  <div>🌇 일몰 : {formatTime(sunDataArray[0]?.sunsetTime)}</div>
                 </div>
               </div>
 
