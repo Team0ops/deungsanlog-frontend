@@ -221,6 +221,9 @@ const MeetingDetailPage = () => {
             overflowY: "auto",
             maxHeight: "100%",
             pl: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <MeetingMemberStatusBox meetingId={meetingId} meeting={meeting} />

@@ -17,6 +17,13 @@ const MeetingMemberOverview = ({ meetingId, meeting }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
+  // 디버깅용 로그
+  console.log("MeetingMemberOverview - meeting:", meeting);
+  console.log(
+    "MeetingMemberOverview - maxParticipants:",
+    meeting?.maxParticipants
+  );
+
   const fetchMembers = async () => {
     setLoading(true);
     try {
@@ -54,7 +61,11 @@ const MeetingMemberOverview = ({ meetingId, meeting }) => {
           fontSize={isMobile ? "0.9rem" : "1rem"}
           color="#4b8161"
         >
-          모임원 현황 {members.length}/{meeting?.maxParticipants || 0}
+          모임원 현황 {members.length}/
+          {meeting?.maxParticipants ||
+            meeting?.maxParticipant ||
+            meeting?.participantLimit ||
+            10}
         </Typography>
         <Button
           size={isMobile ? "small" : "small"}
