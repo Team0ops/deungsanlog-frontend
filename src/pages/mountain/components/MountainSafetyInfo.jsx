@@ -1,6 +1,34 @@
 import React from "react";
 
 const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
+  // 날씨 상태에 따른 아이콘 반환 함수
+  const getWeatherIcon = (weather) => {
+    if (!weather) return "🌤️";
+
+    if (weather.includes("맑음")) return "☀️";
+    if (weather.includes("구름많음")) return "⛅";
+    if (weather.includes("흐림")) return "☁️";
+    if (weather.includes("비")) return "🌧️";
+    if (weather.includes("눈")) return "❄️";
+    if (weather.includes("안개")) return "🌫️";
+
+    return "🌤️"; // 기본값
+  };
+
+  // 날씨 상태에 따른 색상 반환 함수
+  const getWeatherColor = (weather) => {
+    if (!weather) return "#007bff";
+
+    if (weather.includes("맑음")) return "#ffc107"; // 노란색
+    if (weather.includes("구름많음")) return "#6c757d"; // 회색
+    if (weather.includes("흐림")) return "#495057"; // 진한 회색
+    if (weather.includes("비")) return "#6c757d"; // 회색
+    if (weather.includes("눈")) return "#17a2b8"; // 하늘색
+    if (weather.includes("안개")) return "#adb5bd"; // 연한 회색
+
+    return "#007bff"; // 기본 파란색
+  };
+
   // 날짜 포맷팅 함수
   const formatDate = (dateStr) => {
     if (!dateStr) return "-";
@@ -111,17 +139,29 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
       <div style={realtimeCardsStyle}>
         {/* 날씨 카드 */}
         <div style={cardStyle}>
-          <h3 style={cardTitleStyle}>🌤️ 실시간 날씨</h3>
+          <h3 style={cardTitleStyle}>
+            {getWeatherIcon(weatherInfo?.weather)} 실시간 날씨
+          </h3>
           {weatherInfo && !weatherInfo.error ? (
             <div>
               <div
                 style={{
                   fontSize: "clamp(1.5rem, 3vw, 2rem)",
                   fontWeight: "700",
-                  color: "#007bff",
+                  color: getWeatherColor(weatherInfo.weather),
                 }}
               >
                 {weatherInfo.temperature}
+              </div>
+              <div
+                style={{
+                  fontSize: "clamp(1rem, 1.5vw, 1.1rem)",
+                  fontWeight: "600",
+                  color: getWeatherColor(weatherInfo.weather),
+                  marginBottom: "0.5rem",
+                }}
+              >
+                {weatherInfo.weather}
               </div>
               <div
                 style={{
@@ -131,7 +171,13 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
               >
                 <div>습도: {weatherInfo.humidity}</div>
                 <div>바람: {weatherInfo.windSpeed}</div>
-                <div>강수: {weatherInfo.precipitation}</div>
+                <div>
+                  강수:{" "}
+                  {weatherInfo.precipitation === "0" ||
+                  weatherInfo.precipitation === 0
+                    ? "없음"
+                    : `${weatherInfo.precipitation}mm`}
+                </div>
               </div>
             </div>
           ) : (
