@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "shared/lib/axiosInstance";
 import HostView from "./HostView";
@@ -6,6 +6,7 @@ import MemberView from "./MemberView";
 import ApplicantView from "./ApplicantView";
 import VisitorView from "./VisitorView";
 import { getUserInfo } from "shared/lib/auth";
+import MeetingMemberOverview from "../MeetingMemberOverview";
 
 const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
   const [accepted, setAccepted] = useState([]);
@@ -13,6 +14,8 @@ const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
   const [members, setMembers] = useState([]);
   const userInfo = getUserInfo();
   const myId = userInfo?.userId || null;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   useEffect(() => {
     if (!meetingId) return;
 
@@ -100,7 +103,13 @@ const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
   // 분기 렌더링
   if (String(myId) === String(hostId)) {
     return (
-      <Box sx={boxStyle}>
+      <Box
+        sx={{
+          ...boxStyle,
+          p: isMobile ? 2 : 3,
+          minWidth: isMobile ? 200 : 220,
+        }}
+      >
         <HostView
           meeting={meeting}
           members={members}
@@ -108,28 +117,60 @@ const MeetingMemberStatusBox = ({ meetingId, meeting }) => {
           applicants={applicants}
           onAccept={handleAccept}
           onReject={handleReject}
+          meetingId={meetingId}
         />
       </Box>
     );
   } else if (accepted.some((m) => String(m.userId) === String(myId))) {
     return (
-      <Box sx={boxStyle}>
+      <Box
+        sx={{
+          ...boxStyle,
+          p: isMobile ? 2 : 3,
+          minWidth: isMobile ? 200 : 220,
+        }}
+      >
         <Typography variant="h6" fontWeight={700} mb={2}>
           참가자
         </Typography>
-        <MemberView meeting={meeting} members={members} accepted={accepted} />
+        <MemberView
+          meeting={meeting}
+          members={members}
+          accepted={accepted}
+          meetingId={meetingId}
+        />
       </Box>
     );
   } else if (applicants.some((m) => String(m.userId) === String(myId))) {
     return (
-      <Box sx={boxStyleCenter}>
-        <ApplicantView onCancel={handleCancel} />
+      <Box
+        sx={{
+          ...boxStyleCenter,
+          p: isMobile ? 2 : 3,
+          minWidth: isMobile ? 200 : 220,
+        }}
+      >
+        <ApplicantView
+          onCancel={handleCancel}
+          meetingId={meetingId}
+          meeting={meeting}
+        />
       </Box>
     );
   } else {
     return (
-      <Box sx={boxStyleCenter}>
-        <VisitorView onApply={handleApply} />
+      <Box
+        sx={{
+          ...boxStyleCenter,
+          p: isMobile ? 2 : 3,
+          minWidth: isMobile ? 200 : 220,
+        }}
+      >
+        <VisitorView
+          onApply={handleApply}
+          meetingId={meetingId}
+          meeting={meeting}
+        />
       </Box>
     );
   }

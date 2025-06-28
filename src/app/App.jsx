@@ -42,6 +42,7 @@ import PostDetailPage from "pages/community/PostDetailPage";
 import MeetingPage from "pages/meeting/meetingPage";
 import MeetingDetailPage from "pages/meeting/meetingDetailPage";
 import MeetingCreatePage from "pages/meeting/meetingCreatePage";
+import MeetingEditPage from "pages/meeting/meetingEditPage";
 import OrmiPage from "pages/ormie/ormiPage";
 import NotificationPage from "pages/notificationPage";
 import MyPage from "pages/mypage/mypage";
@@ -249,11 +250,15 @@ function AppContent() {
               element={<PostDetailPage />}
             />
             <Route path="/meeting" element={<MeetingPage />} />
+            <Route path="/meeting/create" element={<MeetingCreatePage />} />
+            <Route
+              path="/meeting/edit/:meetingId"
+              element={<MeetingEditPage />}
+            />
             <Route
               path="/meeting/detail/:meetingId"
               element={<MeetingDetailPage />}
             />
-            <Route path="/meeting/create" element={<MeetingCreatePage />} />
             <Route path="/ormi" element={<OrmiPage />} />
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/mypage" element={<MyPage />} />
