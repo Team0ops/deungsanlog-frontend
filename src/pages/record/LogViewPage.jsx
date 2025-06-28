@@ -6,7 +6,6 @@ import axiosInstance from "shared/lib/axiosInstance";
 import RecordCard from "widgets/record/RecordCard";
 import Grid from "@mui/material/Grid";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
-import greenSpot from "shared/assets/images/green_spot.png";
 import GreenButton from "shared/ui/greenButton";
 import Pagination from "@mui/material/Pagination";
 
@@ -22,75 +21,53 @@ const NotLoggedIn = () => {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      minHeight="100%"
+      minHeight="60vh"
       width="100%"
-      bgcolor="transparent"
+      maxWidth="600px"
+      mx="auto"
+      bgcolor="#f8f9fa"
       borderRadius={3}
-      p={isMobile ? 2 : 4}
-      position="relative"
+      p={isMobile ? 3 : 4}
+      boxShadow="0 2px 8px rgba(0,0,0,0.1)"
+      border="1px solid #e9ecef"
     >
       <Box
-        position="relative"
-        width="100%"
-        height="100%"
         display="flex"
+        flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        flexDirection="column"
+        textAlign="center"
+        maxWidth="400px"
+        width="100%"
       >
-        <img
-          src={greenSpot}
-          alt="로그인 안내"
-          style={{
-            width: isMobile ? "80%" : "60%",
-            maxWidth: isMobile ? "80%" : "60%",
-            height: "auto",
-            objectFit: "contain",
-            opacity: 0.9,
-            display: "block",
-          }}
-        />
         <Box
-          position="absolute"
-          top="50%"
-          left="50%"
           sx={{
-            transform: "translate(-50%, -50%)",
-            textAlign: "center",
-            zIndex: 2,
-            width: "90%",
-            maxWidth: "400px",
+            color: "#495057",
+            fontWeight: 500,
+            fontSize: isMobile ? "1.1rem" : "1.3rem",
+            mb: 3,
+            lineHeight: 1.6,
           }}
         >
-          <Box
-            sx={{
-              color: "#f5f7f0",
-              fontWeight: 400,
-              fontSize: isMobile ? "1rem" : "1.3rem",
-              textShadow: "0 2px 6px #000000",
-              mb: 2,
-              lineHeight: 1.6,
-              px: isMobile ? 1 : 0,
-            }}
-          >
-            당신의 발자국을 기록할 수 있어요.
-            <br />
-            로그인 후, 첫 번째 이야기를 남겨보세요 💬
-          </Box>
-          <GreenButton
-            onClick={() => (window.location.href = "/login")}
-            style={{
-              color: "#8cac7f",
-              fontSize: isMobile ? "1rem" : "1.3rem",
-              background: "#f5f5f5",
-              padding: isMobile ? "0.6rem 1.8rem" : "0.7rem 2.2rem",
-              marginTop: "1.1rem",
-              whiteSpace: "nowrap",
-            }}
-          >
-            로그인 하러가기
-          </GreenButton>
+          당신의 발자국을 기록할 수 있어요.
+          <br />
+          로그인 후, 첫 번째 이야기를 남겨보세요 💬
         </Box>
+        <GreenButton
+          onClick={() => (window.location.href = "/login")}
+          style={{
+            color: "#8cac7f",
+            fontSize: isMobile ? "1rem" : "1.2rem",
+            background: "#f5f5f5",
+            padding: isMobile ? "0.8rem 2rem" : "1rem 2.5rem",
+            whiteSpace: "nowrap",
+            border: "1px solid #dee2e6",
+            borderRadius: "8px",
+            fontWeight: "600",
+          }}
+        >
+          로그인 하러가기
+        </GreenButton>
       </Box>
     </Box>
   );

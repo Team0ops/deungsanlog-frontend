@@ -32,6 +32,10 @@ const MountainInfoPage = () => {
   // 📍 GPS 위치 마커 관련 상태
   const [userLocationMarker, setUserLocationMarker] = useState(null);
 
+  // 🚨 에러 상태 추가
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const initMap = () => {
       if (window.kakao?.maps) {
@@ -85,6 +89,8 @@ const MountainInfoPage = () => {
 
   // 🏔️ 산 데이터 조회
   const fetchAllMountains = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await axiosInstance.get("/mountain-service/all");
       const data = response.data;
@@ -93,6 +99,9 @@ const MountainInfoPage = () => {
       setMountains(data);
     } catch (error) {
       console.error("산 데이터 조회 오류:", error);
+      setError("산 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -214,6 +223,29 @@ const MountainInfoPage = () => {
           zIndex: 0,
         }}
       />
+
+      {/* 🚨 에러 메시지 */}
+      {error && (
+        <div style={errorContainerStyle}>
+          <div style={errorStyle}>
+            <div style={errorIconStyle}>⚠️</div>
+            <div style={errorTextStyle}>{error}</div>
+            <button style={retryButtonStyle} onClick={fetchAllMountains}>
+              다시 시도
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 🚨 로딩 메시지 */}
+      {loading && !error && (
+        <div style={loadingContainerStyle}>
+          <div style={loadingStyle}>
+            <div style={loadingIconStyle}>🏔️</div>
+            <div style={loadingTextStyle}>산 정보를 불러오는 중...</div>
+          </div>
+        </div>
+      )}
 
       {/* ✅ 범례 추가 - 데스크탑: 오른쪽 상단, 모바일: 오른쪽 상단 */}
       {window.innerWidth >= 600 && (
@@ -833,6 +865,101 @@ const detailButtonStyle = {
   fontSize: "clamp(0.85rem, 1.5vw, 0.95rem)",
   transition: "all 0.2s ease",
   boxShadow: "0 2px 8px rgba(67,226,125,0.15)",
+};
+
+// 🚨 에러 메시지 스타일들
+const errorContainerStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 9999,
+};
+
+const errorStyle = {
+  backgroundColor: "white",
+  borderRadius: "clamp(0.8rem, 1.5vw, 1rem)",
+  padding: "clamp(1rem, 2.5vw, 1.5rem)",
+  maxWidth: "clamp(18rem, 50vw, 25rem)",
+  width: "clamp(16rem, 90vw, 22rem)",
+  maxHeight: "85vh",
+  overflow: "auto",
+  position: "relative",
+  boxShadow: "0 0.25rem 1.25rem rgba(0, 0, 0, 0.15)",
+  zIndex: 10000,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const errorIconStyle = {
+  fontSize: "2rem",
+  marginBottom: "clamp(0.8rem, 1.5vw, 1rem)",
+};
+
+const errorTextStyle = {
+  fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
+  marginBottom: "clamp(0.8rem, 1.5vw, 1rem)",
+};
+
+const retryButtonStyle = {
+  backgroundColor: "#649177",
+  color: "white",
+  border: "none",
+  borderRadius: "clamp(0.5rem, 1vw, 0.7rem)",
+  padding: "clamp(0.7rem, 1.3vw, 0.9rem) clamp(1rem, 1.8vw, 1.2rem)",
+  cursor: "pointer",
+  fontWeight: "600",
+  fontSize: "clamp(0.85rem, 1.5vw, 0.95rem)",
+  transition: "all 0.2s ease",
+  boxShadow: "0 2px 8px rgba(67,226,125,0.15)",
+};
+
+// 🚨 로딩 메시지 스타일들
+const loadingContainerStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 9999,
+};
+
+const loadingStyle = {
+  backgroundColor: "white",
+  borderRadius: "clamp(0.8rem, 1.5vw, 1rem)",
+  padding: "clamp(1rem, 2.5vw, 1.5rem)",
+  maxWidth: "clamp(18rem, 50vw, 25rem)",
+  width: "clamp(16rem, 90vw, 22rem)",
+  maxHeight: "85vh",
+  overflow: "auto",
+  position: "relative",
+  boxShadow: "0 0.25rem 1.25rem rgba(0, 0, 0, 0.15)",
+  zIndex: 10000,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const loadingIconStyle = {
+  fontSize: "2rem",
+  marginBottom: "clamp(0.8rem, 1.5vw, 1rem)",
+};
+
+const loadingTextStyle = {
+  fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
+  marginBottom: "clamp(0.8rem, 1.5vw, 1rem)",
 };
 
 export default MountainInfoPage;

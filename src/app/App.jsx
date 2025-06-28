@@ -61,6 +61,30 @@ function AppContent() {
     pathname === "/log/edit" ||
     pathname === "/log/write/mountain-search";
   const isLoginPage = pathname === "/login";
+  const isCommunityPage = pathname.startsWith("/community");
+  const isMeetingPage = pathname.startsWith("/meeting");
+  const isNotificationPage = pathname === "/notification";
+  const isMyPage = pathname === "/mypage";
+
+  // 배경화면이 필요한 페이지들
+  const hasBackgroundPage =
+    isOrmiPage ||
+    isRecordPage ||
+    isLoginPage ||
+    isCommunityPage ||
+    isMeetingPage ||
+    isNotificationPage ||
+    isMyPage;
+
+  // 배경화면 이미지 결정
+  const getBackgroundImage = () => {
+    if (isOrmiPage || isLoginPage || isNotificationPage || isMyPage) {
+      return "url('/images/back_green.jpg')";
+    } else if (isRecordPage || isCommunityPage || isMeetingPage) {
+      return "url('/images/back_paper.jpg')";
+    }
+    return "none";
+  };
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -90,7 +114,7 @@ function AppContent() {
 
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
-      {(isOrmiPage || isRecordPage || isLoginPage) && (
+      {hasBackgroundPage && (
         <div
           style={{
             position: "absolute",
@@ -98,11 +122,7 @@ function AppContent() {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundImage: isOrmiPage
-              ? "url('/images/back_green.jpg')"
-              : isLoginPage
-              ? "url('/images/back_green.jpg')"
-              : "url('/images/back_paper.jpg')",
+            backgroundImage: getBackgroundImage(),
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -137,6 +157,7 @@ function AppContent() {
                   routes={getRoutes()}
                   onMouseEnter={handleOnMouseEnter}
                   onMouseLeave={handleOnMouseLeave}
+                  onMobileMenuClick={() => setMiniSidenav(dispatch, true)}
                 />
               </div>
             </>

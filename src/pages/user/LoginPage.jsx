@@ -2,23 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  // 환경별 API URL 설정
-  const getApiBaseUrl = () => {
-    const currentDomain = window.location.hostname;
-
-    // 배포 환경 감지
-    if (
-      currentDomain === "deungsanlog.site" ||
-      currentDomain === "www.deungsanlog.site"
-    ) {
-      return "https://api.deungsanlog.site"; // 배포 환경 백엔드 URL
-    }
-
-    // 개발 환경
-    return import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-  };
-
-  const BASE_URL = getApiBaseUrl();
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [loading, setLoading] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState(null);
   const navigate = useNavigate();
@@ -33,19 +17,7 @@ const LoginPage = () => {
       // 토큰이 있으면 저장하고 메인 페이지로 이동
       localStorage.setItem("X-AUTH-TOKEN", token);
       console.log("로그인 성공! 토큰 저장됨");
-
-      // 현재 도메인 감지하여 올바른 URL로 리다이렉트
-      const currentDomain = window.location.hostname;
-      if (
-        currentDomain === "deungsanlog.site" ||
-        currentDomain === "www.deungsanlog.site"
-      ) {
-        // 배포 환경에서는 절대 경로 사용
-        window.location.href = "/mountain";
-      } else {
-        // 개발 환경에서는 navigate 사용
-        navigate("/mountain");
-      }
+      navigate("/mountain");
     } else if (error) {
       // 에러가 있으면 알림
       alert("로그인 실패: " + error);

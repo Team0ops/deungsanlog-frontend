@@ -78,7 +78,13 @@ const ProfileStep = ({ question, options, onSelect, step }) => {
             ))}
           </div>
         ) : (
-          <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <GreenInput
               value={customValues[step] || ""}
               onChange={handleCustomChange}
