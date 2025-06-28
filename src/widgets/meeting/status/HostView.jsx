@@ -41,7 +41,7 @@ const HostView = ({
 
   return (
     <Box p={isMobile ? 1 : 2}>
-      <MeetingMemberOverview meetingId={meetingId} meeting={meeting} />
+      <MeetingMemberOverview meetingId={meetingId} />
 
       <Box display="flex" flexDirection="column" gap={isMobile ? 1.5 : 2}>
         {/* 신청자 목록 - CLOSED 상태가 아닐 때만 표시 */}
@@ -182,10 +182,6 @@ const HostView = ({
                 fontWeight: 600,
                 fontSize: isMobile ? "0.9rem" : "1rem",
                 py: isMobile ? 0.8 : 1,
-                outline: "none",
-                "&:focus": {
-                  outline: "none",
-                },
                 "&:hover": {
                   borderColor: "#e5dd93",
                   backgroundColor: "#FFF59D",
@@ -208,10 +204,6 @@ const HostView = ({
                 fontWeight: 600,
                 fontSize: isMobile ? "0.8rem" : "0.9rem",
                 py: isMobile ? 0.8 : 1,
-                outline: "none",
-                "&:focus": {
-                  outline: "none",
-                },
                 "&:hover": {
                   borderColor: "#5a8a6a",
                   backgroundColor: "rgba(112, 167, 132, 0.1)",
@@ -235,10 +227,6 @@ const HostView = ({
               fontWeight: 600,
               fontSize: isMobile ? "0.9rem" : "1rem",
               py: isMobile ? 0.8 : 1,
-              outline: "none",
-              "&:focus": {
-                outline: "none",
-              },
               "&:hover": {
                 borderColor: "#5a8a6a",
                 backgroundColor: "rgba(112, 167, 132, 0.1)",
@@ -262,10 +250,6 @@ const HostView = ({
                 fontWeight: 600,
                 fontSize: isMobile ? "0.9rem" : "1rem",
                 py: isMobile ? 0.8 : 1,
-                outline: "none",
-                "&:focus": {
-                  outline: "none",
-                },
                 "&:hover": {
                   borderColor: "#5a8a6a",
                   backgroundColor: "rgba(112, 167, 132, 0.1)",
