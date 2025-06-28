@@ -8,6 +8,8 @@ import {
   IconButton,
   Box,
   Typography,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axiosInstance from "shared/lib/axiosInstance";
@@ -15,6 +17,7 @@ import defaultImage from "shared/assets/images/logo_mountain.png";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -24,6 +27,10 @@ const RecordDetailModalPage = () => {
   const [record, setRecord] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [resultModal, setResultModal] = useState({ open: false, message: "" });
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     axiosInstance
@@ -47,13 +54,12 @@ const RecordDetailModalPage = () => {
 
   const handleDelete = async () => {
     handleMenuClose();
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    setConfirmOpen(false);
     try {
       await axiosInstance.delete(`/record-service/delete?recordId=${recordId}`);
-      alert("삭제되었습니다.");
-      navigate(-1);
+      setResultModal({ open: true, message: "삭제되었습니다." });
     } catch (e) {
-      alert("삭제에 실패했습니다.");
+      setResultModal({ open: true, message: "삭제에 실패했습니다." });
       console.error(e);
     }
   };
@@ -64,10 +70,14 @@ const RecordDetailModalPage = () => {
     <Dialog
       open
       onClose={handleClose}
-      maxWidth="sm"
+      maxWidth={isMobile ? "xs" : "sm"}
       fullWidth
       PaperProps={{
-        sx: { borderRadius: "24px" },
+        sx: {
+          borderRadius: isMobile ? "16px" : "24px",
+          m: isMobile ? 1 : 3,
+          p: isMobile ? 1 : 3,
+        },
       }}
     >
       <Box sx={{ position: "relative" }}>
@@ -77,15 +87,15 @@ const RecordDetailModalPage = () => {
           onClick={handleClose}
           sx={{
             position: "absolute",
-            top: 20,
-            right: 20,
+            top: isMobile ? 10 : 20,
+            right: isMobile ? 10 : 20,
             zIndex: 10,
             background: "#fff",
             boxShadow: "0 2px 8px 0 rgba(76, 117, 89, 0.12)",
             border: "1.5px solid #e0e0e0",
-            width: 40,
-            height: 40,
-            outline: "none", // 추가
+            width: isMobile ? 32 : 40,
+            height: isMobile ? 32 : 40,
+            outline: "none",
             "&:focus": {
               outline: "none",
               boxShadow: "none",
@@ -98,7 +108,7 @@ const RecordDetailModalPage = () => {
             transition: "all 0.15s",
           }}
         >
-          <CloseIcon sx={{ fontSize: 28, color: "#4b8161" }} />
+          <CloseIcon sx={{ fontSize: isMobile ? 22 : 28, color: "#4b8161" }} />
         </IconButton>
         {/* 메뉴 버튼 */}
         <IconButton
@@ -106,15 +116,15 @@ const RecordDetailModalPage = () => {
           onClick={handleMenuClick}
           sx={{
             position: "absolute",
-            top: 20,
-            right: 70,
+            top: isMobile ? 10 : 20,
+            right: isMobile ? 50 : 70,
             zIndex: 10,
             background: "#fff",
             boxShadow: "0 2px 8px 0 rgba(76, 117, 89, 0.12)",
             border: "1.5px solid #e0e0e0",
-            width: 40,
-            height: 40,
-            outline: "none", // 추가
+            width: isMobile ? 32 : 40,
+            height: isMobile ? 32 : 40,
+            outline: "none",
             "&:focus": {
               outline: "none",
               boxShadow: "none",
@@ -127,15 +137,17 @@ const RecordDetailModalPage = () => {
             transition: "all 0.15s",
           }}
         >
-          <MoreVertIcon sx={{ fontSize: 26, color: "#4b8161" }} />
+          <MoreVertIcon
+            sx={{ fontSize: isMobile ? 18 : 26, color: "#4b8161" }}
+          />
         </IconButton>
         <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
           <MenuItem onClick={handleEdit}>수정</MenuItem>
-          <MenuItem onClick={handleDelete}>삭제</MenuItem>
+          <MenuItem onClick={() => setConfirmOpen(true)}>삭제</MenuItem>
         </Menu>
         {/* 버튼 아래에 여백 추가 */}
-        <Box sx={{ height: 48 }} />
-        <DialogContent>
+        <Box sx={{ height: isMobile ? 32 : 48 }} />
+        <DialogContent sx={{ p: isMobile ? 1 : 3 }}>
           <Box
             component="img"
             src={
@@ -153,7 +165,7 @@ const RecordDetailModalPage = () => {
               height: "auto",
               borderRadius: 2,
               mb: 2,
-              maxHeight: 400,
+              maxHeight: isMobile ? 220 : 400,
               objectFit: "contain",
               background: "#eee",
               display: "block",
@@ -165,11 +177,14 @@ const RecordDetailModalPage = () => {
             <span
               role="img"
               aria-label="mountain"
-              style={{ fontSize: "1.3rem" }}
+              style={{ fontSize: isMobile ? "1.1rem" : "1.3rem" }}
             >
               🏔️
             </span>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            <Typography
+              variant={isMobile ? "subtitle1" : "h6"}
+              sx={{ fontWeight: 700 }}
+            >
               {record.mountainName}
             </Typography>
           </Box>
@@ -178,15 +193,15 @@ const RecordDetailModalPage = () => {
             sx={{
               background: "#f2f7ee",
               borderRadius: "16px",
-              p: 2,
-              my: 2,
-              minHeight: 60,
+              p: isMobile ? 1.2 : 2,
+              my: isMobile ? 1 : 2,
+              minHeight: isMobile ? 40 : 60,
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
               justifyContent: "flex-start",
               gap: 1,
-              boxShadow: "0 2px 12px 0 rgba(0, 0, 0, 0.2)", // 연한 초록 그림자 추가
+              boxShadow: "0 2px 12px 0 rgba(0, 0, 0, 0.2)",
             }}
           >
             <Typography
@@ -194,7 +209,7 @@ const RecordDetailModalPage = () => {
               sx={{
                 color: "#355c2e",
                 fontWeight: 500,
-                fontSize: "1.05rem",
+                fontSize: isMobile ? "0.98rem" : "1.05rem",
                 textAlign: "left",
                 wordBreak: "break-all",
                 width: "100%",
@@ -206,7 +221,7 @@ const RecordDetailModalPage = () => {
               <Typography
                 variant="caption"
                 color="text.secondary"
-                sx={{ mt: 1 }}
+                sx={{ mt: 1, fontSize: isMobile ? "0.85rem" : undefined }}
               >
                 {(() => {
                   const date = new Date(record.createdAt);
@@ -218,6 +233,30 @@ const RecordDetailModalPage = () => {
             )}
           </Box>
         </DialogContent>
+        {/* 삭제 확인 모달 */}
+        <ConfirmModal
+          isOpen={confirmOpen}
+          message={"정말 삭제하시겠습니까?"}
+          onCancel={() => setConfirmOpen(false)}
+          onConfirm={handleDelete}
+          cancelText="취소"
+          confirmText="삭제"
+        />
+        {/* 결과 안내 모달 */}
+        <ConfirmModal
+          isOpen={resultModal.open}
+          message={resultModal.message}
+          onCancel={() => {
+            setResultModal({ open: false, message: "" });
+            if (resultModal.message === "삭제되었습니다.") navigate(-1);
+          }}
+          onConfirm={() => {
+            setResultModal({ open: false, message: "" });
+            if (resultModal.message === "삭제되었습니다.") navigate(-1);
+          }}
+          cancelText="확인"
+          confirmText="확인"
+        />
       </Box>
     </Dialog>
   );

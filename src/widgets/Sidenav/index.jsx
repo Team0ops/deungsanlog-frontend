@@ -22,7 +22,9 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
 
   useEffect(() => {
     function handleMiniSidenav() {
-      setMiniSidenav(dispatch, window.innerWidth < 1200);
+      if (window.innerWidth >= 1200) {
+        setMiniSidenav(dispatch, false);
+      }
     }
 
     window.addEventListener("resize", handleMiniSidenav);
@@ -32,14 +34,17 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
 
   // ✅ 액션 처리 함수 추가
   const handleActionClick = (action) => {
-    if (action && typeof action === 'function') {
-      console.log('🚪 사이드바에서 액션 실행');
+    if (action && typeof action === "function") {
+      console.log("🚪 사이드바에서 액션 실행");
       action(); // logout() 함수 실행
     }
   };
 
   const renderRoutes = routes.map(
-    ({ type, name, icon, title, noCollapse, key, route, href, action }, index) => {
+    (
+      { type, name, icon, title, noCollapse, key, route, href, action },
+      index
+    ) => {
       const itemKey = key || `route-${index}`; // fallback key
 
       if (type === "collapse") {
@@ -78,16 +83,16 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       // ✅ 액션 타입 처리 추가
       if (type === "action") {
         return (
-          <Box 
-            key={itemKey} 
-            sx={{ 
-              display: "block", 
+          <Box
+            key={itemKey}
+            sx={{
+              display: "block",
               p: 0,
               cursor: "pointer",
               "&:hover": {
                 backgroundColor: "rgba(255, 255, 255, 0.1)",
                 borderRadius: "0.5rem",
-              }
+              },
             }}
             onClick={() => handleActionClick(action)}
           >
@@ -95,7 +100,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
               color={color}
               name={name}
               icon={icon}
-              active={false}  // 액션은 항상 비활성 상태
+              active={false} // 액션은 항상 비활성 상태
               noCollapse={noCollapse}
             />
           </Box>
@@ -137,7 +142,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       ownerState={{ transparentSidenav, miniSidenav }}
       sx={{
         position: "relative",
-        height: "100vh", // 전체 높이 설정
         display: "flex",
         flexDirection: "column",
       }}

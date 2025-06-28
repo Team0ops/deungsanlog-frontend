@@ -40,14 +40,26 @@ const OnboardingChat = ({ onComplete }) => {
     return (
       <div
         style={{
-          height: "100%",
+          width: "100%",
+          maxWidth: "400px",
+          padding: "1rem",
+          margin: "0 auto",
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100%",
         }}
       >
         <div
-          style={{ textAlign: "center", maxWidth: "400px", padding: "1rem" }}
+          style={{
+            textAlign: "center",
+            maxWidth: "400px",
+            padding: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
           <p
             className="wave-text"
@@ -96,7 +108,11 @@ const OnboardingChat = ({ onComplete }) => {
           <p style={{ fontSize: "1rem", marginBottom: "1.2rem" }}>
             아래 버튼을 눌러 시작해주세요!
           </p>
-          <GreenButton onClick={() => setStep(0)}>시작하기</GreenButton>
+          <div
+            style={{ display: "flex", justifyContent: "center", width: "100%" }}
+          >
+            <GreenButton onClick={() => setStep(0)}>시작하기</GreenButton>
+          </div>
         </div>
       </div>
     );

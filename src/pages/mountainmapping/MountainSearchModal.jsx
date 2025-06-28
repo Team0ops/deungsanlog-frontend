@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
-import axiosInstance from "shared/lib/axiosInstance"; // axios → axiosInstance로 변경
+import axiosInstance from "shared/lib/axiosInstance";
 
 const MountainSearchModal = ({ searchKeyword, onSelect }) => {
   const [mountainList, setMountainList] = useState([]);

@@ -55,13 +55,24 @@ const SidenavRoot = styled(Drawer)(({ theme, ownerState }) => {
 
   return {
     "& .MuiDrawer-paper": {
-      overflow: "visible",
       position: "fixed",
-      zIndex: 1300,
+      top: 0,
+      left: 0,
+      right: "auto",
+      bottom: 0,
+      height: "94vh",
+      maxHeight: "94vh",
+      boxSizing: "border-box",
+      overflowY: "auto",
+      zIndex: 2000,
       willChange: "transform",
       isolation: "isolate",
       boxShadow: theme.shadows[8],
       border: "none",
+      "@media (max-width: 600px)": {
+        height: "94dvh",
+        maxHeight: "94dvh",
+      },
       ...(miniSidenav ? drawerCloseStyles() : drawerOpenStyles()),
     },
   };

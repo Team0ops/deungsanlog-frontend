@@ -5,12 +5,15 @@ import KingOfMountainWidget from "widgets/community/Rank/KingOfMountainWidget";
 import HotMountainList from "widgets/community/HotMountain/HotMountainList";
 import FreeBoardBanner from "widgets/community/board/FreeBoardBanner";
 import { getUserInfo } from "shared/lib/auth";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const CommunityPage = () => {
   const [previewPosts, setPreviewPosts] = useState([]);
   const [userId, setUserId] = useState(null);
   const [refreshKing, setRefreshKing] = useState(false); // 추가
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // 로그인 여부만 체크해서 userId만 저장
   useEffect(() => {
@@ -43,16 +46,20 @@ const CommunityPage = () => {
   return (
     <div
       style={{
-        width: "100%",
-        maxWidth: "1200px",
+        maxWidth: isMobile ? "95vw" : "70vw",
         margin: "0 auto",
-        padding: "1.5rem",
+        padding: isMobile ? "0.7rem 0.5rem" : "1.5rem",
         boxSizing: "border-box",
+        overflowX: "hidden",
       }}
     >
       {/* 자유게시판 배너 - 상단 한 줄 전체 */}
-      <div style={{ marginBottom: "2rem" }}>
-        <FreeBoardBanner onClick={handleNavigate} previewPosts={previewPosts} />
+      <div style={{ marginBottom: isMobile ? "1.2rem" : "2rem" }}>
+        <FreeBoardBanner
+          onClick={handleNavigate}
+          previewPosts={previewPosts}
+          isMobile={isMobile}
+        />
       </div>
 
       {/* 랭킹 / Hot 산 - 가로 배치 (작아지면 세로) */}
@@ -61,14 +68,17 @@ const CommunityPage = () => {
         style={{
           display: "flex",
           flexWrap: "wrap",
-          gap: "1.5rem",
-          justifyContent: "space-between",
+          gap: isMobile ? "0.8rem" : "1.5rem",
+          justifyContent: isMobile ? "center" : "space-between",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "stretch" : undefined,
         }}
       >
         <div
           style={{
             flex: "1 1 300px",
-            minWidth: "280px",
+            minWidth: isMobile ? "0" : "280px",
+            width: isMobile ? "100%" : undefined,
           }}
         >
           {/* key에 refreshKing을 넣어 mount 트리거 */}
@@ -81,7 +91,8 @@ const CommunityPage = () => {
         <div
           style={{
             flex: "1 1 300px",
-            minWidth: "280px",
+            minWidth: isMobile ? "0" : "280px",
+            width: isMobile ? "100%" : undefined,
           }}
         >
           <HotMountainList />

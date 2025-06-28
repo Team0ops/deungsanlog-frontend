@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Pagination } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Pagination,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardMyHeader from "widgets/community/board/FreeBoardMyHeader";
@@ -15,6 +21,8 @@ const FreeBoardMyPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetPost, setDeleteTargetPost] = useState(null);
   const [sortOption, setSortOption] = useState("latest");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const size = 6;
 
@@ -93,7 +101,9 @@ const FreeBoardMyPage = () => {
         flexDirection: "column",
         backgroundColor: "transparent",
         borderRadius: "20px",
-        padding: "clamp(1rem, 4vw, 1.5rem)",
+        padding: isMobile
+          ? "clamp(0.8rem, 3vw, 1rem)"
+          : "clamp(1rem, 4vw, 1.5rem)",
         position: "relative",
         height: "calc(100vh - 40px)",
       }}
@@ -105,7 +115,7 @@ const FreeBoardMyPage = () => {
           margin: "0 auto",
           display: "flex",
           flexDirection: "column",
-          gap: "1.2rem",
+          gap: isMobile ? "1rem" : "1.2rem",
           height: "100%",
           position: "relative",
         }}
@@ -127,52 +137,131 @@ const FreeBoardMyPage = () => {
             alignItems: "center",
             justifyContent: posts.length === 0 ? "center" : "flex-start",
             color: "#aaa",
-            fontSize: "1.1rem",
-            p: 3,
+            fontSize: isMobile ? "1rem" : "1.1rem",
+            p: isMobile ? 2 : 3,
             overflowY: "auto",
             maxHeight: "calc(100vh - 180px)",
           }}
         >
-          {loading
-            ? "불러오는 중..."
-            : getSortedPosts().length === 0
-            ? "작성한 게시글이 없습니다."
-            : getSortedPosts().map((post, idx) => (
+          {loading ? (
+            <div
+              style={{
+                color: "#666",
+                textAlign: "center",
+                fontSize: isMobile ? "1rem" : "1.1rem",
+                fontFamily: "'GmarketSansMedium', sans-serif",
+                lineHeight: "1.6",
+                minHeight: "200px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: isMobile ? "2.5rem" : "3rem",
+                  animation: "bounce 1.5s infinite",
+                }}
+              >
+                🐿️
+              </div>
+              <div>
+                <div style={{ marginBottom: "0.5rem" }}>
+                  내 게시글을 열심히 찾고 있어요!
+                </div>
                 <div
-                  key={post.id}
                   style={{
-                    width: "100%",
-                    marginBottom: idx !== posts.length - 1 ? "1.2rem" : 0,
+                    fontSize: isMobile ? "0.9rem" : "1rem",
+                    color: "#888",
                   }}
                 >
-                  <FeedCard
-                    post={post}
-                    myUserId={userId}
-                    onEdit={() => handleEdit(post)}
-                    onDelete={() => handleDelete(post)}
-                  />
+                  잠시만 기다려주세요... 🌰
                 </div>
-              ))}
+              </div>
+              <style>
+                {`
+                  @keyframes bounce {
+                    0%, 20%, 50%, 80%, 100% {
+                      transform: translateY(0);
+                    }
+                    40% {
+                      transform: translateY(-10px);
+                    }
+                    60% {
+                      transform: translateY(-5px);
+                    }
+                  }
+                `}
+              </style>
+            </div>
+          ) : getSortedPosts().length === 0 ? (
+            <div
+              style={{
+                color: "#888",
+                textAlign: "center",
+                marginTop: 0,
+                fontSize: isMobile ? "1rem" : "1.1rem",
+                fontFamily: "'GmarketSansMedium', sans-serif",
+                lineHeight: "1.6",
+                minHeight: "220px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              🐿️ 아직 작성한 게시글이 없어요! <br />첫 번째 이야기를 남겨볼까요?
+              🌰
+            </div>
+          ) : (
+            getSortedPosts().map((post, idx) => (
+              <div
+                key={post.id}
+                style={{
+                  width: "100%",
+                  marginBottom:
+                    idx !== posts.length - 1
+                      ? isMobile
+                        ? "1rem"
+                        : "1.2rem"
+                      : 0,
+                }}
+              >
+                <FeedCard
+                  post={post}
+                  myUserId={userId}
+                  onEdit={() => handleEdit(post)}
+                  onDelete={() => handleDelete(post)}
+                />
+              </div>
+            ))
+          )}
         </Box>
         {/* 페이지네이션 버튼 */}
-        <Box display="flex" justifyContent="center" mt={2}>
+        <Box display="flex" justifyContent="center" mt={isMobile ? 1 : 2}>
           <Pagination
             count={totalPages}
             page={page + 1}
             onChange={(_, value) => setPage(value - 1)}
             color="primary"
             shape="rounded"
-            size="large"
-            siblingCount={1}
-            boundaryCount={1}
-            showFirstButton
-            showLastButton
+            size={isMobile ? "medium" : "large"}
+            siblingCount={isMobile ? 0 : 1}
+            boundaryCount={isMobile ? 1 : 1}
+            showFirstButton={!isMobile}
+            showLastButton={!isMobile}
             sx={{
               "& .MuiPaginationItem-root": {
                 color: "#356849",
                 fontWeight: 600,
                 borderRadius: "24px !important",
                 outline: "none",
+                fontSize: isMobile ? "0.9rem" : "1rem",
+                minWidth: isMobile ? "32px" : "40px",
+                height: isMobile ? "32px" : "40px",
               },
               "& .Mui-selected": {
                 backgroundColor: "#bfccb185 !important",

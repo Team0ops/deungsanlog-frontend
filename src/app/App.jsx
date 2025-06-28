@@ -39,9 +39,9 @@ import FreeBoardMyPage from "pages/community/FreeBoardMyPage";
 import FreeBoardPage from "pages/community/freeBoardPage";
 import FreeBoardWritePage from "pages/community/freeBoardWritePage";
 import PostDetailPage from "pages/community/PostDetailPage";
-import MeetingPage from "pages/meeting/MeetingPage";
+import MeetingPage from "pages/meeting/meetingPage";
 import MeetingDetailPage from "pages/meeting/meetingDetailPage";
-import MeetingCreatePage from "pages/meeting/MeetingCreatePage";
+import MeetingCreatePage from "pages/meeting/meetingCreatePage";
 import OrmiPage from "pages/ormie/ormiPage";
 import NotificationPage from "pages/notificationPage";
 import MyPage from "pages/mypage/mypage";
@@ -53,14 +53,6 @@ function AppContent() {
   const { miniSidenav, direction, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
-
-  // ✅ Sidenav 동적 height (iOS 사파리 하단 짤림 방지)
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  useEffect(() => {
-    const handleResize = () => setViewportHeight(window.innerHeight);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const isOrmiPage = pathname === "/ormi";
   const isRecordPage =
@@ -93,6 +85,9 @@ function AppContent() {
     }
   };
 
+  // 모바일 여부 체크
+  const isMobile = window.innerWidth < 600;
+
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
       {(isOrmiPage || isRecordPage || isLoginPage) && (
@@ -117,20 +112,51 @@ function AppContent() {
         />
       )}
       <div style={{ display: "flex", position: "relative", zIndex: 1 }}>
-        <div style={{ height: viewportHeight, minHeight: viewportHeight }}>
-          <Sidenav
-            color={sidenavColor}
-            brand={brand}
-            brandName="등산 이야기"
-            routes={getRoutes()}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          />
-        </div>
+        {/* 모바일: miniSidenav이 false일 때만 Sidenav 오버레이로 표시 */}
+        {isMobile ? (
+          !miniSidenav && (
+            <>
+              {/* 오버레이 배경 */}
+              <div
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100vw",
+                  height: "100vh",
+                  background: "rgba(0,0,0,0.3)",
+                  zIndex: 1999,
+                }}
+                onClick={() => setMiniSidenav(dispatch, true)}
+              />
+              <div style={{ position: "fixed", top: 0, left: 0, zIndex: 2000 }}>
+                <Sidenav
+                  color={sidenavColor}
+                  brand={brand}
+                  brandName="등산 이야기"
+                  routes={getRoutes()}
+                  onMouseEnter={handleOnMouseEnter}
+                  onMouseLeave={handleOnMouseLeave}
+                />
+              </div>
+            </>
+          )
+        ) : (
+          <div>
+            <Sidenav
+              color={sidenavColor}
+              brand={brand}
+              brandName="등산 이야기"
+              routes={getRoutes()}
+              onMouseEnter={handleOnMouseEnter}
+              onMouseLeave={handleOnMouseLeave}
+            />
+          </div>
+        )}
         {/* SidenavToggleButton 위치 반응형 */}
         <div
           style={
-            window.innerWidth < 600
+            isMobile
               ? {
                   position: "fixed",
                   bottom: "2rem",
@@ -149,7 +175,9 @@ function AppContent() {
           style={{
             flex: 1,
             padding: "clamp(0.5rem, 4vw, 2rem)",
-            marginLeft: `max(0px, ${miniSidenav ? "2em" : "5rem"})`,
+            marginLeft: isMobile
+              ? 0
+              : `max(0px, ${miniSidenav ? "2em" : "5rem"})`,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",

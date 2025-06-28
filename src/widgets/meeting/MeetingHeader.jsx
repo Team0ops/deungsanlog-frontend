@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import GreenButton from "shared/ui/GreenButton";
+import GreenButton from "shared/ui/greenButton";
 import { useNavigate } from "react-router-dom";
 
 const messages = [

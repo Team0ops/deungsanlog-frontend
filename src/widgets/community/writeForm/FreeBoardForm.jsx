@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, useTheme, useMediaQuery } from "@mui/material";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 import MultiPhotoUploadWidget from "widgets/PhotoUpload/MultiPhotoUploadWidget";
 import LogMountainSearchModal from "pages/record/LogMountainSearchModal";
 import MountainSearchOnlyWidget from "widgets/mountain/MountainSearchOnlyWidget";
+import ConfirmModal from "widgets/Modal/ConfirmModal";
 import axiosInstance from "shared/lib/axiosInstance";
 
 const FreeBoardWriteForm = ({ userId: propUserId }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { postId } = useParams();
-  // prop으로 받은 userId가 있으면 사용, 없으면 기본값(11)
-  const userId = propUserId ?? 11;
+  const userId = propUserId;
   const [title, setTitle] = useState("");
   const [mountain, setMountain] = useState(null);
   const [content, setContent] = useState("");
@@ -22,6 +24,7 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
   const [contentError, setContentError] = useState(false);
   const [titleError, setTitleError] = useState(false);
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,6 +106,11 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
     }
     if (!isValid) return;
 
+    // 확인 모달 표시
+    setConfirmModalOpen(true);
+  };
+
+  const handleConfirmSubmit = async () => {
     try {
       let imageUrls = photoPreviews;
       if (photos.length > 0) {
@@ -136,114 +144,139 @@ const FreeBoardWriteForm = ({ userId: propUserId }) => {
     } catch (error) {
       console.error("실패", error);
       alert("처리에 실패했습니다.");
+    } finally {
+      setConfirmModalOpen(false);
     }
   };
 
   return (
-    <Box
-      maxWidth="100vw"
-      width="100%"
-      p={{ xs: "1rem", md: "2rem" }}
-      boxShadow={2}
-      borderRadius={3}
-      bgcolor="#ffffff"
-      sx={{
-        maxWidth: { xs: "100vw", md: "700px" },
-        minHeight: "60vh",
-        maxHeight: "90vh",
-        margin: "0 auto",
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <form onSubmit={handleSubmit}>
-        <MultiPhotoUploadWidget
-          photos={photos}
-          photoPreviews={photoPreviews}
-          photoError={false}
-          onPhotosChange={handlePhotosChange}
-          onPhotoRemove={handlePhotoRemove}
-          setPhotoError={() => {}}
-          shakeKeyframes={""}
-          max={3}
-        />
+    <>
+      <Box
+        maxWidth="100vw"
+        width="100%"
+        p={{ xs: "0.8rem", md: "2rem" }}
+        boxShadow={2}
+        borderRadius={3}
+        bgcolor="#ffffff"
+        sx={{
+          maxWidth: { xs: "100vw", md: "700px" },
+          minHeight: isMobile ? "50vh" : "60vh",
+          maxHeight: isMobile ? "85vh" : "90vh",
+          margin: "0 auto",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <form onSubmit={handleSubmit}>
+          <MultiPhotoUploadWidget
+            photos={photos}
+            photoPreviews={photoPreviews}
+            photoError={false}
+            onPhotosChange={handlePhotosChange}
+            onPhotoRemove={handlePhotoRemove}
+            setPhotoError={() => {}}
+            shakeKeyframes={""}
+            max={3}
+          />
 
-        {/* 산 검색 위젯 추가 */}
-        <MountainSearchOnlyWidget
-          value={mountain}
-          onChange={setMountain}
-          onSearchClick={() => setMountainModalOpen(true)}
-          error={mountainError}
-          errorMessage="산을 선택해주세요."
-        />
+          {/* 산 검색 위젯 추가 */}
+          <MountainSearchOnlyWidget
+            value={mountain}
+            onChange={setMountain}
+            onSearchClick={() => setMountainModalOpen(true)}
+            error={mountainError}
+            errorMessage="산을 선택해주세요."
+          />
 
-        <LogMountainSearchModal
-          open={mountainModalOpen}
-          onClose={() => setMountainModalOpen(false)}
-          onSelect={(mountainObj) => {
-            setMountain(mountainObj);
-            setMountainError(false);
-          }}
-        />
-        <GreenInput
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            setTitleError(false);
-          }}
-          maxLength={30}
-          error={titleError}
-          errorMessage="제목을 작성해주세요."
-          placeholder="제목을 입력해주세요 (20자 이내)"
-          style={{
-            marginBottom: "1rem",
-            border: titleError ? "2px solid #dc3545" : "2px solid #70a784",
-          }}
-        />
-        <GreenInput
-          as="textarea"
-          value={content}
-          onChange={(e) => {
-            setContent(e.target.value);
-            setContentError(false);
-          }}
-          maxLength={300}
-          error={contentError}
-          errorMessage="글 내용을 작성해주세요."
-          placeholder="내용을 입력하세요. (300자 이내)"
-          style={{
-            width: "100%",
-            border: contentError ? "2px solid #dc3545" : "2px solid #70a784",
-            fontFamily: "inherit",
-            marginBottom: "1.5rem",
-            background: "#f8fff9",
-            resize: "vertical",
-          }}
-        />
-        <GreenButton
-          type="submit"
-          style={{ width: "100%", marginTop: "1.5rem" }}
-        >
-          {postId ? "수정하기" : "등록하기"}
-        </GreenButton>
-        <GreenButton
-          type="button"
-          style={{
-            background: "#72927f",
-            color: "#ffffff",
-            width: "100%",
-            fontSize: "1.05rem",
-            padding: "0.8rem 0",
-            marginTop: "0.7rem",
-          }}
-          onClick={() => navigate(-1)}
-        >
-          뒤로가기
-        </GreenButton>
-      </form>
-    </Box>
+          <LogMountainSearchModal
+            open={mountainModalOpen}
+            onClose={() => setMountainModalOpen(false)}
+            onSelect={(mountainObj) => {
+              setMountain(mountainObj);
+              setMountainError(false);
+            }}
+          />
+          <GreenInput
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setTitleError(false);
+            }}
+            maxLength={30}
+            error={titleError}
+            errorMessage="제목을 작성해주세요."
+            placeholder="제목을 입력해주세요 (20자 이내)"
+            style={{
+              marginBottom: isMobile ? "0.8rem" : "1rem",
+              border: titleError ? "2px solid #dc3545" : "2px solid #70a784",
+              fontSize: isMobile ? "0.95rem" : "1rem",
+              height: isMobile ? "44px" : "auto",
+            }}
+          />
+          <GreenInput
+            as="textarea"
+            value={content}
+            onChange={(e) => {
+              setContent(e.target.value);
+              setContentError(false);
+            }}
+            maxLength={300}
+            error={contentError}
+            errorMessage="글 내용을 작성해주세요."
+            placeholder="내용을 입력하세요. (300자 이내)"
+            style={{
+              width: "100%",
+              border: contentError ? "2px solid #dc3545" : "2px solid #70a784",
+              fontFamily: "inherit",
+              marginBottom: isMobile ? "1.2rem" : "1.5rem",
+              background: "#f8fff9",
+              resize: "vertical",
+              fontSize: isMobile ? "0.95rem" : "1rem",
+              minHeight: isMobile ? "120px" : "150px",
+            }}
+          />
+          <GreenButton
+            type="submit"
+            style={{
+              width: "100%",
+              marginTop: isMobile ? "1.2rem" : "1.5rem",
+              height: isMobile ? "48px" : "auto",
+              fontSize: isMobile ? "1rem" : "1.05rem",
+            }}
+          >
+            {postId ? "수정하기" : "등록하기"}
+          </GreenButton>
+          <GreenButton
+            type="button"
+            style={{
+              background: "#72927f",
+              color: "#ffffff",
+              width: "100%",
+              fontSize: isMobile ? "1rem" : "1.05rem",
+              padding: isMobile ? "0.7rem 0" : "0.8rem 0",
+              marginTop: isMobile ? "0.6rem" : "0.7rem",
+              height: isMobile ? "44px" : "auto",
+            }}
+            onClick={() => navigate(-1)}
+          >
+            뒤로가기
+          </GreenButton>
+        </form>
+      </Box>
+
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        message={
+          postId ? "게시글을 수정하시겠습니까?" : "게시글을 등록하시겠습니까?"
+        }
+        onCancel={() => setConfirmModalOpen(false)}
+        onConfirm={handleConfirmSubmit}
+        cancelText="취소"
+        confirmText={postId ? "수정" : "등록"}
+      />
+    </>
   );
 };
 

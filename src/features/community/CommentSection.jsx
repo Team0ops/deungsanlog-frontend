@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTheme, useMediaQuery } from "@mui/material";
 import axiosInstance from "shared/lib/axiosInstance";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import GreenButton from "shared/ui/greenButton";
@@ -6,6 +7,9 @@ import GreenInput from "shared/ui/greenInput";
 import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [menuOpenId, setMenuOpenId] = useState(null);
@@ -90,14 +94,14 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
           <div
             key={c.id}
             style={{
-              marginLeft: `${level * 20}px`, // 들여쓰기
-              padding: "0.8rem",
+              marginLeft: `${level * (isMobile ? 15 : 20)}px`, // 들여쓰기
+              padding: isMobile ? "0.6rem" : "0.8rem",
               borderRadius: "10px",
               background: "rgba(39,174,96,0.05)",
               border: "1px solid rgba(39,174,96,0.1)",
               display: "flex",
               flexDirection: "column",
-              gap: "0.3rem",
+              gap: isMobile ? "0.2rem" : "0.3rem",
               position: "relative",
             }}
           >
@@ -107,7 +111,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom: "0.3rem",
+                marginBottom: isMobile ? "0.2rem" : "0.3rem",
               }}
             >
               <NicknameWithBadge
@@ -115,14 +119,23 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                 nickname={c.nickname}
                 style={{
                   fontWeight: 600,
-                  fontSize: "1.05rem",
+                  fontSize: isMobile ? "0.95rem" : "1.05rem",
                   color: "#333",
                 }}
               />
               <div
-                style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: isMobile ? "0.3rem" : "0.4rem",
+                }}
               >
-                <div style={{ fontSize: "0.9rem", color: "#aaa" }}>
+                <div
+                  style={{
+                    fontSize: isMobile ? "0.8rem" : "0.9rem",
+                    color: "#aaa",
+                  }}
+                >
                   {new Date(c.createdAt).toLocaleString()}
                 </div>
                 {canDelete && (
@@ -134,10 +147,10 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                         background: "none",
                         border: "none",
                         cursor: "pointer",
-                        fontSize: "1.3rem",
+                        fontSize: isMobile ? "1.1rem" : "1.3rem",
                         color: "#888",
                         padding: 0,
-                        marginLeft: "0.2rem",
+                        marginLeft: isMobile ? "0.1rem" : "0.2rem",
                       }}
                     >
                       ⋯
@@ -162,17 +175,17 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                           }}
                           style={{
                             background: "none",
-                            fontSize: "1rem",
+                            fontSize: isMobile ? "0.9rem" : "1rem",
                             outline: "none",
                             border: "none",
                             color: "#961c1c",
                             fontWeight: 500,
-                            padding: "0.7rem 1.2rem",
+                            padding: isMobile ? "0.6rem 1rem" : "0.7rem 1.2rem",
                             cursor: "pointer",
-                            width: "auto", // ← 수정: 100% → auto
+                            width: "auto",
                             textAlign: "left",
-                            whiteSpace: "nowrap", // ← 추가: 한 줄로 표시
-                            minWidth: "56px", // ← 추가: 너무 좁아지지 않게
+                            whiteSpace: "nowrap",
+                            minWidth: isMobile ? "48px" : "56px",
                           }}
                         >
                           삭제
@@ -187,9 +200,10 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
             {/* 댓글 내용 */}
             <div
               style={{
-                fontSize: "1rem",
+                fontSize: isMobile ? "0.95rem" : "1rem",
                 color: "#555",
                 whiteSpace: "pre-line",
+                lineHeight: isMobile ? "1.4" : "1.5",
               }}
             >
               {c.content}
@@ -197,7 +211,12 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
 
             {/* 댓글 달기 버튼: level이 1 미만일 때만 표시 */}
             {level < 1 && (
-              <div style={{ marginTop: "0.5rem", textAlign: "right" }}>
+              <div
+                style={{
+                  marginTop: isMobile ? "0.4rem" : "0.5rem",
+                  textAlign: "right",
+                }}
+              >
                 <button
                   onClick={() => toggleReplyInput(c.id)}
                   style={{
@@ -205,7 +224,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                     background: "none",
                     border: "none",
                     color: "#345e45",
-                    fontSize: "0.85rem",
+                    fontSize: isMobile ? "0.8rem" : "0.85rem",
                     cursor: "pointer",
                   }}
                 >
@@ -219,9 +238,10 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
               <form
                 onSubmit={(e) => handleReplySubmit(e, c.id)}
                 style={{
-                  marginTop: "0.6rem",
+                  marginTop: isMobile ? "0.5rem" : "0.6rem",
                   display: "flex",
-                  gap: "0.5rem",
+                  flexDirection: isMobile ? "column" : "row",
+                  gap: isMobile ? "0.4rem" : "0.5rem",
                   width: "100%",
                 }}
               >
@@ -235,13 +255,14 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                   }
                   placeholder="대댓글을 입력하세요"
                   style={{
-                    fontSize: "1.05rem",
+                    fontSize: isMobile ? "1rem" : "1.05rem",
                     flex: 1,
                     marginBottom: 0,
                     background: "#fff",
                     border: "1.5px solid #e0e0e0",
                     transition: "border 0.2s",
                     boxShadow: "none",
+                    height: isMobile ? "40px" : "auto",
                   }}
                   maxLength={200}
                   onFocus={(e) =>
@@ -254,15 +275,17 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                 <GreenButton
                   type="submit"
                   style={{
-                    padding: "0.7rem 1.5rem",
+                    padding: isMobile ? "0.6rem 1.2rem" : "0.7rem 1.5rem",
                     fontWeight: 500,
-                    fontSize: "1.05rem",
+                    fontSize: isMobile ? "1rem" : "1.05rem",
                     borderRadius: "8px",
                     whiteSpace: "nowrap",
                     background: "#688574",
                     color: "#ffffff",
                     border: "none",
                     boxShadow: "none",
+                    height: isMobile ? "44px" : "auto",
+                    alignSelf: isMobile ? "flex-end" : "auto",
                   }}
                 >
                   등록
@@ -303,15 +326,20 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
 
   return (
     <>
-      <div style={{ marginBottom: "1.2rem", minHeight: "300px" }}>
+      <div
+        style={{
+          marginBottom: isMobile ? "1rem" : "1.2rem",
+          minHeight: "300px",
+        }}
+      >
         {/* 항상 구분선 표시 */}
         <div
           style={{
             borderTop: "1px solid #e0e0e0",
-            paddingTop: "1.2rem",
+            paddingTop: isMobile ? "1rem" : "1.2rem",
             display: "flex",
             flexDirection: "column",
-            gap: "0.8rem",
+            gap: isMobile ? "0.6rem" : "0.8rem",
           }}
         >
           {comments.length === 0 ? (
@@ -320,9 +348,9 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                 color: "#888",
                 textAlign: "center",
                 marginTop: 0,
-                fontSize: "1rem",
+                fontSize: isMobile ? "0.95rem" : "1rem",
                 lineHeight: 1.6,
-                minHeight: "220px",
+                minHeight: isMobile ? "180px" : "220px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -342,10 +370,11 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
         onSubmit={handleComment}
         style={{
           display: "flex",
-          alignItems: "center",
-          gap: "0.6rem",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "stretch" : "center",
+          gap: isMobile ? "0.4rem" : "0.6rem",
           width: "100%",
-          marginTop: "1.5rem",
+          marginTop: isMobile ? "1.2rem" : "1.5rem",
         }}
       >
         <GreenInput
@@ -353,13 +382,14 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
           onChange={(e) => setComment(e.target.value)}
           placeholder="댓글로 마음을 나눠보세요!"
           style={{
-            fontSize: "1.05rem",
+            fontSize: isMobile ? "1rem" : "1.05rem",
             flex: 1,
             marginBottom: 0,
             background: "#fff",
             border: "1.5px solid #e0e0e0",
             transition: "border 0.2s",
             boxShadow: "none",
+            height: isMobile ? "44px" : "auto",
           }}
           maxLength={200}
           onFocus={(e) => (e.target.style.border = "1.5px solid #98ceae")}
@@ -368,15 +398,17 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
         <GreenButton
           type="submit"
           style={{
-            padding: "0.7rem 1.5rem",
+            padding: isMobile ? "0.6rem 1.2rem" : "0.7rem 1.5rem",
             fontWeight: 500,
-            fontSize: "1.05rem",
+            fontSize: isMobile ? "1rem" : "1.05rem",
             borderRadius: "8px",
             whiteSpace: "nowrap",
             background: "#688574",
             color: "#ffffff",
             border: "none",
             boxShadow: "none",
+            height: isMobile ? "44px" : "auto",
+            alignSelf: isMobile ? "flex-end" : "auto",
           }}
         >
           등록

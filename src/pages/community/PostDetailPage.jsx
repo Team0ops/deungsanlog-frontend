@@ -3,6 +3,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTheme, useMediaQuery } from "@mui/material";
 import axiosInstance from "shared/lib/axiosInstance";
 import CommentSection from "features/community/CommentSection";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -17,6 +18,8 @@ import ConfirmModal from "widgets/Modal/ConfirmModal";
 
 const PostDetailPage = ({ onLike }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const { postId } = useParams();
   const navigate = useNavigate();
@@ -89,7 +92,59 @@ const PostDetailPage = ({ onLike }) => {
     fetchPost();
   }, [postId, userId]);
 
-  if (!post) return <div style={{ padding: "2rem" }}>로딩 중...</div>;
+  if (!post)
+    return (
+      <div
+        style={{
+          padding: isMobile ? "2rem 1rem" : "3rem 2rem",
+          textAlign: "center",
+          color: "#666",
+          fontSize: isMobile ? "1rem" : "1.1rem",
+          fontFamily: "'GmarketSansMedium', sans-serif",
+          lineHeight: "1.6",
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "1rem",
+        }}
+      >
+        <div
+          style={{
+            fontSize: isMobile ? "2.5rem" : "3rem",
+            animation: "bounce 1.5s infinite",
+          }}
+        >
+          🐿️
+        </div>
+        <div>
+          <div style={{ marginBottom: "0.5rem" }}>
+            게시글을 열심히 찾고 있어요!
+          </div>
+          <div
+            style={{ fontSize: isMobile ? "0.9rem" : "1rem", color: "#888" }}
+          >
+            잠시만 기다려주세요... 🌰
+          </div>
+        </div>
+        <style>
+          {`
+            @keyframes bounce {
+              0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+              }
+              40% {
+                transform: translateY(-10px);
+              }
+              60% {
+                transform: translateY(-5px);
+              }
+            }
+          `}
+        </style>
+      </div>
+    );
 
   const hasPhotos =
     post.hasImage && post.imageUrls && post.imageUrls.length > 0;
@@ -162,10 +217,12 @@ const PostDetailPage = ({ onLike }) => {
   return (
     <div
       style={{
-        maxWidth: "90%",
-        minWidth: "80%",
+        maxWidth: isMobile ? "95%" : "90%",
+        minWidth: isMobile ? "90%" : "80%",
         margin: "0 auto",
-        padding: "2.2rem 1rem 2.5rem 1rem",
+        padding: isMobile
+          ? "1.5rem 0.8rem 2rem 0.8rem"
+          : "2.2rem 1rem 2.5rem 1rem",
         background: "#fff",
         borderRadius: "18px",
         boxShadow: "0 4px 32px rgba(0,0,0,0.08)",
@@ -177,7 +234,7 @@ const PostDetailPage = ({ onLike }) => {
         style={{
           display: "flex",
           alignItems: "center",
-          marginBottom: "1.2rem",
+          marginBottom: isMobile ? "1rem" : "1.2rem",
           minHeight: "40px",
         }}
       >
@@ -187,13 +244,13 @@ const PostDetailPage = ({ onLike }) => {
             background: "#f4f8f4",
             border: "none",
             color: "#27ae60",
-            fontSize: "1.15rem",
+            fontSize: isMobile ? "1rem" : "1.15rem",
             cursor: "pointer",
-            borderRadius: "50%", // 완전 동그랗게
-            width: "44px", // 정사각형
-            height: "44px",
-            minWidth: "44px",
-            minHeight: "44px",
+            borderRadius: "50%",
+            width: isMobile ? "40px" : "44px",
+            height: isMobile ? "40px" : "44px",
+            minWidth: isMobile ? "40px" : "44px",
+            minHeight: isMobile ? "40px" : "44px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -208,7 +265,9 @@ const PostDetailPage = ({ onLike }) => {
           onMouseOver={(e) => (e.currentTarget.style.background = "#e6f6ec")}
           onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
         >
-          <ArrowBackIosNewIcon style={{ fontSize: "1.2rem" }} />
+          <ArrowBackIosNewIcon
+            style={{ fontSize: isMobile ? "1rem" : "1.2rem" }}
+          />
         </button>
         {/* 본인 글일 때만 메뉴버튼 노출 */}
         {post && userId === post.userId && (
@@ -223,7 +282,7 @@ const PostDetailPage = ({ onLike }) => {
                 padding: "0.3rem",
                 marginLeft: "0.5rem",
                 color: "#888",
-                fontSize: "1.7rem",
+                fontSize: isMobile ? "1.5rem" : "1.7rem",
                 display: "flex",
                 alignItems: "center",
               }}
@@ -264,11 +323,11 @@ const PostDetailPage = ({ onLike }) => {
       <div
         style={{
           color: "#888",
-          fontSize: "1.01rem",
-          marginBottom: "0.7rem",
+          fontSize: isMobile ? "0.95rem" : "1.01rem",
+          marginBottom: isMobile ? "0.6rem" : "0.7rem",
           display: "flex",
           alignItems: "flex-start",
-          gap: "0.7rem",
+          gap: isMobile ? "0.5rem" : "0.7rem",
           flexDirection: "row",
         }}
       >
@@ -276,13 +335,13 @@ const PostDetailPage = ({ onLike }) => {
           style={{
             color: "#000000",
             fontWeight: 700,
-            fontSize: "1.08rem",
+            fontSize: isMobile ? "1rem" : "1.08rem",
             borderRadius: "8px",
             padding: "0.18em 0.7em 0.18em 0.5em",
             letterSpacing: "0.01em",
             display: "inline-block",
             lineHeight: 1.3,
-            minWidth: "90px",
+            minWidth: isMobile ? "80px" : "90px",
           }}
         >
           <NicknameWithBadge
@@ -291,14 +350,20 @@ const PostDetailPage = ({ onLike }) => {
             style={{
               color: "#2b2b2b",
               fontWeight: 700,
-              fontSize: "1.08rem",
+              fontSize: isMobile ? "1rem" : "1.08rem",
               background: "none",
               padding: 0,
               boxShadow: "none",
             }}
           />
           <br />
-          <span style={{ color: "#aaa", fontWeight: 400, fontSize: "0.97rem" }}>
+          <span
+            style={{
+              color: "#aaa",
+              fontWeight: 400,
+              fontSize: isMobile ? "0.9rem" : "0.97rem",
+            }}
+          >
             {new Date(post.createdAt).toLocaleString()}
           </span>
         </span>
@@ -316,9 +381,9 @@ const PostDetailPage = ({ onLike }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: "1.2rem",
-            minHeight: "220px",
-            maxHeight: "520px",
+            marginBottom: isMobile ? "1rem" : "1.2rem",
+            minHeight: isMobile ? "180px" : "220px",
+            maxHeight: isMobile ? "400px" : "520px",
           }}
         >
           <img
@@ -326,7 +391,7 @@ const PostDetailPage = ({ onLike }) => {
             alt={`피드 이미지 ${photoIdx + 1}`}
             style={{
               maxWidth: "100%",
-              maxHeight: "480px",
+              maxHeight: isMobile ? "360px" : "480px",
               width: "auto",
               height: "auto",
               objectFit: "contain",
@@ -342,11 +407,11 @@ const PostDetailPage = ({ onLike }) => {
                 style={{
                   position: "absolute",
                   top: "50%",
-                  left: "16px",
+                  left: isMobile ? "12px" : "16px",
                   transform: "translateY(-50%)",
                   background: "none",
                   border: "none",
-                  fontSize: "2.2rem",
+                  fontSize: isMobile ? "1.8rem" : "2.2rem",
                   color: "rgba(0, 0, 0, 0.55)",
                   outline: "none",
                   cursor: "pointer",
@@ -373,11 +438,11 @@ const PostDetailPage = ({ onLike }) => {
                 style={{
                   position: "absolute",
                   top: "50%",
-                  right: "16px",
+                  right: isMobile ? "12px" : "16px",
                   transform: "translateY(-50%)",
                   background: "none",
                   border: "none",
-                  fontSize: "2.2rem",
+                  fontSize: isMobile ? "1.8rem" : "2.2rem",
                   color: "rgba(0, 0, 0, 0.55)",
                   outline: "none",
                   cursor: "pointer",
@@ -403,11 +468,11 @@ const PostDetailPage = ({ onLike }) => {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "14px",
+                  bottom: isMobile ? "10px" : "14px",
                   left: "50%",
                   transform: "translateX(-50%)",
                   display: "flex",
-                  gap: "6px",
+                  gap: isMobile ? "4px" : "6px",
                   zIndex: 3,
                 }}
               >
@@ -415,8 +480,8 @@ const PostDetailPage = ({ onLike }) => {
                   <div
                     key={idx}
                     style={{
-                      width: "9px",
-                      height: "9px",
+                      width: isMobile ? "7px" : "9px",
+                      height: isMobile ? "7px" : "9px",
                       borderRadius: "50%",
                       background:
                         idx === photoIdx ? "#fff" : "rgba(255, 255, 255, 0.5)",
@@ -436,8 +501,8 @@ const PostDetailPage = ({ onLike }) => {
           style={{
             color: "#235a3a",
             fontWeight: 600,
-            fontSize: "1.05rem",
-            marginBottom: "0.7rem",
+            fontSize: isMobile ? "1rem" : "1.05rem",
+            marginBottom: isMobile ? "0.6rem" : "0.7rem",
             display: "flex",
             alignItems: "center",
             gap: "0.4rem",
@@ -452,8 +517,8 @@ const PostDetailPage = ({ onLike }) => {
         style={{
           color: "#2b2b2b",
           fontWeight: "bold",
-          fontSize: "1rem",
-          marginBottom: "0.6rem",
+          fontSize: isMobile ? "0.95rem" : "1rem",
+          marginBottom: isMobile ? "0.5rem" : "0.6rem",
         }}
       >
         {post.title}
@@ -462,9 +527,10 @@ const PostDetailPage = ({ onLike }) => {
       <div
         style={{
           color: "#2b2b2b",
-          fontSize: "1rem",
-          marginBottom: "0.7rem",
+          fontSize: isMobile ? "0.95rem" : "1rem",
+          marginBottom: isMobile ? "0.6rem" : "0.7rem",
           whiteSpace: "pre-line",
+          lineHeight: isMobile ? "1.5" : "1.6",
         }}
       >
         {post.content}
@@ -474,29 +540,29 @@ const PostDetailPage = ({ onLike }) => {
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "1.2rem",
-          marginBottom: "1.1rem",
+          gap: isMobile ? "1rem" : "1.2rem",
+          marginBottom: isMobile ? "1rem" : "1.1rem",
         }}
       >
         <button
           onClick={async (e) => {
             setLikePressed(true);
             await handleLike(e);
-            setTimeout(() => setLikePressed(false), 150); // 0.15초 후 원복
+            setTimeout(() => setLikePressed(false), 150);
           }}
           style={{
             background: "none",
             border: "none",
             color: "#222",
-            fontSize: "1.08rem",
+            fontSize: isMobile ? "1rem" : "1.08rem",
             cursor: "pointer",
             fontWeight: 700,
             display: "flex",
             alignItems: "center",
             gap: "0.3rem",
             padding: 0,
-            outline: "none", // 아웃라인 제거
-            boxShadow: "none", // 아웃라인 제거
+            outline: "none",
+            boxShadow: "none",
           }}
           tabIndex={0}
           onFocus={(e) => (e.currentTarget.style.outline = "none")}
@@ -505,8 +571,8 @@ const PostDetailPage = ({ onLike }) => {
             src={liked ? HeartIconY : HeartIconN}
             alt="좋아요"
             style={{
-              width: likePressed ? 36 : 30, // 누를 때 커졌다가 작아짐
-              height: likePressed ? 36 : 30,
+              width: likePressed ? (isMobile ? 32 : 36) : isMobile ? 26 : 30,
+              height: likePressed ? (isMobile ? 32 : 36) : isMobile ? 26 : 30,
               verticalAlign: "middle",
               transition: "all 0.13s cubic-bezier(.4,2,.6,1)",
               userSelect: "none",
@@ -514,20 +580,25 @@ const PostDetailPage = ({ onLike }) => {
             }}
             draggable={false}
           />
-          <span style={{ fontSize: "1.08rem", fontWeight: 700 }}>
+          <span
+            style={{
+              fontSize: isMobile ? "1rem" : "1.08rem",
+              fontWeight: 700,
+            }}
+          >
             {likeCount}
           </span>
         </button>
         <span
           style={{
-            color: "#222", // 폰트색 고정
-            fontSize: "1.08rem",
+            color: "#222",
+            fontSize: isMobile ? "1rem" : "1.08rem",
             display: "flex",
             alignItems: "center",
             gap: "0.2rem",
             fontWeight: 700,
-            outline: "none", // 아웃라인 제거
-            boxShadow: "none", // 아웃라인 제거
+            outline: "none",
+            boxShadow: "none",
           }}
           tabIndex={-1}
         >
@@ -535,15 +606,20 @@ const PostDetailPage = ({ onLike }) => {
             src={CommentIcon}
             alt="댓글"
             style={{
-              width: 28,
-              height: 28,
+              width: isMobile ? 24 : 28,
+              height: isMobile ? 24 : 28,
               verticalAlign: "middle",
               userSelect: "none",
               pointerEvents: "none",
             }}
             draggable={false}
           />
-          <span style={{ fontSize: "1.08rem", fontWeight: 700 }}>
+          <span
+            style={{
+              fontSize: isMobile ? "1rem" : "1.08rem",
+              fontWeight: 700,
+            }}
+          >
             {comments.length}
           </span>
         </span>

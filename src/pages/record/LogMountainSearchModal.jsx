@@ -1,4 +1,4 @@
-import { Box, Typography, Modal } from "@mui/material";
+import { Box, Typography, Modal, useTheme, useMediaQuery } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SoftInput from "shared/ui/SoftInput";
 import GreenButton from "shared/ui/greenButton";
@@ -6,6 +6,8 @@ import { useState } from "react";
 import axiosInstance from "shared/lib/axiosInstance";
 
 const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [mountainList, setMountainList] = useState([]);
@@ -65,15 +67,15 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
       <Box
         maxWidth="100vw"
         width="100%"
-        p={{ xs: "1rem", md: "2rem" }}
+        p={{ xs: "0.8rem", md: "2rem" }}
         boxShadow={2}
         borderRadius={3}
         bgcolor="#ffffff"
         sx={{
-          maxWidth: { xs: "100vw", md: "700px" },
-          minHeight: "60vh",
-          maxHeight: "90vh",
-          margin: "5vh auto",
+          maxWidth: { xs: "calc(100vw - 2rem)", md: "700px" },
+          minHeight: isMobile ? "50vh" : "60vh",
+          maxHeight: isMobile ? "85vh" : "90vh",
+          margin: isMobile ? "2rem auto" : "5vh auto",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
@@ -84,8 +86,12 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
           variant="body1"
           color="#4b8161"
           fontWeight={600}
-          mb={3}
-          sx={{ textAlign: "center", fontSize: "1.05rem" }}
+          mb={isMobile ? 2 : 3}
+          sx={{
+            textAlign: "center",
+            fontSize: isMobile ? "0.95rem" : "1.05rem",
+            lineHeight: isMobile ? 1.4 : 1.5,
+          }}
         >
           등산 이야기에서는 우리나라 100대 산과 국립공원의 정보만 제공합니다.
           <br />
@@ -98,9 +104,9 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
           icon={{ component: <SearchIcon />, direction: "right" }}
           size="large"
           style={{
-            fontSize: "1.2rem",
-            py: 2,
-            px: 3,
+            fontSize: isMobile ? "1rem" : "1.2rem",
+            py: isMobile ? 1.5 : 2,
+            px: isMobile ? 2 : 3,
           }}
           fullWidth
           onIconClick={() => {
@@ -118,7 +124,7 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
             flex: 1,
             overflowY: "auto",
             minHeight: 0,
-            mb: 2,
+            mb: isMobile ? 1.5 : 2,
           }}
         >
           {mountainList.map((mountain) => (
@@ -127,11 +133,11 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
               onClick={() => handleSelectMountain(mountain)}
               sx={{
                 cursor: "pointer",
-                padding: "0.7rem 1rem",
+                padding: isMobile ? "0.6rem 0.8rem" : "0.7rem 1rem",
                 borderRadius: "8px",
                 backgroundColor: "#f0f9f3",
                 marginTop: "0.5rem",
-                fontSize: "0.97rem",
+                fontSize: isMobile ? "0.9rem" : "0.97rem",
                 lineHeight: 1.5,
                 color: "#35523d",
                 "&:hover": {
@@ -143,8 +149,8 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
               <span
                 style={{
                   fontWeight: 400,
-                  marginLeft: 4,
-                  fontSize: "0.93rem",
+                  marginLeft: isMobile ? 2 : 4,
+                  fontSize: isMobile ? "0.85rem" : "0.93rem",
                   color: "#666",
                 }}
               >
@@ -155,7 +161,7 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
           {error && (
             <Typography
               color="#dc3545"
-              fontSize="0.95rem"
+              fontSize={isMobile ? "0.9rem" : "0.95rem"}
               mt={1}
               mb={-1}
               textAlign="center"
@@ -166,12 +172,13 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
         </Box>
         <GreenButton
           style={{
-            marginTop: "2rem",
+            marginTop: isMobile ? "1.5rem" : "2rem",
             background: "#70a784",
             color: "#fff",
             fontWeight: 600,
-            fontSize: "1.1rem",
+            fontSize: isMobile ? "1rem" : "1.1rem",
             borderRadius: "12px",
+            height: isMobile ? "48px" : "auto",
           }}
           fullWidth
           onClick={handleApply}
@@ -180,11 +187,12 @@ const LogMountainSearchModal = ({ open, onClose, onSelect }) => {
         </GreenButton>
         <GreenButton
           style={{
-            marginTop: "1rem",
+            marginTop: isMobile ? "0.8rem" : "1rem",
             background: "#58806f",
             fontWeight: 600,
-            fontSize: "1.05rem",
+            fontSize: isMobile ? "0.95rem" : "1.05rem",
             borderRadius: "12px",
+            height: isMobile ? "44px" : "auto",
           }}
           fullWidth
           onClick={onClose}

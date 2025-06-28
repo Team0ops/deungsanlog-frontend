@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, useTheme, useMediaQuery } from "@mui/material";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 
@@ -12,6 +12,8 @@ const MountainInputWidget = ({
 }) => {
   const [directInput, setDirectInput] = useState(false);
   const [tempValue, setTempValue] = useState("");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // 직접입력 모드 진입
   const handleDirectInput = () => {
@@ -36,7 +38,7 @@ const MountainInputWidget = ({
   };
 
   return (
-    <Box display="flex" alignItems="center" width="100%">
+    <Box width="100%">
       <GreenInput
         value={
           directInput
@@ -46,90 +48,93 @@ const MountainInputWidget = ({
             : value
         }
         onChange={directInput ? (e) => setTempValue(e.target.value) : undefined}
-        readOnly={!directInput} // ✅ 여기로 변경
+        readOnly={!directInput}
         error={error}
         errorMessage={errorMessage}
         placeholder="산 이름을 입력하세요."
         style={{
           width: "100%",
-          height: "2.7rem",
-          marginBottom: "1.0rem",
-          fontSize: "1.0rem",
-          flex: 1,
+          height: isMobile ? "2.3rem" : "2.7rem",
+          marginBottom: isMobile ? "0.7rem" : "1.0rem",
+          fontSize: isMobile ? "0.98rem" : "1.0rem",
           border: `2px solid ${error ? "#dc3545" : "#70a784"}`,
         }}
       />
-      <Box width="1.5rem" />
-      {!directInput ? (
-        <>
-          <GreenButton
-            type="button"
-            style={{
-              height: "2.7rem",
-              fontSize: "1rem",
-              padding: "0 1.2rem",
-              marginBottom: "1.0rem",
-              background: "#70a784",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-            }}
-            onClick={onSearchClick}
-          >
-            산 검색
-          </GreenButton>
-          <Box width="1.5rem" />
-          <GreenButton
-            type="button"
-            style={{
-              height: "2.7rem",
-              fontSize: "1rem",
-              padding: "0 1.2rem",
-              marginBottom: "1.0rem",
-              background: "#72927f",
-              color: "#ffffff",
-              whiteSpace: "nowrap",
-            }}
-            onClick={handleDirectInput}
-          >
-            직접입력
-          </GreenButton>
-        </>
-      ) : (
-        <>
-          <GreenButton
-            type="button"
-            style={{
-              height: "2.7rem",
-              fontSize: "1rem",
-              padding: "0 1.2rem",
-              marginBottom: "1.0rem",
-              background: "#72927f",
-              color: "#fff",
-              whiteSpace: "nowrap",
-            }}
-            onClick={handleCancel}
-          >
-            취소
-          </GreenButton>
-          <Box width="1.5rem" />
-          <GreenButton
-            type="button"
-            style={{
-              height: "2.7rem",
-              fontSize: "1rem",
-              padding: "0 1.2rem",
-              marginBottom: "1.0rem",
-              background: "#70a784",
-              color: "#fff",
-              whiteSpace: "nowrap",
-            }}
-            onClick={handleApply}
-            disabled={!tempValue.trim()}
-          >
-            적용
-          </GreenButton>
-        </>
-      )}
+      <Box
+        display="flex"
+        flexDirection="row"
+        gap={isMobile ? 1 : 2}
+        width="100%"
+      >
+        {!directInput ? (
+          <>
+            <GreenButton
+              type="button"
+              style={{
+                height: isMobile ? "2.3rem" : "2.7rem",
+                fontSize: isMobile ? "0.98rem" : "1rem",
+                padding: isMobile ? "0 0.7rem" : "0 1.2rem",
+                background: "#70a784",
+                color: "#ffffff",
+                whiteSpace: "nowrap",
+                width: "50%",
+              }}
+              onClick={onSearchClick}
+            >
+              산 검색
+            </GreenButton>
+            <GreenButton
+              type="button"
+              style={{
+                height: isMobile ? "2.3rem" : "2.7rem",
+                fontSize: isMobile ? "0.98rem" : "1rem",
+                padding: isMobile ? "0 0.7rem" : "0 1.2rem",
+                background: "#72927f",
+                color: "#ffffff",
+                whiteSpace: "nowrap",
+                width: "50%",
+              }}
+              onClick={handleDirectInput}
+            >
+              직접입력
+            </GreenButton>
+          </>
+        ) : (
+          <>
+            <GreenButton
+              type="button"
+              style={{
+                height: isMobile ? "2.3rem" : "2.7rem",
+                fontSize: isMobile ? "0.98rem" : "1rem",
+                padding: isMobile ? "0 0.7rem" : "0 1.2rem",
+                background: "#72927f",
+                color: "#fff",
+                whiteSpace: "nowrap",
+                width: "50%",
+              }}
+              onClick={handleCancel}
+            >
+              취소
+            </GreenButton>
+            <GreenButton
+              type="button"
+              style={{
+                height: isMobile ? "2.3rem" : "2.7rem",
+                fontSize: isMobile ? "0.98rem" : "1rem",
+                padding: isMobile ? "0 0.7rem" : "0 1.2rem",
+                background: "#70a784",
+                color: "#fff",
+                whiteSpace: "nowrap",
+                width: "50%",
+              }}
+              onClick={handleApply}
+              disabled={!tempValue.trim()}
+            >
+              적용
+            </GreenButton>
+          </>
+        )}
+      </Box>
     </Box>
   );
 };

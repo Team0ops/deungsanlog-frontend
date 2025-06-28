@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import NicknameWithBadge from "widgets/user/NicknameWithBadge"; // 추가
 import HeartIcon from "shared/assets/icons/heart_y.svg";
 import CommentIcon from "shared/assets/icons/Comment.svg";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 // 공통 미리보기 카드
 const cardHoverStyle = {
@@ -187,6 +188,8 @@ const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // 마우스 드래그 핸들러
   const handleMouseDown = (e) => {
@@ -221,8 +224,8 @@ const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
     <div
       style={{
         width: "100%",
-        maxWidth: "950px",
-        minWidth: "0",
+        maxWidth: "none",
+        minWidth: 0,
         margin: "0 auto",
         padding: "clamp(1rem, 4vw, 1.5rem)",
         backgroundColor: "rgba(255, 255, 255, 0.95)",
@@ -245,19 +248,28 @@ const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
           alignItems: "center",
         }}
       >
-        <h3 style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
+        <h3
+          style={{
+            fontWeight: "bold",
+            fontSize: isMobile ? "1.2rem" : "1.5rem",
+          }}
+        >
           📢 이야기광장
         </h3>
         <GreenButton
           onClick={onClick}
           style={{
-            fontSize: "1.08rem",
+            fontSize: isMobile ? "0.98rem" : "1.02rem",
             background: "#769b85",
-            padding: "0.6rem 1.5rem",
+            padding: isMobile ? "0.45rem 1.1rem" : "0.5rem 1.2rem",
             borderRadius: "0.7rem",
+            minWidth: isMobile ? "auto" : "110px",
+            height: isMobile ? "2.1rem" : "2.3rem",
+            lineHeight: 1.1,
+            fontWeight: 600,
           }}
         >
-          광장 입장하기 ↗
+          {isMobile ? "광장 입장하기" : "광장 입장하기 ↗"}
         </GreenButton>
       </div>
 
@@ -266,7 +278,7 @@ const FreeBoardBanner = ({ onClick, previewPosts = [] }) => {
           color: "#555",
           fontSize: "0.95rem",
           lineHeight: 1.5,
-          marginTop: "0.4rem",
+          marginTop: "0.7rem",
           marginBottom: "1.2rem",
         }}
       >

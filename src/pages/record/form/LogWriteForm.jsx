@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import MountainInputWidget from "../../../widgets/mountain/MountainInputWidget";
-import { Box } from "@mui/material";
+import { Box, useTheme, useMediaQuery } from "@mui/material";
 import DatePickerWidget from "widgets/DatePick/DatePickerWidget";
 import PhotoUploadWidget from "widgets/PhotoUpload/PhotoUploadWidget";
 import dayjs from "dayjs";
@@ -41,7 +41,10 @@ const LogWriteForm = ({
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState(false);
   const [mountainModalOpen, setMountainModalOpen] = useState(false);
+  const [futureDateError, setFutureDateError] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const saved = localStorage.getItem("logWriteForm");
@@ -76,6 +79,17 @@ const LogWriteForm = ({
       setPhoto(null);
       setPhotoPreview(null);
       setPhotoError(false);
+    }
+  };
+
+  const handleDateChange = (e) => {
+    const selected = e.target.value;
+    setDate(selected);
+    setDateError(false);
+    if (selected && dayjs(selected).isAfter(dayjs(), "day")) {
+      setFutureDateError(true);
+    } else {
+      setFutureDateError(false);
     }
   };
 
@@ -175,22 +189,22 @@ const LogWriteForm = ({
     <Box
       maxWidth="100vw"
       width="100%"
-      p={{ xs: "1rem", md: "2rem" }}
+      p={isMobile ? "0.7rem" : { xs: "1rem", md: "2rem" }}
       boxShadow={2}
-      borderRadius={3}
+      borderRadius={isMobile ? 2 : 3}
       bgcolor="#ffffff"
       sx={{
         maxWidth: { xs: "100vw", md: "700px" },
-        minHeight: "60vh",
-        maxHeight: "90vh",
-        margin: "0 auto",
+        minHeight: isMobile ? "70vh" : "60vh",
+        maxHeight: isMobile ? "100vh" : "90vh",
+        margin: isMobile ? "0" : "0 auto",
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
       }}
     >
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <PhotoUploadWidget
           photoPreview={photoPreview}
           photoError={photoError}
@@ -206,9 +220,9 @@ const LogWriteForm = ({
           value={mountain}
           onChange={(e) => {
             if (typeof e.target.value === "object") {
-              setMountain(e.target.value); // 검색으로 선택한 경우
+              setMountain(e.target.value);
             } else {
-              setMountain({ id: null, name: e.target.value, location: "" }); // 직접입력한 경우
+              setMountain({ id: null, name: e.target.value, location: "" });
             }
             setMountainError(false);
           }}
@@ -221,25 +235,39 @@ const LogWriteForm = ({
           open={mountainModalOpen}
           onClose={() => setMountainModalOpen(false)}
           onSelect={(mountainObj) => {
-            setMountain(mountainObj); // id, name, location 다 포함됨
+            setMountain(mountainObj);
             setMountainError(false);
           }}
         />
-        <Box mt={3} />
+        <Box mt={isMobile ? 2 : 3} />
         <DatePickerWidget
           value={date}
-          onChange={(e) => {
-            setDate(e.target.value);
-            setDateError(false); // 날짜 입력 시 에러 해제
-          }}
-          error={dateError}
-          errorMessage="등산 일자를 입력해주세요."
+          onChange={handleDateChange}
+          error={dateError || futureDateError}
+          errorMessage={
+            dateError
+              ? "등산 일자를 입력해주세요."
+              : futureDateError
+              ? "미래의 날짜는 선택할 수 없습니다."
+              : undefined
+          }
           sx={{
             width: "100%",
-            fontSize: "1.1rem",
+            fontSize: isMobile ? "1rem" : "1.1rem",
           }}
         />
-        <Box mt={3} />
+        {futureDateError && (
+          <div
+            style={{
+              color: "#dc3545",
+              fontSize: "0.92rem",
+              marginLeft: "0.2rem",
+            }}
+          >
+            미래의 날짜는 선택할 수 없습니다.
+          </div>
+        )}
+        <Box mt={isMobile ? 2 : 3} />
         <GreenInput
           as="textarea"
           value={content}
@@ -255,9 +283,12 @@ const LogWriteForm = ({
             width: "100%",
             border: contentError ? "2px solid #dc3545" : "2px solid #70a784",
             fontFamily: "inherit",
-            marginBottom: "1.5rem",
+            marginBottom: isMobile ? "1rem" : "1.5rem",
             background: "#f8fff9",
             resize: "vertical",
+            fontSize: isMobile ? "1rem" : "1.1rem",
+            minHeight: isMobile ? "90px" : "120px",
+            padding: isMobile ? "0.7rem" : "1rem",
           }}
         />
         <GreenButton
@@ -266,9 +297,10 @@ const LogWriteForm = ({
             background: "#4b8161",
             color: "#ffffff",
             width: "100%",
-            fontSize: "1.1rem",
-            padding: "1rem 0",
-            marginTop: "1rem",
+            fontSize: isMobile ? "1rem" : "1.1rem",
+            padding: isMobile ? "0.8rem 0" : "1rem 0",
+            marginTop: isMobile ? "0.7rem" : "1rem",
+            borderRadius: isMobile ? "10px" : "14px",
           }}
         >
           {isEdit ? "수정 완료" : "기록 저장"}
@@ -279,9 +311,10 @@ const LogWriteForm = ({
             background: "#72927f",
             color: "#ffffff",
             width: "100%",
-            fontSize: "1.05rem",
-            padding: "0.8rem 0",
-            marginTop: "0.7rem",
+            fontSize: isMobile ? "0.95rem" : "1.05rem",
+            padding: isMobile ? "0.7rem 0" : "0.8rem 0",
+            marginTop: isMobile ? "0.5rem" : "0.7rem",
+            borderRadius: isMobile ? "10px" : "14px",
           }}
           onClick={() => navigate(-1)}
         >
