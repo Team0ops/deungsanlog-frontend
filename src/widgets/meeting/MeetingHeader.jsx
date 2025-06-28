@@ -121,8 +121,8 @@ const MeetingHeader = ({ setShowLoginModal, setModalAction }) => {
               color: "#4c7559",
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              fontSize: isMobile ? "clamp(0.9rem, 3vw, 1rem)" : "inherit",
-              fontWeight: "500",
+              fontSize: isMobile ? "0.95rem" : "1rem",
+              fontWeight: 600,
             }}
             onClick={() => handleButtonClick("create")}
           >
@@ -135,8 +135,8 @@ const MeetingHeader = ({ setShowLoginModal, setModalAction }) => {
               color: "#4c7559",
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              fontSize: isMobile ? "clamp(0.9rem, 3vw, 1rem)" : "inherit",
-              fontWeight: "500",
+              fontSize: isMobile ? "0.95rem" : "1rem",
+              fontWeight: 600,
             }}
             onClick={() => handleButtonClick("my")}
           >

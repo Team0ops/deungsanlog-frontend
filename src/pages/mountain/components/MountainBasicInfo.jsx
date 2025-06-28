@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { getToken, getUserInfo, isAuthenticated } from "shared/lib/auth"; // ✅ 인증 유틸 추가
 import axiosInstance from "shared/lib/axiosInstance";
+import LoginRequiredModal from "shared/components/LoginRequiredModal";
 
 const MountainBasicInfo = ({ mountain, description }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // ✅ 인증 유틸을 사용하여 사용자 정보 추출
   useEffect(() => {
@@ -78,16 +80,10 @@ const MountainBasicInfo = ({ mountain, description }) => {
   const handleFavoriteToggle = async () => {
     console.log("🚀 즐겨찾기 버튼 클릭됨!");
 
-    // 로그인하지 않은 경우 로그인 페이지로 이동
+    // 로그인하지 않은 경우 로그인 모달 표시
     if (!userId) {
       console.log("❌ 사용자 로그인 안됨");
-      if (
-        window.confirm(
-          "즐겨찾기 기능을 사용하려면 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-        )
-      ) {
-        window.location.href = "/login";
-      }
+      setShowLoginModal(true);
       return;
     }
 
@@ -153,6 +149,16 @@ const MountainBasicInfo = ({ mountain, description }) => {
     }
   };
 
+  // 로그인 모달 관련 함수들
+  const handleCloseModal = () => {
+    setShowLoginModal(false);
+  };
+
+  const handleLogin = () => {
+    setShowLoginModal(false);
+    window.location.href = "/login";
+  };
+
   // difficulty 문자열에서 세부 정보 robust하게 추출 함수
   const parseDifficulty = (difficultyStr) => {
     if (!difficultyStr) return {};
@@ -168,7 +174,7 @@ const MountainBasicInfo = ({ mountain, description }) => {
     };
   };
 
-  const { time, height, level } = parseDifficulty(description?.difficulty);
+  const { time, level } = parseDifficulty(description?.difficulty);
 
   if (!mountain) return null;
 
@@ -256,56 +262,76 @@ const MountainBasicInfo = ({ mountain, description }) => {
   };
 
   return (
-    <header style={headerStyle}>
-      <div>
-        {/* 산 이름과 즐겨찾기 버튼 */}
-        <div style={titleContainerStyle}>
-          <h1 style={mountainNameStyle}>{mountain.name}</h1>
-          {/* 즐겨찾기 버튼 */}
-          <button
-            style={favoriteButtonStyle}
-            onClick={handleFavoriteToggle}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <span style={{ fontSize: "1.1rem", marginRight: "0.3rem" }}>
-                  ⏳
-                </span>
-                추가 중...
-              </>
-            ) : !userId ? (
-              <>
-                <span style={{ fontSize: "1.1rem", marginRight: "0.3rem" }}>
-                  🔒
-                </span>
-                로그인 필요
-              </>
-            ) : isFavorite ? (
-              <>
-                <span style={{ fontSize: "1.2rem", marginRight: "0.3rem" }}>
-                  🌟
-                </span>
-                즐겨찾는 산
-              </>
-            ) : (
-              <>즐겨찾기 추가</>
-            )}
-          </button>
-        </div>
+    <>
+      <header style={headerStyle}>
+        <div>
+          {/* 산 이름과 즐겨찾기 버튼 */}
+          <div style={titleContainerStyle}>
+            <h1 style={mountainNameStyle}>{mountain.name}</h1>
+            {/* 즐겨찾기 버튼 */}
+            <button
+              style={favoriteButtonStyle}
+              onClick={handleFavoriteToggle}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span style={{ fontSize: "1.1rem", marginRight: "0.3rem" }}>
+                    ⏳
+                  </span>
+                  추가 중...
+                </>
+              ) : !userId ? (
+                <>
+                  <span style={{ fontSize: "1.1rem", marginRight: "0.3rem" }}>
+                    🔒
+                  </span>
+                  즐겨찾기 추가
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      marginTop: "0.2rem",
+                      color: "#999",
+                    }}
+                  >
+                    로그인 필요
+                  </div>
+                </>
+              ) : isFavorite ? (
+                <>
+                  <span style={{ fontSize: "1.2rem", marginRight: "0.3rem" }}>
+                    🌟
+                  </span>
+                  즐겨찾는 산
+                </>
+              ) : (
+                <>즐겨찾기 추가</>
+              )}
+            </button>
+          </div>
 
-        <div style={basicInfoStyle}>
-          <span style={badgeStyle}>📍 {mountain.location}</span>
-          <span style={badgeStyle}>⛰️ {mountain.elevation}m</span>
-          {time && time !== "-" && (
-            <span style={badgeStyle}>🕒 산행시간: {time}</span>
-          )}
-          {level && level !== "-" && (
-            <span style={badgeStyle}>🎯 난이도: {level}</span>
-          )}
+          <div style={basicInfoStyle}>
+            <span style={badgeStyle}>📍 {mountain.location}</span>
+            <span style={badgeStyle}>⛰️ {mountain.elevation}m</span>
+            {time && time !== "-" && (
+              <span style={badgeStyle}>🕒 산행시간: {time}</span>
+            )}
+            {level && level !== "-" && (
+              <span style={badgeStyle}>🎯 난이도: {level}</span>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* 로그인 안내 모달 */}
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onClose={handleCloseModal}
+        onLogin={handleLogin}
+        title="즐겨찾기 기능"
+        message="즐겨찾기 기능을 사용하려면 로그인이 필요해요!"
+      />
+    </>
   );
 };
 
