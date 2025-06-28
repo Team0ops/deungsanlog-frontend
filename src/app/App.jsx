@@ -43,10 +43,10 @@ import MeetingPage from "pages/meeting/meetingPage";
 import MeetingDetailPage from "pages/meeting/meetingDetailPage";
 import MeetingCreatePage from "pages/meeting/meetingCreatePage";
 import OrmiPage from "pages/ormie/ormiPage";
-import NotificationPage from "pages/notificationPage";
 import MyPage from "pages/mypage/mypage";
 import LoginPage from "pages/user/LoginPage";
 import LogEditPage from "pages/record/LogEditPage";
+import NotificationPage from "pages/notification/NotificationPage";
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
