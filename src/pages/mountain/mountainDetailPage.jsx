@@ -136,7 +136,7 @@ const MountainDetailPage = () => {
     );
   }
 
-  const { mountain, description, sunInfo, weatherInfo, fireRiskInfo } =
+  const { mountain, description, sunInfoList, weatherInfo, fireRiskInfo } =
     mountainData;
 
   return (
@@ -153,7 +153,7 @@ const MountainDetailPage = () => {
             <MountainSafetyInfo
               weatherInfo={weatherInfo}
               fireRiskInfo={fireRiskInfo}
-              sunInfo={sunInfo}
+              sunInfoList={sunInfoList}
             />
           </div>
         </div>
