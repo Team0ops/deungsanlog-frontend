@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import GreenButton from "shared/ui/greenButton";
 import { useNavigate } from "react-router-dom";
 
@@ -11,13 +11,15 @@ const messages = [
 const MeetingHeader = () => {
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box
       width="100%"
       maxWidth="100%"
       mx="auto"
-      mt={4}
+      mt={isMobile ? 2 : 4}
       display="flex"
       justifyContent="center"
       alignItems="center"
@@ -25,69 +27,81 @@ const MeetingHeader = () => {
       <Box
         width="100%"
         display="flex"
-        flexDirection="row"
-        gap={3}
+        flexDirection={isMobile ? "column" : "row"}
+        gap={isMobile ? 2 : 3}
         bgcolor="#fdfdfd"
         borderRadius={3}
         boxShadow="0 4px 12px rgba(0, 0, 0, 0.1)"
-        p={3}
+        p={isMobile ? 2 : 3}
         alignItems="stretch"
       >
         {/* 메시지 박스 (왼쪽) */}
         <Box
-          flex={2}
+          flex={isMobile ? "none" : 2}
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          px={2}
-          py={1}
+          px={isMobile ? 1 : 2}
+          py={isMobile ? 1 : 1}
           textAlign="center"
         >
           <Typography
-            variant="h5"
+            variant={isMobile ? "h6" : "h5"}
             fontWeight={600}
-            mb={2}
+            mb={isMobile ? 1 : 2}
             sx={{
               color: "#2e2e2e",
               background: "linear-gradient(transparent 60%, #d4f1db 60%)",
               borderRadius: 0,
               display: "inline",
               boxDecorationBreak: "clone",
+              fontSize: isMobile ? "clamp(1rem, 4vw, 1.2rem)" : "inherit",
+              lineHeight: 1.3,
             }}
           >
             {randomMessage}
           </Typography>
-          <Typography variant="body1" mt={1}>
+          <Typography
+            variant="body1"
+            mt={isMobile ? 0.5 : 1}
+            sx={{
+              fontSize: isMobile ? "clamp(0.85rem, 3vw, 1rem)" : "inherit",
+              lineHeight: 1.4,
+            }}
+          >
             함께하는 모임이 기다리고 있어요 🥾
           </Typography>
         </Box>
 
         {/* 구분선 */}
         <Box
-          width="2px"
+          width={isMobile ? "100%" : "2px"}
+          height={isMobile ? "2px" : "auto"}
           bgcolor="#e0e0e0"
-          mx={2}
+          mx={isMobile ? 0 : 2}
+          my={isMobile ? 1 : 0}
           borderRadius={1}
-          display={{ xs: "none", md: "block" }}
         />
 
-        {/* 버튼만 (정렬 기준 대신) */}
+        {/* 버튼들 */}
         <Box
-          flex={1}
+          flex={isMobile ? "none" : 1}
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          gap={2}
+          gap={isMobile ? 1.5 : 2}
         >
           <GreenButton
             style={{
-              height: "55px",
+              height: isMobile ? "48px" : "55px",
               width: "100%",
               color: "#4c7559",
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              fontSize: isMobile ? "clamp(0.9rem, 3vw, 1rem)" : "inherit",
+              fontWeight: "500",
             }}
             onClick={() => navigate("/meeting/create")}
           >
@@ -95,11 +109,13 @@ const MeetingHeader = () => {
           </GreenButton>
           <GreenButton
             style={{
-              height: "55px",
+              height: isMobile ? "48px" : "55px",
               width: "100%",
               color: "#4c7559",
               background: "#fdfdfd",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              fontSize: isMobile ? "clamp(0.9rem, 3vw, 1rem)" : "inherit",
+              fontWeight: "500",
             }}
             onClick={() => navigate("/meeting/my")}
           >
