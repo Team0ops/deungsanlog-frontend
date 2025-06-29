@@ -16,6 +16,12 @@ const axiosInstance = axios.create({
 // iOS Safari 특화 인터셉터 추가
 axiosInstance.interceptors.request.use(
   (config) => {
+    // FormData인 경우 Content-Type 헤더 제거 (브라우저가 자동으로 multipart/form-data 설정)
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+      console.log("📤 FormData 감지: Content-Type 헤더 제거됨");
+    }
+
     // iOS Safari에서 발생할 수 있는 문제 방지
     if (
       navigator.userAgent.includes("iPhone") ||
@@ -26,8 +32,11 @@ axiosInstance.interceptors.request.use(
 
       // iOS Safari에서 CORS 문제 방지
       if (config.method === "post" || config.method === "put") {
-        config.headers["Content-Type"] =
-          config.headers["Content-Type"] || "application/json";
+        // FormData가 아닌 경우에만 Content-Type 설정
+        if (!(config.data instanceof FormData)) {
+          config.headers["Content-Type"] =
+            config.headers["Content-Type"] || "application/json";
+        }
       }
     }
 
