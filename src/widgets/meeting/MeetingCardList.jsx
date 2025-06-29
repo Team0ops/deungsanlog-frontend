@@ -41,8 +41,8 @@ const MeetingCardList = ({
       <Box
         display="flex"
         flexDirection="column"
-        gap={isMobile ? 1.5 : 2}
-        mb={isMobile ? 2 : 3}
+        gap={isMobile ? 1.5 : 1.2}
+        mb={isMobile ? 2 : 2.5}
       >
         {loading ? (
           <Box

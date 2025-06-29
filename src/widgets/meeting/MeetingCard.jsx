@@ -103,18 +103,18 @@ const MeetingCard = ({ meeting }) => {
         sx={{
           borderRadius: 4,
           border: "1px solid #e0e0e0",
-          p: isMobile ? 2 : 3,
+          p: isMobile ? 2 : 2,
           width: "100%",
           bgcolor: "#fcfcfa",
           boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-          mb: isMobile ? 1.5 : 2,
-          transition: "0.25s ease",
+          mb: isMobile ? 1.5 : 1.5,
+          transition: "all 0.25s ease",
           cursor: "pointer",
           "&:hover": {
             boxShadow: "0 8px 20px rgba(76, 117, 89, 0.2)",
             transform: "translateY(-3px)",
             borderColor: "#c8e0d0",
-            background: "linear-gradient(135deg, #ffffff 0%, #f7fbf9 100%)",
+            backgroundColor: "#f7fbf9",
           },
         }}
         onClick={handleCardClick}
@@ -129,7 +129,7 @@ const MeetingCard = ({ meeting }) => {
         >
           <Box flex={1} minWidth={0}>
             <Typography
-              variant={isMobile ? "body2" : "subtitle2"}
+              variant={isMobile ? "body2" : "body2"}
               fontWeight={700}
               noWrap
               sx={{
@@ -138,18 +138,18 @@ const MeetingCard = ({ meeting }) => {
                 boxDecorationBreak: "clone",
                 WebkitBoxDecorationBreak: "clone",
                 color: "#3b5f47",
-                fontSize: isMobile ? "clamp(0.8rem, 3vw, 0.9rem)" : "inherit",
+                fontSize: isMobile ? "clamp(0.8rem, 3vw, 0.9rem)" : "0.875rem",
               }}
             >
               {meeting.mountainName}
             </Typography>
             <Typography
-              variant={isMobile ? "subtitle1" : "h6"}
+              variant={isMobile ? "subtitle1" : "subtitle1"}
               fontWeight={800}
               color="#2c2c2c"
               noWrap
               sx={{
-                fontSize: isMobile ? "clamp(1rem, 4vw, 1.2rem)" : "inherit",
+                fontSize: isMobile ? "clamp(1rem, 4vw, 1.2rem)" : "1.1rem",
                 lineHeight: 1.3,
               }}
             >
@@ -158,13 +158,13 @@ const MeetingCard = ({ meeting }) => {
             <Typography
               variant="body2"
               color="#666"
-              mt={isMobile ? 0.3 : 0.5}
+              mt={isMobile ? 0.3 : 0.3}
               sx={{
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
-                fontSize: isMobile ? "clamp(0.8rem, 3vw, 0.9rem)" : "inherit",
+                fontSize: isMobile ? "clamp(0.8rem, 3vw, 0.9rem)" : "0.8rem",
                 lineHeight: 1.4,
               }}
             >
@@ -179,14 +179,14 @@ const MeetingCard = ({ meeting }) => {
               alignItems: "center",
               justifyContent: "center",
               gap: 1,
-              mt: isMobile ? 0 : 0.5,
-              px: isMobile ? 1 : 1.5,
-              py: isMobile ? 0.3 : 0.4,
+              mt: isMobile ? 0 : 0.3,
+              px: isMobile ? 1 : 1,
+              py: isMobile ? 0.3 : 0.3,
               borderRadius: 2,
               backgroundColor: `${bgColor}10`,
               border: `1px solid ${bgColor}`,
               color: bgColor,
-              fontSize: isMobile ? "clamp(0.7rem, 2.5vw, 0.8rem)" : "0.8rem",
+              fontSize: isMobile ? "clamp(0.7rem, 2.5vw, 0.8rem)" : "0.75rem",
               fontWeight: 600,
               alignSelf: isMobile ? "flex-start" : "center",
             }}
@@ -200,10 +200,10 @@ const MeetingCard = ({ meeting }) => {
           </Box>
         </Box>
 
-        <Divider sx={{ my: isMobile ? 1 : 1.5 }} />
+        <Divider sx={{ my: isMobile ? 1 : 1 }} />
 
         {/* 하단 - 날짜 & 기타 정보 */}
-        <Box display="flex" flexDirection="column" gap={1}>
+        <Box display="flex" flexDirection="column" gap={0.8}>
           {meeting.hostUserId && (
             <Typography
               variant="caption"
@@ -211,7 +211,7 @@ const MeetingCard = ({ meeting }) => {
               sx={{
                 fontSize: isMobile
                   ? "clamp(0.75rem, 2.5vw, 0.8rem)"
-                  : "inherit",
+                  : "0.75rem",
                 lineHeight: 1.4,
               }}
             >
@@ -221,7 +221,7 @@ const MeetingCard = ({ meeting }) => {
                 style={{
                   fontSize: isMobile
                     ? "clamp(0.75rem, 2.5vw, 0.8rem)"
-                    : "inherit",
+                    : "0.75rem",
                   color: "#4c7559",
                   fontWeight: 600,
                 }}
@@ -233,7 +233,7 @@ const MeetingCard = ({ meeting }) => {
             variant="caption"
             color="text.secondary"
             sx={{
-              fontSize: isMobile ? "clamp(0.75rem, 2.5vw, 0.8rem)" : "inherit",
+              fontSize: isMobile ? "clamp(0.75rem, 2.5vw, 0.8rem)" : "0.75rem",
               lineHeight: 1.4,
             }}
           >
@@ -245,7 +245,7 @@ const MeetingCard = ({ meeting }) => {
             variant="caption"
             color="text.secondary"
             sx={{
-              fontSize: isMobile ? "clamp(0.75rem, 2.5vw, 0.8rem)" : "inherit",
+              fontSize: isMobile ? "clamp(0.75rem, 2.5vw, 0.8rem)" : "0.75rem",
               lineHeight: 1.4,
             }}
           >
@@ -258,7 +258,7 @@ const MeetingCard = ({ meeting }) => {
             color="text.secondary"
             noWrap
             sx={{
-              fontSize: isMobile ? "clamp(0.75rem, 2.5vw, 0.8rem)" : "inherit",
+              fontSize: isMobile ? "clamp(0.75rem, 2.5vw, 0.8rem)" : "0.75rem",
               lineHeight: 1.4,
             }}
           >
