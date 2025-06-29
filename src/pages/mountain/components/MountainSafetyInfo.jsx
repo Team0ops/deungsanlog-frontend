@@ -7,30 +7,35 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
       {
         code: "1",
         level: "낮음",
+        shortLevel: "안전",
         description: "산불 발생 위험이 낮습니다.",
         color: "#28a745",
       },
       {
         code: "2",
         level: "보통",
+        shortLevel: "조심",
         description: "산불 발생 위험이 보통입니다.",
         color: "#ffc107",
       },
       {
         code: "3",
         level: "높음",
+        shortLevel: "위험",
         description: "산불 발생 위험이 높습니다.",
         color: "#dc3545",
       },
       {
         code: "4",
         level: "매우높음",
+        shortLevel: "매우위험",
         description: "산불 발생 위험이 매우 높습니다.",
         color: "#dc3545",
       },
       {
         code: "5",
         level: "극도",
+        shortLevel: "극도위험",
         description: "산불 발생 위험이 극도로 높습니다.",
         color: "#dc3545",
       },
@@ -47,9 +52,24 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
   // 산불 위험도 정보 처리 (에러 시 랜덤 값 사용)
   const getFireRiskInfo = () => {
     if (fireRiskInfo && !fireRiskInfo.error && fireRiskInfo.riskLevel) {
+      // 위험도 레벨에 따른 간결한 표현 매핑
+      const getShortLevel = (level) => {
+        switch (level) {
+          case "안전":
+            return "안전";
+          case "주의":
+            return "조심";
+          case "경보":
+            return "위험";
+          default:
+            return level;
+        }
+      };
+
       return {
         riskLevelCode: fireRiskInfo.riskLevelCode,
         riskLevel: fireRiskInfo.riskLevel,
+        shortLevel: getShortLevel(fireRiskInfo.riskLevel),
         description: fireRiskInfo.description,
         color:
           fireRiskInfo.riskLevelCode === "1"
@@ -263,7 +283,7 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
                   color: processedFireRiskInfo.color,
                 }}
               >
-                {processedFireRiskInfo.level}
+                {processedFireRiskInfo.shortLevel}
               </div>
               <div
                 style={{
