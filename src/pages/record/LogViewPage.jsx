@@ -51,7 +51,7 @@ const NotLoggedIn = () => {
         >
           당신의 발자국을 기록할 수 있어요.
           <br />
-          로그인 후, 첫 번째 이야기를 남겨보세요 💬
+          로그인 후, 첫 번째 이야기를 남겨보세요.
         </Box>
         <GreenButton
           onClick={() => (window.location.href = "/login")}

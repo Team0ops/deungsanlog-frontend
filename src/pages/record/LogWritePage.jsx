@@ -46,15 +46,11 @@ const LogWritePage = () => {
               overflowY: "auto",
             }
           : {
-              position: "fixed",
-              top: 0,
-              left: 0,
-              height: "100vh",
-              width: "100vw",
+              minHeight: "100vh",
+              width: "100%",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              zIndex: 10,
               background: "transparent",
             }
       }

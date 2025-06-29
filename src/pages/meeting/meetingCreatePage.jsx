@@ -22,19 +22,15 @@ const MeetingCreatePage = () => {
   return (
     <div
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: "100vw",
+        minHeight: "100vh",
+        width: "100%",
         overflowY: "auto",
         paddingTop: isMobile ? "1rem" : "2rem",
         paddingBottom: isMobile ? "1rem" : "2rem",
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
-        background: "#f9f9f9",
-        zIndex: 10,
+        background: "transparent",
       }}
     >
       <MeetingCreateForm userId={userId} />

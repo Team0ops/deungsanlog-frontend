@@ -1,10 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import { getToken, isAuthenticated } from 'shared/lib/auth';
-import axiosInstance from 'shared/lib/axiosInstance';
-import NotificationList from './components/NotificationList';
+import React, { useState, useEffect } from "react";
+import { getToken, isAuthenticated } from "shared/lib/auth";
+import axiosInstance from "shared/lib/axiosInstance";
+import NotificationList from "./components/NotificationList";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
+import GreenButton from "shared/ui/greenButton";
 
 /** ✅ 공통 prefix 한 곳에 모아두면 오타를 줄일 수 있습니다 */
-const BASE = '/notification-service';
+const BASE = "/notification-service";
+
+// 로그인하지 않은 사용자를 위한 안내 컴포넌트
+const NotLoggedIn = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      minHeight="60vh"
+      width="100%"
+      maxWidth="600px"
+      mx="auto"
+      bgcolor="#f8f9fa"
+      borderRadius={5}
+      p={isMobile ? 3 : 4}
+      boxShadow="0 2px 8px rgba(0,0,0,0.1)"
+      border="1px solid #e9ecef"
+    >
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+        maxWidth="400px"
+        width="100%"
+      >
+        <Box
+          sx={{
+            color: "#495057",
+            fontWeight: 500,
+            fontSize: isMobile ? "1.1rem" : "1.3rem",
+            mb: 3,
+            lineHeight: 1.6,
+            whiteSpace: isMobile ? "pre-line" : "normal",
+          }}
+        >
+          {isMobile ? (
+            <>
+              로그인을 하면 중요한 알림을{"\n"}받을 수 있어요!
+              <br />
+              모임 알림, 댓글 알림 등{"\n"}소식을 놓치지 마세요 🔔
+            </>
+          ) : (
+            <>
+              로그인을 하면 중요한 알림을 받을 수 있어요!
+              <br />
+              모임 알림, 댓글 알림 등 소식을 놓치지 마세요 🔔
+            </>
+          )}
+        </Box>
+        <GreenButton
+          onClick={() => (window.location.href = "/login")}
+          style={{
+            color: "#8cac7f",
+            fontSize: isMobile ? "1rem" : "1.2rem",
+            background: "#f5f5f5",
+            padding: isMobile ? "0.8rem 2rem" : "1rem 2.5rem",
+            whiteSpace: "nowrap",
+            border: "1px solid #dee2e6",
+            borderRadius: "8px",
+            fontWeight: "600",
+          }}
+        >
+          로그인 하러가기
+        </GreenButton>
+      </Box>
+    </Box>
+  );
+};
 
 const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -17,7 +93,7 @@ const NotificationPage = () => {
   /* ------------------------- 목록 조회 ------------------------- */
   const fetchNotifications = async (page = 0) => {
     if (!isAuthenticated()) {
-      setError('로그인이 필요합니다.');
+      setError("로그인이 필요합니다.");
       setLoading(false);
       return;
     }
@@ -28,10 +104,15 @@ const NotificationPage = () => {
 
       const { data } = await axiosInstance.get(`${BASE}/list`, {
         params: { page, size: 20 },
-        headers: { 'X-AUTH-TOKEN': token }
+        headers: { "X-AUTH-TOKEN": token },
       });
 
-      const { content, totalPages: total, currentPage: cur, unreadCount: unread } = data;
+      const {
+        content,
+        totalPages: total,
+        currentPage: cur,
+        unreadCount: unread,
+      } = data;
 
       setNotifications(content ?? []);
       setTotalPages(total ?? 0);
@@ -39,11 +120,11 @@ const NotificationPage = () => {
       setUnreadCount(unread ?? 0);
       setError(null);
     } catch (err) {
-      console.error('❌ 알림 목록 조회 실패:', err);
+      console.error("❌ 알림 목록 조회 실패:", err);
       if (err.response?.status === 401) {
-        setError('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        setError("로그인이 만료되었습니다. 다시 로그인해주세요.");
       } else {
-        setError('알림을 불러오는 중 오류가 발생했습니다.');
+        setError("알림을 불러오는 중 오류가 발생했습니다.");
       }
     } finally {
       setLoading(false);
@@ -54,14 +135,18 @@ const NotificationPage = () => {
   const markAsRead = async (id) => {
     try {
       const token = getToken();
-      await axiosInstance.put(`${BASE}/${id}/read`, {}, { headers: { 'X-AUTH-TOKEN': token } });
+      await axiosInstance.put(
+        `${BASE}/${id}/read`,
+        {},
+        { headers: { "X-AUTH-TOKEN": token } }
+      );
 
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (err) {
-      console.error('❌ 읽음 처리 실패:', err);
+      console.error("❌ 읽음 처리 실패:", err);
     }
   };
 
@@ -69,10 +154,12 @@ const NotificationPage = () => {
   const deleteNotification = async (id) => {
     try {
       const token = getToken();
-      await axiosInstance.delete(`${BASE}/${id}`, { headers: { 'X-AUTH-TOKEN': token } });
+      await axiosInstance.delete(`${BASE}/${id}`, {
+        headers: { "X-AUTH-TOKEN": token },
+      });
       setNotifications((prev) => prev.filter((n) => n.id !== id));
     } catch (err) {
-      console.error('❌ 알림 삭제 실패:', err);
+      console.error("❌ 알림 삭제 실패:", err);
     }
   };
 
@@ -80,21 +167,28 @@ const NotificationPage = () => {
   const handleNotificationClick = async (notification) => {
     try {
       if (!notification.isRead) await markAsRead(notification.id); // 1) 읽음
-      await deleteNotification(notification.id);                   // 2) 삭제
+      await deleteNotification(notification.id); // 2) 삭제
 
       // 3) 라우팅
       // (기존 로직과 동일 ― 필요하면 더 다듬으세요)
-      if (['comment', 'like'].includes(notification.type)) {
-        const postId = notification.postId || extractPostIdFromContent(notification.content);
-        window.location.href = postId ? `/community/post/${postId}` : '/community';
-      } else if (['fire_risk', 'weather_alert'].includes(notification.type)) {
-        const mountain = notification.mountainName || extractMountainNameFromContent(notification.content);
-        window.location.href = mountain ? `/mountain/detail/${encodeURIComponent(mountain)}` : '/mountain';
-      } else if (notification.type === 'system') {
-        window.location.href = '/';
+      if (["comment", "like"].includes(notification.type)) {
+        const postId =
+          notification.postId || extractPostIdFromContent(notification.content);
+        window.location.href = postId
+          ? `/community/post/${postId}`
+          : "/community";
+      } else if (["fire_risk", "weather_alert"].includes(notification.type)) {
+        const mountain =
+          notification.mountainName ||
+          extractMountainNameFromContent(notification.content);
+        window.location.href = mountain
+          ? `/mountain/detail/${encodeURIComponent(mountain)}`
+          : "/mountain";
+      } else if (notification.type === "system") {
+        window.location.href = "/";
       }
     } catch (err) {
-      console.error('❌ 알림 처리 중 오류:', err);
+      console.error("❌ 알림 처리 중 오류:", err);
     }
   };
 
@@ -112,18 +206,23 @@ const NotificationPage = () => {
     }
   };
 
-  useEffect(() => { fetchNotifications(); }, []);
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   /* ------------------------- 렌더 ------------------------- */
+  if (!isAuthenticated()) return <NotLoggedIn />;
   if (loading) return <Loader />;
-  if (error)   return <ErrorView message={error} />;
+  if (error) return <ErrorView message={error} />;
 
   return (
     <div style={containerStyle}>
       {/* 헤더 */}
       <div style={headerStyle}>
         <h1 style={titleStyle}>📱 알림</h1>
-        {unreadCount > 0 && <div style={badgeStyle}>{unreadCount}개의 읽지 않은 알림</div>}
+        {unreadCount > 0 && (
+          <div style={badgeStyle}>{unreadCount}개의 읽지 않은 알림</div>
+        )}
       </div>
 
       {/* 목록 */}
@@ -158,8 +257,8 @@ const Loader = () => (
 );
 
 const ErrorView = ({ message }) => (
-  <div style={{ ...centerStyle, color: '#e74c3c' }}>
-    <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
+  <div style={{ ...centerStyle, color: "#e74c3c" }}>
+    <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠️</div>
     <p>{message}</p>
     <button style={btnStyle} onClick={() => window.location.reload()}>
       다시 시도
@@ -168,8 +267,8 @@ const ErrorView = ({ message }) => (
 );
 
 const EmptyState = () => (
-  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#666' }}>
-    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📪</div>
+  <div style={{ textAlign: "center", padding: "3rem 1rem", color: "#666" }}>
+    <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📪</div>
     <h3>알림이 없습니다</h3>
     <p>새로운 알림이 도착하면 여기에 표시됩니다.</p>
   </div>
@@ -184,7 +283,9 @@ const Pagination = ({ current, total, onPageChange }) => (
     >
       이전
     </button>
-    <span style={pageInfo}>{current + 1} / {total}</span>
+    <span style={pageInfo}>
+      {current + 1} / {total}
+    </span>
     <button
       style={{ ...pageBtn, opacity: current >= total - 1 ? 0.5 : 1 }}
       disabled={current >= total - 1}
@@ -196,23 +297,84 @@ const Pagination = ({ current, total, onPageChange }) => (
 );
 
 /* ===== 스타일 ===== */
-const containerStyle = { width: '100%', maxWidth: 800, margin: '0 auto', padding: 'clamp(1rem,3vw,2rem)' };
-const headerStyle    = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #e0e0e0' };
-const titleStyle     = { fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 700, color: '#2c3e50', margin: 0 };
-const badgeStyle     = { background: '#ff4757', color: '#fff', padding: '0.5rem 1rem', borderRadius: 16, fontSize: 'clamp(0.8rem,1.3vw,0.9rem)', fontWeight: 600 };
+const containerStyle = {
+  width: "100%",
+  maxWidth: 800,
+  margin: "0 auto",
+  padding: "clamp(1rem,3vw,2rem)",
+};
+const headerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "1.5rem",
+  paddingBottom: "1rem",
+  borderBottom: "1px solid #e0e0e0",
+};
+const titleStyle = {
+  fontSize: "clamp(1.8rem,4vw,2.5rem)",
+  fontWeight: 700,
+  color: "#2c3e50",
+  margin: 0,
+};
+const badgeStyle = {
+  background: "#ff4757",
+  color: "#fff",
+  padding: "0.5rem 1rem",
+  borderRadius: 16,
+  fontSize: "clamp(0.8rem,1.3vw,0.9rem)",
+  fontWeight: 600,
+};
 
-const centerStyle    = { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', color: '#666' };
-const spinnerStyle   = { width: 32, height: 32, border: '4px solid #f3f3f3', borderTop: '4px solid #007bff', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 };
-const btnStyle       = { padding: '0.8rem 1.5rem', background: '#007bff', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 16 };
+const centerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "50vh",
+  color: "#666",
+};
+const spinnerStyle = {
+  width: 32,
+  height: 32,
+  border: "4px solid #f3f3f3",
+  borderTop: "4px solid #007bff",
+  borderRadius: "50%",
+  animation: "spin 1s linear infinite",
+  marginBottom: 16,
+};
+const btnStyle = {
+  padding: "0.8rem 1.5rem",
+  background: "#007bff",
+  color: "#fff",
+  border: "none",
+  borderRadius: 8,
+  cursor: "pointer",
+  fontSize: 16,
+};
 
-const paginationStyle = { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 32 };
-const pageBtn         = { padding: '0.6rem 1.2rem', background: '#007bff', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' };
-const pageInfo        = { fontWeight: 600, color: '#666' };
+const paginationStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 16,
+  marginTop: 32,
+};
+const pageBtn = {
+  padding: "0.6rem 1.2rem",
+  background: "#007bff",
+  color: "#fff",
+  border: "none",
+  borderRadius: 8,
+  fontWeight: 600,
+  cursor: "pointer",
+};
+const pageInfo = { fontWeight: 600, color: "#666" };
 
 /* ➜ 전역 keyframes 한 번만 삽입 */
-if (!document.getElementById('notification-spin-keyframe')) {
-  const styleTag = document.createElement('style');
-  styleTag.id = 'notification-spin-keyframe';
+if (!document.getElementById("notification-spin-keyframe")) {
+  const styleTag = document.createElement("style");
+  styleTag.id = "notification-spin-keyframe";
   styleTag.textContent = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
   document.head.appendChild(styleTag);
 }

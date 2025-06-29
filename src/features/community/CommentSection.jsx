@@ -5,6 +5,7 @@ import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import GreenButton from "shared/ui/greenButton";
 import GreenInput from "shared/ui/greenInput";
 import ConfirmModal from "widgets/Modal/ConfirmModal";
+import LoginRequiredModal from "shared/components/LoginRequiredModal";
 
 const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const theme = useTheme();
@@ -17,6 +18,46 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const [replyInputMap, setReplyInputMap] = useState({});
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // 상대적 시간 계산 함수
+  const getRelativeTime = (dateString) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) {
+      return "방금 전";
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes}분 전`;
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours}시간 전`;
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays}일 전`;
+    }
+
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    if (diffInWeeks < 4) {
+      return `${diffInWeeks}주 전`;
+    }
+
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) {
+      return `${diffInMonths}개월 전`;
+    }
+
+    const diffInYears = Math.floor(diffInDays / 365);
+    return `${diffInYears}년 전`;
+  };
 
   // 댓글 목록 새로고침 함수
   const fetchComments = () => {
@@ -37,6 +78,13 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
   const handleComment = async (e) => {
     e.preventDefault();
     if (!comment.trim()) return;
+
+    // 로그인 체크
+    if (!userId) {
+      setShowLoginModal(true);
+      return;
+    }
+
     try {
       await axiosInstance.post(`/community-service/comments`, {
         postId,
@@ -49,7 +97,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
     } catch {
       alert("댓글 등록 실패");
     }
-  }; // ← 여기까지가 handleComment 함수의 끝입니다.
+  };
 
   // 대댓글 입력 토글
   const toggleReplyInput = (commentId) => {
@@ -64,6 +112,12 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
     e.preventDefault();
     const content = replyInputMap[parentId]?.trim();
     if (!content) return;
+
+    // 로그인 체크
+    if (!userId) {
+      setShowLoginModal(true);
+      return;
+    }
 
     try {
       await axiosInstance.post(`/community-service/comments`, {
@@ -136,7 +190,7 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
                     color: "#aaa",
                   }}
                 >
-                  {new Date(c.createdAt).toLocaleString()}
+                  {getRelativeTime(c.createdAt)}
                 </div>
                 {canDelete && (
                   <div style={{ position: "relative" }}>
@@ -324,6 +378,15 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
     setMenuOpenId(menuOpenId === commentId ? null : commentId);
   };
 
+  const handleLogin = () => {
+    setShowLoginModal(false);
+    window.location.href = "/login";
+  };
+
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+  };
+
   return (
     <>
       <div
@@ -427,6 +490,16 @@ const CommentSection = ({ postId, userId, postUserId, onCommentsChanged }) => {
         onConfirm={handleDeleteConfirm}
         cancelText="취소"
         confirmText="삭제"
+      />
+
+      {/* 로그인 안내 모달 */}
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onClose={handleCloseLoginModal}
+        onLogin={handleLogin}
+        title="로그인이 필요한 서비스입니다"
+        message={`댓글을 작성하려면
+로그인이 필요해요!`}
       />
     </>
   );
