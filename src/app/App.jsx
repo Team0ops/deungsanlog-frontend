@@ -90,6 +90,17 @@ function AppContent() {
     return "none";
   };
 
+  // 첫 방문 체크 및 모달 표시
+  useEffect(() => {
+    const hasVisited = localStorage.getItem("hasVisitedDeungsanlog");
+    if (!hasVisited) {
+      // 첫 방문 시 모달 표시
+      setShowIntroModal(true);
+      // 방문 기록 저장
+      localStorage.setItem("hasVisitedDeungsanlog", "true");
+    }
+  }, []);
+
   useEffect(() => {
     document.body.setAttribute("dir", direction);
   }, [direction]);

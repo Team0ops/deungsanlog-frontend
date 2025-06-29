@@ -251,102 +251,128 @@ const ServiceIntroModal = ({ isOpen, onClose }) => {
                 boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
                 maxWidth: isMobile ? "90%" : "600px",
                 width: "100%",
+                minHeight: isMobile ? "400px" : "350px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
               }}
             >
-              <h2
-                key={currentPage}
-                style={{
-                  color: "#2b5f3e",
-                  fontSize: isMobile ? "1.4rem" : "1.8rem",
-                  fontWeight: "700",
-                  marginBottom: "1.5rem",
-                  lineHeight: "1.4",
-                  animation: "slideDown 1.5s ease-out",
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {currentPageData.title}
-              </h2>
-              <p
-                style={{
-                  color: "#555",
-                  fontSize: isMobile ? "1rem" : "1.2rem",
-                  lineHeight: "1.6",
-                  marginBottom: "2rem",
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {currentPageData.content}
-              </p>
-
-              {/* 페이지 인디케이터 */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "0.5rem",
-                  marginBottom: "2rem",
-                }}
-              >
-                {pages.map((_, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      width: "8px",
-                      height: "8px",
-                      borderRadius: "50%",
-                      backgroundColor:
-                        index === currentPage ? "#4b8161" : "#ddd",
-                      transition: "background-color 0.3s ease",
-                    }}
-                  />
-                ))}
+              <div>
+                <h2
+                  key={currentPage}
+                  style={{
+                    color: "#2b5f3e",
+                    fontSize: isMobile ? "1.4rem" : "1.8rem",
+                    fontWeight: "700",
+                    marginBottom: "1.5rem",
+                    lineHeight: "1.4",
+                    animation: "slideDown 1.5s ease-out",
+                    whiteSpace: "pre-line",
+                  }}
+                >
+                  {currentPageData.title}
+                </h2>
+                <p
+                  style={{
+                    color: "#555",
+                    fontSize: isMobile ? "1rem" : "1.2rem",
+                    lineHeight: "1.6",
+                    marginBottom: "2rem",
+                    whiteSpace: "pre-line",
+                  }}
+                >
+                  {currentPageData.content}
+                </p>
               </div>
 
-              {/* 버튼들 */}
-              {currentPageData.showButtons && (
+              <div>
+                {/* 페이지 인디케이터 */}
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "center",
-                    gap: "1rem",
-                    flexWrap: "wrap",
+                    gap: "0.5rem",
+                    marginBottom: "2rem",
                   }}
                 >
-                  {currentPageData.prevText && (
+                  {pages.map((_, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        backgroundColor:
+                          index === currentPage ? "#4b8161" : "#ddd",
+                        transition: "background-color 0.3s ease",
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* 버튼들 */}
+                {currentPageData.showButtons && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "1rem",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {currentPageData.prevText && (
+                      <GreenButton
+                        onClick={handlePrev}
+                        style={{
+                          padding: isMobile ? "0.8rem 1.5rem" : "1rem 2rem",
+                          fontSize: isMobile ? "1rem" : "1.1rem",
+                          fontWeight: "600",
+                          borderRadius: "12px",
+                          background: "#ffffff",
+                          color: "#4b8161",
+                          border: "2px solid #4b8161",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        {currentPageData.prevText}
+                      </GreenButton>
+                    )}
                     <GreenButton
-                      onClick={handlePrev}
+                      onClick={handleButtonClick}
                       style={{
                         padding: isMobile ? "0.8rem 1.5rem" : "1rem 2rem",
                         fontSize: isMobile ? "1rem" : "1.1rem",
                         fontWeight: "600",
                         borderRadius: "12px",
-                        background: "#ffffff",
-                        color: "#4b8161",
-                        border: "2px solid #4b8161",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        background: "#4b8161",
+                        color: "#ffffff",
+                        border: "none",
+                        boxShadow: "0 4px 12px rgba(75, 129, 97, 0.3)",
                       }}
                     >
-                      {currentPageData.prevText}
+                      {currentPageData.nextText}
                     </GreenButton>
-                  )}
-                  <GreenButton
-                    onClick={handleButtonClick}
-                    style={{
-                      padding: isMobile ? "0.8rem 1.5rem" : "1rem 2rem",
-                      fontSize: isMobile ? "1rem" : "1.1rem",
-                      fontWeight: "600",
-                      borderRadius: "12px",
-                      background: "#4b8161",
-                      color: "#ffffff",
-                      border: "none",
-                      boxShadow: "0 4px 12px rgba(75, 129, 97, 0.3)",
-                    }}
-                  >
-                    {currentPageData.nextText}
-                  </GreenButton>
-                </div>
-              )}
+                    {/* 마지막 페이지에서만 "둘러보기" 버튼 표시 (로그인하지 않은 사용자) */}
+                    {isLastPage && !isLoggedIn && (
+                      <GreenButton
+                        onClick={handleClose}
+                        style={{
+                          padding: isMobile ? "0.8rem 1.5rem" : "1rem 2rem",
+                          fontSize: isMobile ? "1rem" : "1.1rem",
+                          fontWeight: "600",
+                          borderRadius: "12px",
+                          background: "#ffffff",
+                          color: "#666666",
+                          border: "2px solid #dddddd",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        둘러보기
+                      </GreenButton>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
