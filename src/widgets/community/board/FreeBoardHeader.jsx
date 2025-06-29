@@ -106,7 +106,7 @@ const FreeBoardHeader = ({
                 lineHeight: { xs: 1.4, md: 1.5 },
               }}
             >
-              당신의 글이 다른 사람에게 힘이 될 수 있어요 ✨
+              당신의 글이 다른 사람에게 힘이 될 수 있어요 :)
             </Typography>
           </Box>
 
