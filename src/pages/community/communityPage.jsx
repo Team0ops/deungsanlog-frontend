@@ -15,6 +15,19 @@ const CommunityPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // iOS Safari 디버깅
+  useEffect(() => {
+    const isIOS =
+      navigator.userAgent.includes("iPhone") ||
+      navigator.userAgent.includes("iPad");
+    if (isIOS) {
+      console.log("📱 iOS Safari 감지됨");
+      console.log("📱 User Agent:", navigator.userAgent);
+      console.log("📱 온라인 상태:", navigator.onLine);
+      console.log("📱 API Base URL:", import.meta.env.VITE_API_BASE_URL);
+    }
+  }, []);
+
   // 로그인 여부만 체크해서 userId만 저장
   useEffect(() => {
     const userInfo = getUserInfo();
@@ -30,10 +43,30 @@ const CommunityPage = () => {
   };
 
   useEffect(() => {
+    const isIOS =
+      navigator.userAgent.includes("iPhone") ||
+      navigator.userAgent.includes("iPad");
+
+    console.log("🌐 커뮤니티 미리보기 데이터 요청 시작");
+
     axiosInstance
       .get("/community-service/posts/preview")
-      .then((res) => setPreviewPosts(res.data))
-      .catch(() => setPreviewPosts([]));
+      .then((res) => {
+        console.log("✅ 커뮤니티 미리보기 데이터 성공:", res.data.length, "개");
+        setPreviewPosts(res.data);
+      })
+      .catch((error) => {
+        console.error("❌ 커뮤니티 미리보기 데이터 실패:", error);
+        if (isIOS) {
+          console.log("📱 iOS Safari 오류 상세:", {
+            message: error.message,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+          });
+        }
+        setPreviewPosts([]);
+      });
   }, []);
 
   // 등산왕 위젯 mount 시 강제 리프레시 트리거

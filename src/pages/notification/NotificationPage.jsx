@@ -91,6 +91,9 @@ const NotificationPage = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [markingAllAsRead, setMarkingAllAsRead] = useState(false);
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   /* ------------------------- 목록 조회 ------------------------- */
   const fetchNotifications = async (page = 0) => {
     if (!isAuthenticated()) {
@@ -104,7 +107,7 @@ const NotificationPage = () => {
       const token = getToken();
 
       const { data } = await axiosInstance.get(`${BASE}/list`, {
-        params: { page, size: 20 },
+        params: { page, size: isMobile ? 15 : 20 }, // 모바일에서는 더 적은 개수
         headers: { "X-AUTH-TOKEN": token },
       });
 
@@ -269,27 +272,35 @@ const NotificationPage = () => {
 
   /* ------------------------- 렌더 ------------------------- */
   if (!isAuthenticated()) return <NotLoggedIn />;
-  if (loading) return <Loader />;
-  if (error) return <ErrorView message={error} />;
+  if (loading) return <Loader isMobile={isMobile} />;
+  if (error) return <ErrorView message={error} isMobile={isMobile} />;
 
   return (
-    <div style={containerStyle}>
+    <div style={getContainerStyle(isMobile)}>
       {/* 헤더 */}
-      <div style={headerStyle}>
-        <h1 style={titleStyle}>📱 알림</h1>
-        <div style={headerRightStyle}>
+      <div style={getHeaderStyle(isMobile)}>
+        <h1 style={getTitleStyle(isMobile)}>📱 알림</h1>
+        <div style={getHeaderRightStyle(isMobile)}>
           {unreadCount > 0 && (
-            <div style={badgeStyle}>{unreadCount}개의 읽지 않은 알림</div>
+            <div style={getBadgeStyle(isMobile)}>
+              {isMobile
+                ? `${unreadCount}개`
+                : `${unreadCount}개의 읽지 않은 알림`}
+            </div>
           )}
           <button
             onClick={markAllAsRead}
             disabled={unreadCount === 0 || markingAllAsRead}
             style={{
-              ...markAllReadButtonStyle,
+              ...getMarkAllReadButtonStyle(isMobile),
               opacity: unreadCount > 0 && !markingAllAsRead ? 1 : 0.5,
             }}
           >
-            {markingAllAsRead ? "처리 중..." : "한 번에 읽기"}
+            {markingAllAsRead
+              ? "처리 중..."
+              : isMobile
+              ? "모두 읽기"
+              : "한 번에 읽기"}
           </button>
         </div>
       </div>
@@ -300,6 +311,7 @@ const NotificationPage = () => {
         onNotificationClick={handleNotificationClick}
         onMarkAsRead={markAsRead}
         onDeleteNotification={deleteNotification}
+        isMobile={isMobile}
       />
 
       {/* 페이지네이션 */}
@@ -308,55 +320,89 @@ const NotificationPage = () => {
           current={currentPage}
           total={totalPages}
           onPageChange={handlePageChange}
+          isMobile={isMobile}
         />
       )}
 
       {/* 빈 상태 */}
-      {notifications.length === 0 && <EmptyState />}
+      {notifications.length === 0 && <EmptyState isMobile={isMobile} />}
     </div>
   );
 };
 
 /* ===== 공통 컴포넌트들 (깔끔하게 분리) ===== */
-const Loader = () => (
-  <div style={centerStyle}>
-    <div style={spinnerStyle} />
-    <p>알림을 불러오는 중...</p>
+const Loader = ({ isMobile }) => (
+  <div style={getCenterStyle(isMobile)}>
+    <div style={getSpinnerStyle(isMobile)} />
+    <p style={{ fontSize: isMobile ? "0.9rem" : "1rem" }}>
+      알림을 불러오는 중...
+    </p>
   </div>
 );
 
-const ErrorView = ({ message }) => (
-  <div style={{ ...centerStyle, color: "#e74c3c" }}>
-    <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠️</div>
-    <p>{message}</p>
-    <button style={btnStyle} onClick={() => window.location.reload()}>
+const ErrorView = ({ message, isMobile }) => (
+  <div style={{ ...getCenterStyle(isMobile), color: "#e74c3c" }}>
+    <div
+      style={{ fontSize: isMobile ? "1.5rem" : "2rem", marginBottom: "1rem" }}
+    >
+      ⚠️
+    </div>
+    <p style={{ fontSize: isMobile ? "0.9rem" : "1rem", textAlign: "center" }}>
+      {message}
+    </p>
+    <button
+      style={getBtnStyle(isMobile)}
+      onClick={() => window.location.reload()}
+    >
       다시 시도
     </button>
   </div>
 );
 
-const EmptyState = () => (
-  <div style={{ textAlign: "center", padding: "3rem 1rem", color: "#666" }}>
-    <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📪</div>
-    <h3>알림이 없습니다</h3>
-    <p>새로운 알림이 도착하면 여기에 표시됩니다.</p>
+const EmptyState = ({ isMobile }) => (
+  <div
+    style={{
+      textAlign: "center",
+      padding: isMobile ? "2rem 1rem" : "3rem 1rem",
+      color: "#666",
+    }}
+  >
+    <div
+      style={{ fontSize: isMobile ? "2.5rem" : "3rem", marginBottom: "1rem" }}
+    >
+      📪
+    </div>
+    <h3
+      style={{
+        fontSize: isMobile ? "1.2rem" : "1.5rem",
+        marginBottom: "0.5rem",
+      }}
+    >
+      알림이 없습니다
+    </h3>
+    <p style={{ fontSize: isMobile ? "0.9rem" : "1rem" }}>
+      새로운 알림이 도착하면 여기에 표시됩니다.
+    </p>
   </div>
 );
 
-const Pagination = ({ current, total, onPageChange }) => (
-  <div style={paginationStyle}>
+const Pagination = ({ current, total, onPageChange, isMobile }) => (
+  <div style={getPaginationStyle(isMobile)}>
     <button
-      style={{ ...pageBtn, opacity: current === 0 ? 0.5 : 1 }}
+      style={{ ...getPageBtnStyle(isMobile), opacity: current === 0 ? 0.5 : 1 }}
       disabled={current === 0}
       onClick={() => onPageChange(current - 1)}
     >
       이전
     </button>
-    <span style={pageInfo}>
+    <span style={getPageInfoStyle(isMobile)}>
       {current + 1} / {total}
     </span>
     <button
-      style={{ ...pageBtn, opacity: current >= total - 1 ? 0.5 : 1 }}
+      style={{
+        ...getPageBtnStyle(isMobile),
+        opacity: current >= total - 1 ? 0.5 : 1,
+      }}
       disabled={current >= total - 1}
       onClick={() => onPageChange(current + 1)}
     >
@@ -365,99 +411,115 @@ const Pagination = ({ current, total, onPageChange }) => (
   </div>
 );
 
-/* ===== 스타일 ===== */
-const containerStyle = {
+/* ===== 모바일 대응 스타일 함수들 ===== */
+const getContainerStyle = (isMobile) => ({
   width: "100%",
-  maxWidth: 800,
+  maxWidth: isMobile ? "100%" : 800,
   margin: "0 auto",
-  padding: "clamp(1rem,3vw,2rem)",
-};
-const headerStyle = {
+  padding: isMobile ? "0.8rem" : "clamp(1rem,3vw,2rem)",
+});
+
+const getHeaderStyle = (isMobile) => ({
   display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: "1.5rem",
-  paddingBottom: "1rem",
+  flexDirection: isMobile ? "column" : "row",
+  justifyContent: isMobile ? "flex-start" : "space-between",
+  alignItems: isMobile ? "flex-start" : "center",
+  marginBottom: isMobile ? "1rem" : "1.5rem",
+  paddingBottom: isMobile ? "0.8rem" : "1rem",
   borderBottom: "1px solid #e0e0e0",
-};
-const titleStyle = {
-  fontSize: "clamp(1.8rem,4vw,2.5rem)",
+  gap: isMobile ? "0.8rem" : 0,
+});
+
+const getTitleStyle = (isMobile) => ({
+  fontSize: isMobile ? "1.5rem" : "clamp(1.8rem,4vw,2.5rem)",
   fontWeight: 700,
   color: "#2c3e50",
   margin: 0,
-};
-const badgeStyle = {
+});
+
+const getBadgeStyle = (isMobile) => ({
   background: "#ff4757",
   color: "#fff",
-  padding: "0.5rem 1rem",
+  padding: isMobile ? "0.4rem 0.8rem" : "0.5rem 1rem",
   borderRadius: 16,
-  fontSize: "clamp(0.8rem,1.3vw,0.9rem)",
+  fontSize: isMobile ? "0.75rem" : "clamp(0.8rem,1.3vw,0.9rem)",
   fontWeight: 600,
-};
+});
 
-const centerStyle = {
+const getCenterStyle = (isMobile) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  height: "50vh",
+  height: isMobile ? "40vh" : "50vh",
   color: "#666",
-};
-const spinnerStyle = {
-  width: 32,
-  height: 32,
+});
+
+const getSpinnerStyle = (isMobile) => ({
+  width: isMobile ? 24 : 32,
+  height: isMobile ? 24 : 32,
   border: "4px solid #f3f3f3",
   borderTop: "4px solid #007bff",
   borderRadius: "50%",
   animation: "spin 1s linear infinite",
-  marginBottom: 16,
-};
-const btnStyle = {
-  padding: "0.8rem 1.5rem",
+  marginBottom: isMobile ? 12 : 16,
+});
+
+const getBtnStyle = (isMobile) => ({
+  padding: isMobile ? "0.6rem 1.2rem" : "0.8rem 1.5rem",
   background: "#007bff",
   color: "#fff",
   border: "none",
   borderRadius: 8,
   cursor: "pointer",
-  fontSize: 16,
-};
+  fontSize: isMobile ? "0.9rem" : 16,
+});
 
-const paginationStyle = {
+const getPaginationStyle = (isMobile) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  gap: 16,
-  marginTop: 32,
-};
-const pageBtn = {
-  padding: "0.6rem 1.2rem",
+  gap: isMobile ? 12 : 16,
+  marginTop: isMobile ? 24 : 32,
+});
+
+const getPageBtnStyle = (isMobile) => ({
+  padding: isMobile ? "0.5rem 1rem" : "0.6rem 1.2rem",
   background: "#007bff",
   color: "#fff",
   border: "none",
   borderRadius: 8,
   fontWeight: 600,
   cursor: "pointer",
-};
-const pageInfo = { fontWeight: 600, color: "#666" };
+  fontSize: isMobile ? "0.85rem" : "1rem",
+});
 
-const headerRightStyle = {
+const getPageInfoStyle = (isMobile) => ({
+  fontWeight: 600,
+  color: "#666",
+  fontSize: isMobile ? "0.85rem" : "1rem",
+});
+
+const getHeaderRightStyle = (isMobile) => ({
   display: "flex",
   alignItems: "center",
-  gap: 16,
-};
+  gap: isMobile ? 8 : 16,
+  flexWrap: isMobile ? "wrap" : "nowrap",
+});
 
-const markAllReadButtonStyle = {
+const getMarkAllReadButtonStyle = (isMobile) => ({
   background: "#43b95e",
   color: "#fff",
   outline: "none",
-  padding: "0.5rem 1rem",
+  padding: isMobile ? "0.4rem 0.8rem" : "0.5rem 1rem",
   borderRadius: 16,
-  fontSize: "clamp(0.8rem,1.3vw,0.9rem)",
+  fontSize: isMobile ? "0.75rem" : "clamp(0.8rem,1.3vw,0.9rem)",
   fontWeight: 600,
   border: "none",
   cursor: "pointer",
   transition: "background-color 0.2s ease",
-};
+  whiteSpace: "nowrap",
+});
 
 /* ➜ 전역 keyframes 한 번만 삽입 */
 if (!document.getElementById("notification-spin-keyframe")) {
