@@ -19,6 +19,7 @@ function Sidenav({
   brandName,
   routes,
   onMobileMenuClick,
+  onShowIntro,
   ...rest
 }) {
   const [controller, dispatch] = useSoftUIController();
@@ -168,7 +169,18 @@ function Sidenav({
       }}
     >
       <SoftBox pt={3} pb={1} px={3}>
-        <SoftBox component={NavLink} to="/" display="flex" alignItems="center">
+        <SoftBox
+          component="div"
+          display="flex"
+          alignItems="center"
+          onClick={onShowIntro}
+          sx={{
+            cursor: "pointer",
+            "&:hover": {
+              opacity: 0.8,
+            },
+          }}
+        >
           {brand && (
             <SoftBox
               component="img"

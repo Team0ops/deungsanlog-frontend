@@ -8,6 +8,7 @@ import createCache from "@emotion/cache";
 // UI 컴포넌트
 import Sidenav from "widgets/Sidenav";
 import SidenavToggleButton from "shared/ui/SidenavToggleButton";
+import ServiceIntroModal from "shared/components/ServiceIntroModal";
 
 // 컨텍스트
 import {
@@ -54,6 +55,7 @@ function AppContent() {
   const [controller, dispatch] = useSoftUIController();
   const { miniSidenav, direction, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
+  const [showIntroModal, setShowIntroModal] = useState(false);
   const { pathname } = useLocation();
 
   const isOrmiPage = pathname === "/ormi";
@@ -121,6 +123,10 @@ function AppContent() {
   // 모바일 여부 체크
   const isMobile = window.innerWidth < 600;
 
+  const handleShowIntro = () => {
+    setShowIntroModal(true);
+  };
+
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
       {hasBackgroundPage && (
@@ -167,6 +173,7 @@ function AppContent() {
                   onMouseEnter={handleOnMouseEnter}
                   onMouseLeave={handleOnMouseLeave}
                   onMobileMenuClick={() => setMiniSidenav(dispatch, true)}
+                  onShowIntro={handleShowIntro}
                 />
               </div>
             </>
@@ -180,6 +187,7 @@ function AppContent() {
               routes={getRoutes()}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
+              onShowIntro={handleShowIntro}
             />
           </div>
         )}
@@ -268,6 +276,12 @@ function AppContent() {
           </Routes>
         </main>
       </div>
+
+      {/* 서비스 소개 모달 */}
+      <ServiceIntroModal
+        isOpen={showIntroModal}
+        onClose={() => setShowIntroModal(false)}
+      />
     </div>
   );
 }
