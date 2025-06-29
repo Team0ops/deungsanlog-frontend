@@ -48,7 +48,7 @@ const MyMeetingPage = () => {
   // 상태 옵션
   const statusOptions = [
     { value: "all", label: "전체" },
-    { value: "RECRUITING", label: "모집중" },
+    { value: "OPEN", label: "모집중" },
     { value: "CANCELLED", label: "취소" },
     { value: "CLOSED", label: "마감" },
   ];
