@@ -196,7 +196,6 @@ const NotificationPage = () => {
       await deleteNotification(notification.id); // 2) 삭제
 
       // 3) 라우팅
-      // (기존 로직과 동일 ― 필요하면 더 다듬으세요)
       if (["comment", "like"].includes(notification.type)) {
         const postId =
           notification.postId || extractPostIdFromContent(notification.content);
@@ -210,6 +209,22 @@ const NotificationPage = () => {
         window.location.href = mountain
           ? `/mountain/detail/${encodeURIComponent(mountain)}`
           : "/mountain";
+      } else if (
+        [
+          "meeting_apply",
+          "meeting_accepted",
+          "meeting_full",
+          "meeting_closed",
+        ].includes(notification.type)
+      ) {
+        // 모임 관련 알림 처리
+        const meetingId = extractMeetingIdFromContent(
+          notification.content,
+          notification
+        );
+        window.location.href = meetingId
+          ? `/meeting/detail/${meetingId}`
+          : "/meeting";
       } else if (notification.type === "system") {
         window.location.href = "/";
       }
@@ -224,6 +239,22 @@ const NotificationPage = () => {
 
   const extractMountainNameFromContent = (c) =>
     (c.match(/\[(.*?)\]|산\s*:\s*(.*?)\s|(\w+산)/) ?? [])[1] || null;
+
+  const extractMeetingIdFromContent = (c, notification) => {
+    // 알림에 meetingId 필드가 있으면 그것을 사용
+    if (notification.meetingId) {
+      return notification.meetingId;
+    }
+
+    // 모임 제목에서 ID를 추출하는 정규식 (필요시 수정)
+    const match = c.match(/\[(.*?)\]/);
+    if (match) {
+      // 모임 제목이 있다면 해당 제목으로 모임을 찾을 수 있도록 처리
+      // 현재는 기본적으로 모임 목록 페이지로 이동
+      return null;
+    }
+    return null;
+  };
 
   const handlePageChange = (p) => {
     if (p >= 0 && p < totalPages) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getUserInfo, getToken, requireAuth } from "shared/lib/auth";
 import ProfileSection from "./components/ProfileSection";
+import HikingStatsSection from "./components/HikingStatsSection";
 import FavoriteSection from "./components/FavoriteSection";
 import axiosInstance from "shared/lib/axiosInstance";
 
@@ -114,8 +115,29 @@ const MyPage = () => {
         {/* 1. 프로필 관리 섹션 */}
         <ProfileSection userInfo={userInfo} setUserInfo={setUserInfo} />
 
-        {/* 2. 즐겨찾기 관리 */}
+        {/* 2. 등산 통계 대시보드 */}
+        <HikingStatsSection userId={userId} />
+
+        {/* 3. 즐겨찾기 관리 */}
         <FavoriteSection userId={userId} />
+
+        {/* 4. 커뮤니티 활동 현황 (추후 구현) */}
+        <div style={comingSoonSectionStyle}>
+          <h2 style={sectionTitleStyle}>📝 커뮤니티 활동</h2>
+          <div style={comingSoonContentStyle}>
+            <span>🚧 준비 중입니다</span>
+            <p>게시글, 댓글, 좋아요 통계가 여기에 표시됩니다.</p>
+          </div>
+        </div>
+
+        {/* 5. 모임 참여 현황 (추후 구현) */}
+        <div style={comingSoonSectionStyle}>
+          <h2 style={sectionTitleStyle}>👥 모임 활동</h2>
+          <div style={comingSoonContentStyle}>
+            <span>🚧 준비 중입니다</span>
+            <p>참여한 모임, 주최한 모임 정보가 여기에 표시됩니다.</p>
+          </div>
+        </div>
       </main>
     </div>
   );
@@ -135,6 +157,27 @@ const containerStyle = {
 const mainContentStyle = {
   display: "grid",
   gap: "clamp(2rem, 4vw, 3rem)",
+};
+
+const comingSoonSectionStyle = {
+  backgroundColor: "#ffffff",
+  borderRadius: "1rem",
+  padding: "clamp(1.5rem, 3vw, 2rem)",
+  boxShadow: "0 0.2rem 1rem rgba(0,0,0,0.1)",
+  border: "0.1rem solid #e9ecef",
+};
+
+const sectionTitleStyle = {
+  fontSize: "clamp(1.3rem, 2.5vw, 1.5rem)",
+  fontWeight: "600",
+  color: "#2c3e50",
+  marginBottom: "clamp(1rem, 2vw, 1.5rem)",
+};
+
+const comingSoonContentStyle = {
+  textAlign: "center",
+  padding: "clamp(2rem, 4vw, 3rem)",
+  color: "#6c757d",
 };
 
 const loadingStyle = {
