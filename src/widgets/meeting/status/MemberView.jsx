@@ -8,14 +8,9 @@ import {
 } from "@mui/material";
 import MeetingMemberOverview from "../MeetingMemberOverview";
 
-const MemberView = ({ meeting, members, meetingId }) => {
+const MemberView = ({ meeting, meetingId }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  const accepted = members.filter(
-    (m) => m.status === "ACCEPTED" && m.userId !== meeting.hostUserId
-  );
-  const host = members.find((m) => m.userId === meeting.hostUserId);
 
   // 취소된 모임인지 확인
   const isCanceled = meeting?.status === "CANCELED";
@@ -90,60 +85,6 @@ const MemberView = ({ meeting, members, meetingId }) => {
                 📋
               </Button>
             </Box>
-          )}
-
-          <Typography
-            fontWeight={600}
-            mb={1}
-            fontSize={isMobile ? "0.9rem" : "inherit"}
-          >
-            개설자
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            mb={2}
-            fontSize={isMobile ? "0.85rem" : "inherit"}
-          >
-            {host ? host.nickname || host.userId : "정보 없음"}
-          </Typography>
-          <Divider sx={{ my: isMobile ? 0.8 : 1 }} />
-
-          <Typography
-            fontWeight={600}
-            mb={1}
-            fontSize={isMobile ? "0.9rem" : "inherit"}
-          >
-            참가자
-          </Typography>
-          <Typography
-            variant="body2"
-            color="primary"
-            fontWeight={700}
-            mb={0.5}
-            fontSize={isMobile ? "0.85rem" : "inherit"}
-          >
-            (나)
-          </Typography>
-          {accepted.length > 0 ? (
-            accepted.map((m) => (
-              <Typography
-                key={m.userId}
-                variant="body2"
-                color="text.secondary"
-                fontSize={isMobile ? "0.85rem" : "inherit"}
-              >
-                {m.nickname || m.userId}
-              </Typography>
-            ))
-          ) : (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              fontSize={isMobile ? "0.85rem" : "inherit"}
-            >
-              없음
-            </Typography>
           )}
         </>
       )}

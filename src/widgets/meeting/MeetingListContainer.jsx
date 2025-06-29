@@ -23,7 +23,7 @@ const MeetingListContainer = () => {
 
     axiosInstance
       .get("/meeting-service/search", {
-        params: { status, sort, keyword, page, size: 2 },
+        params: { status, sort, keyword, page, size: 5 },
       })
       .then((res) => {
         console.log("✅ 모임 검색 응답:", res.data);

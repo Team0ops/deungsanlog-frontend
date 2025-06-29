@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axiosInstance from "shared/lib/axiosInstance";
+import GreenButton from "shared/ui/greenButton";
 
 const ProfileSection = ({ userInfo, setUserInfo }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -116,19 +117,12 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
         }
       );
 
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUserInfo(updatedUser);
-        setIsEditing(false);
-        setSelectedFile(null);
-        setPreviewUrl("");
-        alert("프로필이 성공적으로 수정되었습니다!");
-      } else {
-        console.error("프로필 수정 실패:", response.status);
-        alert(
-          "프로필 수정에 실패했습니다. User Service에 PUT API가 구현되어 있는지 확인해주세요."
-        );
-      }
+      // axios는 성공 시 자동으로 response.data를 반환
+      setUserInfo(response.data);
+      setIsEditing(false);
+      setSelectedFile(null);
+      setPreviewUrl("");
+      alert("프로필이 성공적으로 수정되었습니다!");
     } catch (error) {
       console.error("프로필 수정 오류:", error);
       alert("프로필 수정 중 오류가 발생했습니다.");
@@ -259,23 +253,23 @@ const ProfileSection = ({ userInfo, setUserInfo }) => {
               disabled={isLoading}
               style={{ ...buttonStyle, ...saveButtonStyle }}
             >
-              {isLoading ? "저장 중..." : "💾 저장"}
+              {isLoading ? "저장 중..." : "저장"}
             </button>
             <button
               onClick={handleEditCancel}
               disabled={isLoading}
               style={{ ...buttonStyle, ...cancelButtonStyle }}
             >
-              ❌ 취소
+              취소
             </button>
           </>
         ) : (
-          <button
+          <GreenButton
             onClick={handleEditStart}
             style={{ ...buttonStyle, ...editButtonStyle }}
           >
-            ✏️ 프로필 수정
-          </button>
+            프로필 수정
+          </GreenButton>
         )}
       </div>
     </section>
@@ -414,17 +408,25 @@ const editButtonStyle = {
 const saveButtonStyle = {
   backgroundColor: "#28a745",
   color: "#ffffff",
+  "&:hover": {
+    backgroundColor: "#218838",
+  },
 };
 
 const cancelButtonStyle = {
-  backgroundColor: "#6c757d",
-  color: "#ffffff",
+  backgroundColor: "#ffffff",
+  color: "#28a745",
+  border: "0.1rem solid #28a745",
+  "&:hover": {
+    backgroundColor: "#28a745",
+    color: "#ffffff",
+  },
 };
 
 const fileSelectButtonStyle = {
   display: "inline-block",
   padding: "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.5rem)",
-  backgroundColor: "#007bff",
+  backgroundColor: "#28a745",
   color: "#ffffff",
   borderRadius: "0.5rem",
   cursor: "pointer",

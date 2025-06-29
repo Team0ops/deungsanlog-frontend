@@ -87,28 +87,6 @@ const HostView = ({
   const isClosed = meeting?.status === "CLOSED";
   const isCanceled = meeting?.status === "CANCELED";
 
-  // 마감일까지 남은 시간 계산
-  const getTimeUntilDeadline = () => {
-    if (!meeting || meeting.status !== "OPEN") return null;
-
-    const now = dayjs();
-    const deadline = dayjs(`${meeting.deadlineDate}T${meeting.scheduledTime}`);
-    const diff = deadline.diff(now, "minute");
-
-    if (diff <= 0) return "마감됨";
-
-    const hours = Math.floor(diff / 60);
-    const minutes = diff % 60;
-
-    if (hours > 0) {
-      return `${hours}시간 ${minutes}분 남음`;
-    } else {
-      return `${minutes}분 남음`;
-    }
-  };
-
-  const timeUntilDeadline = getTimeUntilDeadline();
-
   return (
     <Box p={isMobile ? 1 : 2}>
       <MeetingMemberOverview meetingId={meetingId} meeting={meeting} />
@@ -156,29 +134,6 @@ const HostView = ({
                 >
                   신청자 목록
                 </Typography>
-                {timeUntilDeadline && (
-                  <Typography
-                    fontSize={isMobile ? "0.8rem" : "0.9rem"}
-                    color={
-                      timeUntilDeadline === "마감됨" ? "#f44336" : "#ff9800"
-                    }
-                    fontWeight={600}
-                    sx={{
-                      backgroundColor:
-                        timeUntilDeadline === "마감됨"
-                          ? "rgba(244, 67, 54, 0.1)"
-                          : "rgba(255, 152, 0, 0.1)",
-                      px: 1,
-                      py: 0.3,
-                      borderRadius: "12px",
-                      border: `1px solid ${
-                        timeUntilDeadline === "마감됨" ? "#f44336" : "#ff9800"
-                      }`,
-                    }}
-                  >
-                    ⏰ {timeUntilDeadline}
-                  </Typography>
-                )}
               </Box>
               <Box
                 sx={{
