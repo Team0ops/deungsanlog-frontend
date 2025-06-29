@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { getUserInfo, getToken, requireAuth } from "shared/lib/auth";
 import ProfileSection from "./components/ProfileSection";
-import HikingStatsSection from "./components/HikingStatsSection";
 import FavoriteSection from "./components/FavoriteSection";
 import axiosInstance from "shared/lib/axiosInstance";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // ✅ 인증 확인 및 사용자 ID 추출
   useEffect(() => {
@@ -80,19 +83,29 @@ const MyPage = () => {
 
   if (loading) {
     return (
-      <div style={loadingStyle}>
-        <div>마이페이지를 불러오는 중...</div>
+      <div style={getLoadingStyle(isMobile)}>
+        <div
+          style={{
+            fontSize: isMobile ? "0.95rem" : "clamp(1rem, 2vw, 1.2rem)",
+          }}
+        >
+          마이페이지를 불러오는 중...
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={errorStyle}>
-        <div>{error}</div>
+      <div style={getErrorStyle(isMobile)}>
+        <div
+          style={{ fontSize: isMobile ? "0.9rem" : "clamp(1rem, 2vw, 1.2rem)" }}
+        >
+          {error}
+        </div>
         <button
           onClick={() => (window.location.href = "/login")}
-          style={loginButtonStyle}
+          style={getLoginButtonStyle(isMobile)}
         >
           로그인하러 가기
         </button>
@@ -102,113 +115,86 @@ const MyPage = () => {
 
   if (!userInfo) {
     return (
-      <div style={errorStyle}>
-        <div>사용자 정보를 찾을 수 없습니다.</div>
+      <div style={getErrorStyle(isMobile)}>
+        <div
+          style={{ fontSize: isMobile ? "0.9rem" : "clamp(1rem, 2vw, 1.2rem)" }}
+        >
+          사용자 정보를 찾을 수 없습니다.
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={containerStyle}>
+    <div style={getContainerStyle(isMobile)}>
       {/* 메인 컨텐츠 */}
-      <main style={mainContentStyle}>
+      <main style={getMainContentStyle(isMobile)}>
         {/* 1. 프로필 관리 섹션 */}
-        <ProfileSection userInfo={userInfo} setUserInfo={setUserInfo} />
-
-        {/* 2. 등산 통계 대시보드 */}
-        <HikingStatsSection userId={userId} />
-
-        {/* 3. 즐겨찾기 관리 */}
-        <FavoriteSection userId={userId} />
-
-        {/* 4. 커뮤니티 활동 현황 (추후 구현) */}
-        <div style={comingSoonSectionStyle}>
-          <h2 style={sectionTitleStyle}>📝 커뮤니티 활동</h2>
-          <div style={comingSoonContentStyle}>
-            <span>🚧 준비 중입니다</span>
-            <p>게시글, 댓글, 좋아요 통계가 여기에 표시됩니다.</p>
-          </div>
-        </div>
-
-        {/* 5. 모임 참여 현황 (추후 구현) */}
-        <div style={comingSoonSectionStyle}>
-          <h2 style={sectionTitleStyle}>👥 모임 활동</h2>
-          <div style={comingSoonContentStyle}>
-            <span>🚧 준비 중입니다</span>
-            <p>참여한 모임, 주최한 모임 정보가 여기에 표시됩니다.</p>
-          </div>
-        </div>
+        <ProfileSection
+          userInfo={userInfo}
+          setUserInfo={setUserInfo}
+          isMobile={isMobile}
+        />
+        {/* 2. 즐겨찾기 관리 */}
+        <FavoriteSection userId={userId} isMobile={isMobile} />
       </main>
     </div>
   );
 };
 
-// 스타일 정의들 (기존과 동일)
-const containerStyle = {
+// 모바일 대응 스타일 함수들
+const getContainerStyle = (isMobile) => ({
   width: "100%",
-  maxWidth: "1200px",
+  maxWidth: isMobile ? "100%" : "1200px",
   margin: "0 auto",
-  padding: "clamp(1rem, 3vw, 2rem)",
+  padding: isMobile ? "0.8rem" : "clamp(1rem, 3vw, 2rem)",
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   minHeight: "100vh",
-};
+});
 
-const mainContentStyle = {
+const getMainContentStyle = (isMobile) => ({
   display: "grid",
-  gap: "clamp(2rem, 4vw, 3rem)",
-};
+  gap: isMobile ? "1.2rem" : "clamp(2rem, 4vw, 3rem)",
+});
 
-const comingSoonSectionStyle = {
-  backgroundColor: "#ffffff",
-  borderRadius: "1rem",
-  padding: "clamp(1.5rem, 3vw, 2rem)",
-  boxShadow: "0 0.2rem 1rem rgba(0,0,0,0.1)",
-  border: "0.1rem solid #e9ecef",
-};
-
-const sectionTitleStyle = {
-  fontSize: "clamp(1.3rem, 2.5vw, 1.5rem)",
-  fontWeight: "600",
-  color: "#2c3e50",
-  marginBottom: "clamp(1rem, 2vw, 1.5rem)",
-};
-
-const comingSoonContentStyle = {
-  textAlign: "center",
-  padding: "clamp(2rem, 4vw, 3rem)",
-  color: "#6c757d",
-};
-
-const loadingStyle = {
+const getLoadingStyle = (isMobile) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  height: "50vh",
-  fontSize: "clamp(1rem, 2vw, 1.2rem)",
+  height: isMobile ? "40vh" : "50vh",
+  fontSize: isMobile ? "0.95rem" : "clamp(1rem, 2vw, 1.2rem)",
   color: "#666",
-};
+});
 
-const errorStyle = {
+const getErrorStyle = (isMobile) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  height: "50vh",
-  fontSize: "clamp(1rem, 2vw, 1.2rem)",
+  height: isMobile ? "40vh" : "50vh",
+  fontSize: isMobile ? "0.9rem" : "clamp(1rem, 2vw, 1.2rem)",
   color: "#e74c3c",
-  gap: "1rem",
-};
+  gap: isMobile ? "0.8rem" : "1rem",
+  padding: isMobile ? "1rem" : "2rem",
+  textAlign: "center",
+});
 
-const loginButtonStyle = {
-  padding: "0.8rem 1.5rem",
+const getLoginButtonStyle = (isMobile) => ({
+  padding: isMobile ? "0.7rem 1.2rem" : "0.8rem 1.5rem",
   backgroundColor: "#007bff",
   color: "white",
   border: "none",
-  borderRadius: "0.5rem",
+  borderRadius: isMobile ? "0.4rem" : "0.5rem",
   cursor: "pointer",
-  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
-};
+  fontSize: isMobile ? "0.85rem" : "clamp(0.9rem, 1.5vw, 1rem)",
+  fontWeight: "500",
+  // 모바일에서 터치 최적화
+  ...(isMobile && {
+    minHeight: "44px",
+    touchAction: "manipulation",
+  }),
+});
 
 export default MyPage;

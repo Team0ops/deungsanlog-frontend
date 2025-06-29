@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { getToken } from "shared/lib/auth";
 import axiosInstance from "shared/lib/axiosInstance";
 
-const FavoriteSection = ({ userId }) => {
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const FavoriteSection = ({ userId, isMobile = false }) => {
   const [favoriteMountains, setFavoriteMountains] = useState([]);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -235,9 +236,9 @@ const FavoriteSection = ({ userId }) => {
 
   if (loading) {
     return (
-      <section style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>⭐ 즐겨찾기 관리</h2>
-        <div style={loadingStyle}>
+      <section style={getSectionStyle(isMobile)}>
+        <h2 style={getSectionTitleStyle(isMobile)}>⭐ 즐겨찾기 관리</h2>
+        <div style={getLoadingStyle(isMobile)}>
           <span>⭐ 즐겨찾기를 불러오는 중...</span>
         </div>
       </section>
@@ -246,21 +247,13 @@ const FavoriteSection = ({ userId }) => {
 
   if (error) {
     return (
-      <section style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>⭐ 즐겨찾기 관리</h2>
-        <div style={errorStyle}>
+      <section style={getSectionStyle(isMobile)}>
+        <h2 style={getSectionTitleStyle(isMobile)}>⭐ 즐겨찾기 관리</h2>
+        <div style={getErrorStyle(isMobile)}>
           <span>❌ {error}</span>
           <button
             onClick={() => window.location.reload()}
-            style={{
-              marginTop: "1rem",
-              padding: "0.5rem 1rem",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "0.3rem",
-              cursor: "pointer",
-            }}
+            style={getRetryButtonStyle(isMobile)}
           >
             🔄 다시 시도
           </button>
@@ -270,19 +263,21 @@ const FavoriteSection = ({ userId }) => {
   }
 
   return (
-    <section style={sectionStyle}>
-      <div style={headerStyle}>
-        <h2 style={sectionTitleStyle}>⭐ 즐겨찾기 관리</h2>
-        <div style={countBadgeStyle}>총 {favoriteCount}개의 산</div>
+    <section style={getSectionStyle(isMobile)}>
+      <div style={getHeaderStyle(isMobile)}>
+        <h2 style={getSectionTitleStyle(isMobile)}>⭐ 즐겨찾기 관리</h2>
+        <div style={getCountBadgeStyle(isMobile)}>
+          총 {favoriteCount}개의 산
+        </div>
       </div>
 
       {favoriteMountains.length > 0 ? (
-        <div style={favoritesListStyle}>
+        <div style={getFavoritesListStyle(isMobile)}>
           {favoriteMountains.map((mountain) => (
             <div
               key={mountain.id}
               style={{
-                ...favoriteItemStyle,
+                ...getFavoriteItemStyle(isMobile),
                 transform:
                   hoveredCard === mountain.id
                     ? "translateY(-2px)"
@@ -300,24 +295,24 @@ const FavoriteSection = ({ userId }) => {
               {/* ✅ 산 정보 - 클릭 가능 */}
               <div
                 style={{
-                  ...mountainInfoClickableStyle,
+                  ...getMountainInfoClickableStyle(isMobile),
                   backgroundColor: "transparent",
                   cursor: "default",
                 }}
               >
                 <h3
                   style={{
-                    ...mountainNameClickableStyle,
+                    ...getMountainNameClickableStyle(isMobile),
                     color: hoveredCard === mountain.id ? "#4c7559" : "#2c3e50",
                   }}
                 >
                   {mountain.name}
                 </h3>
 
-                <div style={mountainDetailsStyle}>
+                <div style={getMountainDetailsStyle(isMobile)}>
                   <span
                     style={{
-                      ...detailItemStyle,
+                      ...getDetailItemStyle(isMobile),
                       backgroundColor:
                         hoveredCard === mountain.id ? "#e9ecef" : "#f8f9fa",
                       transform:
@@ -330,7 +325,7 @@ const FavoriteSection = ({ userId }) => {
                   </span>
                   <span
                     style={{
-                      ...detailItemStyle,
+                      ...getDetailItemStyle(isMobile),
                       backgroundColor:
                         hoveredCard === mountain.id ? "#e9ecef" : "#f8f9fa",
                       transform:
@@ -346,7 +341,7 @@ const FavoriteSection = ({ userId }) => {
                   {mountain.fireRiskInfo && !mountain.fireRiskInfo.error && (
                     <span
                       style={{
-                        ...detailItemStyle,
+                        ...getDetailItemStyle(isMobile),
                         backgroundColor: getFireRiskColor(
                           mountain.fireRiskInfo.riskLevelCode
                         ),
@@ -364,9 +359,7 @@ const FavoriteSection = ({ userId }) => {
               </div>
 
               {/* 버튼 영역 */}
-              <div
-                style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}
-              >
+              <div style={getButtonContainerStyle(isMobile)}>
                 {/* 상세보기 버튼 */}
                 <button
                   onClick={(e) => {
@@ -375,30 +368,10 @@ const FavoriteSection = ({ userId }) => {
                   }}
                   onMouseEnter={() => setHoveredButton(`detail-${mountain.id}`)}
                   onMouseLeave={() => setHoveredButton(null)}
-                  style={{
-                    backgroundColor:
-                      hoveredButton === `detail-${mountain.id}`
-                        ? "#4c7559"
-                        : "#b1ccbd",
-                    color: "#133313",
-                    border: "none",
-                    borderRadius: "0.8rem",
-                    padding:
-                      "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.2rem)",
-                    fontSize: "clamp(0.8rem, 1.4vw, 0.9rem)",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    minWidth: "clamp(4rem, 7vw, 5rem)",
-                    boxShadow:
-                      hoveredButton === `detail-${mountain.id}`
-                        ? "0 4px 8px rgba(76, 117, 89, 0.3)"
-                        : "0 2px 4px rgba(108, 117, 125, 0.2)",
-                    transform:
-                      hoveredButton === `detail-${mountain.id}`
-                        ? "scale(1.05)"
-                        : "scale(1)",
-                  }}
+                  style={getDetailButtonStyle(
+                    isMobile,
+                    hoveredButton === `detail-${mountain.id}`
+                  )}
                 >
                   상세보기
                 </button>
@@ -412,22 +385,11 @@ const FavoriteSection = ({ userId }) => {
                   disabled={removingId === mountain.id}
                   onMouseEnter={() => setHoveredButton(`delete-${mountain.id}`)}
                   onMouseLeave={() => setHoveredButton(null)}
-                  style={{
-                    ...removeButtonStyle,
-                    opacity: removingId === mountain.id ? 0.6 : 1,
-                    backgroundColor:
-                      hoveredButton === `delete-${mountain.id}`
-                        ? "#ff5252"
-                        : "#ff6b6b",
-                    transform:
-                      hoveredButton === `delete-${mountain.id}`
-                        ? "scale(1.05)"
-                        : "scale(1)",
-                    boxShadow:
-                      hoveredButton === `delete-${mountain.id}`
-                        ? "0 4px 8px rgba(255, 107, 107, 0.3)"
-                        : "0 2px 4px rgba(255, 107, 107, 0.2)",
-                  }}
+                  style={getRemoveButtonStyle(
+                    isMobile,
+                    hoveredButton === `delete-${mountain.id}`,
+                    removingId === mountain.id
+                  )}
                 >
                   {removingId === mountain.id ? "⏳" : "삭제"}
                 </button>
@@ -436,15 +398,17 @@ const FavoriteSection = ({ userId }) => {
           ))}
         </div>
       ) : (
-        <div style={emptyStateStyle}>
-          <div style={emptyIconStyle}>⭐</div>
-          <h3 style={emptyTitleStyle}>아직 즐겨찾기한 산이 없습니다</h3>
-          <p style={emptyDescStyle}>
+        <div style={getEmptyStateStyle(isMobile)}>
+          <div style={getEmptyIconStyle(isMobile)}>⭐</div>
+          <h3 style={getEmptyTitleStyle(isMobile)}>
+            아직 즐겨찾기한 산이 없습니다
+          </h3>
+          <p style={getEmptyDescStyle(isMobile)}>
             마음에 드는 산을 찾아서 즐겨찾기에 추가해보세요!
           </p>
           <button
             onClick={() => (window.location.href = "/mountain")}
-            style={emptyActionButtonStyle}
+            style={getEmptyActionButtonStyle(isMobile)}
           >
             🏔️ 산 둘러보기
           </button>
@@ -453,14 +417,14 @@ const FavoriteSection = ({ userId }) => {
 
       {/* 즐겨찾기 통계 */}
       {favoriteCount > 0 && favoriteMountains.length > 0 && (
-        <div style={statsStyle}>
-          <div style={statItemStyle}>
-            <span style={statLabelStyle}>총 즐겨찾기</span>
-            <span style={statValueStyle}>{favoriteCount}개</span>
+        <div style={getStatsStyle(isMobile)}>
+          <div style={getStatItemStyle(isMobile)}>
+            <span style={getStatLabelStyle(isMobile)}>총 즐겨찾기</span>
+            <span style={getStatValueStyle(isMobile)}>{favoriteCount}개</span>
           </div>
-          <div style={statItemStyle}>
-            <span style={statLabelStyle}>평균 고도</span>
-            <span style={statValueStyle}>
+          <div style={getStatItemStyle(isMobile)}>
+            <span style={getStatLabelStyle(isMobile)}>평균 고도</span>
+            <span style={getStatValueStyle(isMobile)}>
               {Math.round(
                 favoriteMountains.reduce((sum, m) => sum + m.elevation, 0) /
                   favoriteMountains.length
@@ -474,54 +438,59 @@ const FavoriteSection = ({ userId }) => {
   );
 };
 
-// ============================================
-// ✅ 스타일 정의
-// ============================================
-
-const sectionStyle = {
+// 모바일 대응 스타일 함수들
+const getSectionStyle = (isMobile) => ({
   backgroundColor: "#ffffff",
-  borderRadius: "1rem",
-  padding: "clamp(1.5rem, 3vw, 2rem)",
-  boxShadow: "0 0.2rem 1rem rgba(0,0,0,0.1)",
+  borderRadius: isMobile ? "0.8rem" : "1rem",
+  padding: isMobile ? "1.2rem" : "clamp(1.5rem, 3vw, 2rem)",
+  boxShadow: isMobile
+    ? "0 0.1rem 0.5rem rgba(0,0,0,0.08)"
+    : "0 0.2rem 1rem rgba(0,0,0,0.1)",
   border: "0.1rem solid #e9ecef",
   position: "relative",
-};
+});
 
-const headerStyle = {
+const getHeaderStyle = (isMobile) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  marginBottom: "clamp(1.5rem, 3vw, 2rem)",
+  marginBottom: isMobile ? "1.2rem" : "clamp(1.5rem, 3vw, 2rem)",
   flexWrap: "wrap",
-  gap: "clamp(0.8rem, 1.5vw, 1rem)",
-};
+  gap: isMobile ? "0.6rem" : "clamp(0.8rem, 1.5vw, 1rem)",
+  ...(isMobile && {
+    flexDirection: "column",
+    alignItems: "flex-start",
+  }),
+});
 
-const sectionTitleStyle = {
-  fontSize: "clamp(1.3rem, 2.5vw, 1.5rem)",
+const getSectionTitleStyle = (isMobile) => ({
+  fontSize: isMobile ? "1.2rem" : "clamp(1.3rem, 2.5vw, 1.5rem)",
   fontWeight: "600",
   color: "#2c3e50",
   margin: 0,
-};
+});
 
-const countBadgeStyle = {
+const getCountBadgeStyle = (isMobile) => ({
   backgroundColor: "#d5e9de",
   color: "#1a471a",
-  padding: "clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1rem)",
+  padding: isMobile
+    ? "0.3rem 0.6rem"
+    : "clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1rem)",
   borderRadius: "1.5rem",
-  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+  fontSize: isMobile ? "0.75rem" : "clamp(0.8rem, 1.3vw, 0.9rem)",
   fontWeight: "600",
-};
+});
 
-const favoritesListStyle = {
+const getFavoritesListStyle = (isMobile) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "clamp(0.8rem, 1.5vw, 1rem)",
-};
+  gap: isMobile ? "0.6rem" : "clamp(0.8rem, 1.5vw, 1rem)",
+});
 
-const favoriteItemStyle = {
+const getFavoriteItemStyle = (isMobile) => ({
   backgroundColor: "#ffffff",
-  borderRadius: "1rem",
-  padding: "clamp(1.2rem, 2.5vw, 1.8rem)",
+  borderRadius: isMobile ? "0.8rem" : "1rem",
+  padding: isMobile ? "1rem" : "clamp(1.2rem, 2.5vw, 1.8rem)",
   border: "1px solid #e8f5e8",
   display: "flex",
   justifyContent: "space-between",
@@ -531,141 +500,220 @@ const favoriteItemStyle = {
   position: "relative",
   overflow: "hidden",
   cursor: "default",
-};
+  ...(isMobile && {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: "0.8rem",
+  }),
+});
 
-const mountainInfoClickableStyle = {
+const getMountainInfoClickableStyle = (isMobile) => ({
   flex: 1,
   cursor: "pointer",
   display: "flex",
   flexDirection: "column",
-  gap: "clamp(0.5rem, 1vw, 0.8rem)",
-  padding: "clamp(0.3rem, 0.6vw, 0.5rem)",
-  borderRadius: "0.8rem",
+  gap: isMobile ? "0.4rem" : "clamp(0.5rem, 1vw, 0.8rem)",
+  padding: isMobile ? "0.2rem" : "clamp(0.3rem, 0.6vw, 0.5rem)",
+  borderRadius: isMobile ? "0.6rem" : "0.8rem",
   transition: "all 0.2s ease",
-};
+});
 
-const mountainNameClickableStyle = {
-  fontSize: "clamp(1.2rem, 2.2vw, 1.4rem)",
+const getMountainNameClickableStyle = (isMobile) => ({
+  fontSize: isMobile ? "1.1rem" : "clamp(1.2rem, 2.2vw, 1.4rem)",
   fontWeight: "700",
   color: "#2c3e50",
   margin: 0,
   transition: "color 0.2s ease",
-};
+});
 
-const mountainDetailsStyle = {
+const getMountainDetailsStyle = (isMobile) => ({
   display: "flex",
-  gap: "clamp(0.6rem, 1.2vw, 0.8rem)",
+  gap: isMobile ? "0.4rem" : "clamp(0.6rem, 1.2vw, 0.8rem)",
   flexWrap: "wrap",
   alignItems: "center",
-};
+});
 
-const detailItemStyle = {
-  fontSize: "clamp(0.8rem, 1.4vw, 0.9rem)",
+const getDetailItemStyle = (isMobile) => ({
+  fontSize: isMobile ? "0.75rem" : "clamp(0.8rem, 1.4vw, 0.9rem)",
   color: "#5a6c7d",
   backgroundColor: "#f8f9fa",
-  padding: "clamp(0.3rem, 0.6vw, 0.4rem) clamp(0.6rem, 1.2vw, 0.8rem)",
-  borderRadius: "0.6rem",
+  padding: isMobile
+    ? "0.2rem 0.4rem"
+    : "clamp(0.3rem, 0.6vw, 0.4rem) clamp(0.6rem, 1.2vw, 0.8rem)",
+  borderRadius: isMobile ? "0.4rem" : "0.6rem",
   border: "1px solid #e9ecef",
   whiteSpace: "nowrap",
   fontWeight: "500",
   transition: "all 0.2s ease",
-};
+});
 
-const removeButtonStyle = {
-  backgroundColor: "#ff6b6b",
-  color: "#ffffff",
+const getButtonContainerStyle = (isMobile) => ({
+  display: "flex",
+  gap: isMobile ? "0.5rem" : "0.8rem",
+  alignItems: "center",
+  ...(isMobile && {
+    justifyContent: "center",
+  }),
+});
+
+const getDetailButtonStyle = (isMobile, isHovered) => ({
+  backgroundColor: isHovered ? "#4c7559" : "#b1ccbd",
+  color: "#133313",
   border: "none",
-  borderRadius: "0.8rem",
-  padding: "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.2rem)",
-  fontSize: "clamp(0.8rem, 1.4vw, 0.9rem)",
+  borderRadius: isMobile ? "0.6rem" : "0.8rem",
+  padding: isMobile
+    ? "0.6rem 0.8rem"
+    : "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.2rem)",
+  fontSize: isMobile ? "0.75rem" : "clamp(0.8rem, 1.4vw, 0.9rem)",
   fontWeight: "600",
   cursor: "pointer",
   transition: "all 0.3s ease",
-  minWidth: "clamp(3.5rem, 6vw, 4.5rem)",
-  boxShadow: "0 2px 4px rgba(255, 107, 107, 0.2)",
-};
+  minWidth: isMobile ? "4rem" : "clamp(4rem, 7vw, 5rem)",
+  boxShadow: isHovered
+    ? "0 4px 8px rgba(76, 117, 89, 0.3)"
+    : "0 2px 4px rgba(108, 117, 125, 0.2)",
+  transform: isHovered ? "scale(1.05)" : "scale(1)",
+  // 모바일에서 터치 최적화
+  ...(isMobile && {
+    minHeight: "44px",
+    touchAction: "manipulation",
+  }),
+});
 
-const emptyStateStyle = {
+const getRemoveButtonStyle = (isMobile, isHovered, isRemoving) => ({
+  backgroundColor: isHovered ? "#ff5252" : "#ff6b6b",
+  color: "#ffffff",
+  border: "none",
+  borderRadius: isMobile ? "0.6rem" : "0.8rem",
+  padding: isMobile
+    ? "0.6rem 0.8rem"
+    : "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.2rem)",
+  fontSize: isMobile ? "0.75rem" : "clamp(0.8rem, 1.4vw, 0.9rem)",
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+  minWidth: isMobile ? "3.5rem" : "clamp(3.5rem, 6vw, 4.5rem)",
+  boxShadow: isHovered
+    ? "0 4px 8px rgba(255, 107, 107, 0.3)"
+    : "0 2px 4px rgba(255, 107, 107, 0.2)",
+  transform: isHovered ? "scale(1.05)" : "scale(1)",
+  opacity: isRemoving ? 0.6 : 1,
+  // 모바일에서 터치 최적화
+  ...(isMobile && {
+    minHeight: "44px",
+    touchAction: "manipulation",
+  }),
+});
+
+const getEmptyStateStyle = (isMobile) => ({
   textAlign: "center",
-  padding: "clamp(3rem, 6vw, 4rem) clamp(1rem, 2vw, 2rem)",
+  padding: isMobile
+    ? "2rem 1rem"
+    : "clamp(3rem, 6vw, 4rem) clamp(1rem, 2vw, 2rem)",
   color: "#6c757d",
-};
+});
 
-const emptyIconStyle = {
-  fontSize: "clamp(4rem, 8vw, 6rem)",
-  marginBottom: "clamp(1rem, 2vw, 1.5rem)",
-};
+const getEmptyIconStyle = (isMobile) => ({
+  fontSize: isMobile ? "3rem" : "clamp(4rem, 8vw, 6rem)",
+  marginBottom: isMobile ? "0.8rem" : "clamp(1rem, 2vw, 1.5rem)",
+});
 
-const emptyTitleStyle = {
-  fontSize: "clamp(1.2rem, 2.2vw, 1.4rem)",
+const getEmptyTitleStyle = (isMobile) => ({
+  fontSize: isMobile ? "1.1rem" : "clamp(1.2rem, 2.2vw, 1.4rem)",
   fontWeight: "600",
   color: "#495057",
-  marginBottom: "clamp(0.8rem, 1.5vw, 1rem)",
-};
+  marginBottom: isMobile ? "0.6rem" : "clamp(0.8rem, 1.5vw, 1rem)",
+});
 
-const emptyDescStyle = {
-  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
+const getEmptyDescStyle = (isMobile) => ({
+  fontSize: isMobile ? "0.85rem" : "clamp(0.9rem, 1.5vw, 1rem)",
   lineHeight: 1.5,
-  marginBottom: "clamp(1.5rem, 3vw, 2rem)",
-};
+  marginBottom: isMobile ? "1.2rem" : "clamp(1.5rem, 3vw, 2rem)",
+});
 
-const emptyActionButtonStyle = {
+const getEmptyActionButtonStyle = (isMobile) => ({
   backgroundColor: "#28a745",
   color: "#ffffff",
-  padding: "clamp(0.8rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2rem)",
+  padding: isMobile
+    ? "0.7rem 1.2rem"
+    : "clamp(0.8rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2rem)",
   border: "none",
-  borderRadius: "0.5rem",
-  fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
+  borderRadius: isMobile ? "0.4rem" : "0.5rem",
+  fontSize: isMobile ? "0.85rem" : "clamp(0.9rem, 1.5vw, 1rem)",
   fontWeight: "600",
   cursor: "pointer",
   transition: "all 0.3s ease",
-};
+  // 모바일에서 터치 최적화
+  ...(isMobile && {
+    minHeight: "44px",
+    touchAction: "manipulation",
+  }),
+});
 
-const statsStyle = {
-  marginTop: "clamp(1.5rem, 3vw, 2rem)",
+const getStatsStyle = (isMobile) => ({
+  marginTop: isMobile ? "1.2rem" : "clamp(1.5rem, 3vw, 2rem)",
   display: "flex",
-  gap: "clamp(1rem, 2vw, 1.5rem)",
+  gap: isMobile ? "0.8rem" : "clamp(1rem, 2vw, 1.5rem)",
   justifyContent: "center",
   flexWrap: "wrap",
-};
+});
 
-const statItemStyle = {
+const getStatItemStyle = (isMobile) => ({
   backgroundColor: "#f8f9fa",
-  padding: "clamp(0.8rem, 1.5vw, 1rem) clamp(1.2rem, 2.4vw, 1.5rem)",
-  borderRadius: "0.8rem",
+  padding: isMobile
+    ? "0.6rem 0.8rem"
+    : "clamp(0.8rem, 1.5vw, 1rem) clamp(1.2rem, 2.4vw, 1.5rem)",
+  borderRadius: isMobile ? "0.6rem" : "0.8rem",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   gap: "0.3rem",
   border: "0.1rem solid #e9ecef",
-};
+});
 
-const statLabelStyle = {
-  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+const getStatLabelStyle = (isMobile) => ({
+  fontSize: isMobile ? "0.75rem" : "clamp(0.8rem, 1.3vw, 0.9rem)",
   color: "#6c757d",
-};
+});
 
-const statValueStyle = {
-  fontSize: "clamp(1.1rem, 2vw, 1.3rem)",
+const getStatValueStyle = (isMobile) => ({
+  fontSize: isMobile ? "1rem" : "clamp(1.1rem, 2vw, 1.3rem)",
   fontWeight: "700",
   color: "#2c3e50",
-};
+});
 
-const loadingStyle = {
+const getLoadingStyle = (isMobile) => ({
   textAlign: "center",
-  padding: "clamp(2rem, 4vw, 3rem)",
+  padding: isMobile ? "1.5rem" : "clamp(2rem, 4vw, 3rem)",
   color: "#6c757d",
-  fontSize: "clamp(1rem, 1.8vw, 1.1rem)",
-};
+  fontSize: isMobile ? "0.9rem" : "clamp(1rem, 1.8vw, 1.1rem)",
+});
 
-const errorStyle = {
+const getErrorStyle = (isMobile) => ({
   textAlign: "center",
-  padding: "clamp(2rem, 4vw, 3rem)",
+  padding: isMobile ? "1.5rem" : "clamp(2rem, 4vw, 3rem)",
   color: "#e74c3c",
-  fontSize: "clamp(1rem, 1.8vw, 1.1rem)",
+  fontSize: isMobile ? "0.9rem" : "clamp(1rem, 1.8vw, 1.1rem)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-};
+  gap: isMobile ? "0.8rem" : "1rem",
+});
+
+const getRetryButtonStyle = (isMobile) => ({
+  marginTop: isMobile ? "0.8rem" : "1rem",
+  padding: isMobile ? "0.5rem 0.8rem" : "0.5rem 1rem",
+  backgroundColor: "#007bff",
+  color: "white",
+  border: "none",
+  borderRadius: isMobile ? "0.3rem" : "0.3rem",
+  cursor: "pointer",
+  fontSize: isMobile ? "0.8rem" : "0.9rem",
+  // 모바일에서 터치 최적화
+  ...(isMobile && {
+    minHeight: "44px",
+    touchAction: "manipulation",
+  }),
+});
 
 export default FavoriteSection;
