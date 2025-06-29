@@ -84,6 +84,17 @@ const LogViewPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // iOS Safari 디버깅
+  useEffect(() => {
+    const isIOS =
+      navigator.userAgent.includes("iPhone") ||
+      navigator.userAgent.includes("iPad");
+    if (isIOS) {
+      console.log("📱 iOS Safari 감지됨 (기록 페이지)");
+      console.log("📱 온라인 상태:", navigator.onLine);
+    }
+  }, []);
+
   useEffect(() => {
     const userInfo = getUserInfo();
     if (userInfo?.userId) {
@@ -93,6 +104,11 @@ const LogViewPage = () => {
 
   useEffect(() => {
     if (!userId) return;
+
+    const isIOS =
+      navigator.userAgent.includes("iPhone") ||
+      navigator.userAgent.includes("iPad");
+    console.log("🌐 기록 데이터 요청 시작 (userId:", userId, ")");
 
     axiosInstance
       .get(`/record-service/get`, {
@@ -104,6 +120,7 @@ const LogViewPage = () => {
       })
       .then((res) => {
         const { content, totalPages } = res.data;
+        console.log("✅ 기록 데이터 성공:", content.length, "개");
 
         const sorted = [...content].sort((a, b) => {
           return sortOption === "latest"
@@ -114,7 +131,17 @@ const LogViewPage = () => {
         setRecords(sorted);
         setTotalPages(totalPages);
       })
-      .catch((err) => console.error("기록 불러오기 실패", err));
+      .catch((err) => {
+        console.error("❌ 기록 데이터 실패:", err);
+        if (isIOS) {
+          console.log("📱 iOS Safari 오류 상세:", {
+            message: err.message,
+            status: err.response?.status,
+            statusText: err.response?.statusText,
+            data: err.response?.data,
+          });
+        }
+      });
   }, [userId, sortOption, page, isMobile]);
 
   if (!userId) return <NotLoggedIn />;

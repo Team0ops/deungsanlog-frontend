@@ -253,15 +253,25 @@ const LogWriteForm = ({
           }
           sx={{
             width: "100%",
-            fontSize: isMobile ? "1rem" : "1.1rem",
+            fontSize: isMobile ? "0.95rem" : "1.1rem",
+            ...(isMobile && {
+              touchAction: "manipulation",
+              "&::-webkit-calendar-picker-indicator": {
+                width: "20px",
+                height: "20px",
+                cursor: "pointer",
+              },
+            }),
           }}
         />
         {futureDateError && (
           <div
             style={{
               color: "#dc3545",
-              fontSize: "0.92rem",
-              marginLeft: "0.2rem",
+              fontSize: isMobile ? "0.85rem" : "0.92rem",
+              marginLeft: isMobile ? "0.1rem" : "0.2rem",
+              marginTop: isMobile ? "-0.5rem" : "0",
+              marginBottom: isMobile ? "0.5rem" : "0",
             }}
           >
             미래의 날짜는 선택할 수 없습니다.

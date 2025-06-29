@@ -1,13 +1,19 @@
-import React from 'react';
-import NotificationItem from './NotificationItem';
+import React from "react";
+import NotificationItem from "./NotificationItem";
 
-const NotificationList = ({ notifications, onNotificationClick, onMarkAsRead, onDeleteNotification }) => {
+const NotificationList = ({
+  notifications,
+  onNotificationClick,
+  onMarkAsRead,
+  onDeleteNotification,
+  isMobile = false,
+}) => {
   if (!notifications || notifications.length === 0) {
     return null;
   }
 
   return (
-    <div style={listContainerStyle}>
+    <div style={getListContainerStyle(isMobile)}>
       {notifications.map((notification) => (
         <NotificationItem
           key={notification.id}
@@ -15,16 +21,17 @@ const NotificationList = ({ notifications, onNotificationClick, onMarkAsRead, on
           onClick={() => onNotificationClick(notification)}
           onMarkAsRead={() => onMarkAsRead(notification.id)}
           onDelete={() => onDeleteNotification(notification.id)}
+          isMobile={isMobile}
         />
       ))}
     </div>
   );
 };
 
-const listContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.5rem',
-};
+const getListContainerStyle = (isMobile) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: isMobile ? "0.3rem" : "0.5rem",
+});
 
 export default NotificationList;
