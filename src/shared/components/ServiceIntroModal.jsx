@@ -157,7 +157,7 @@ const ServiceIntroModal = ({ isOpen, onClose }) => {
           backgroundImage: "url('/images/back_paper.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
+          backgroundRepeat: "repeat",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

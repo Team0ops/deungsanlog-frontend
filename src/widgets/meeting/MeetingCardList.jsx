@@ -14,11 +14,6 @@ const MeetingCardList = ({
   return (
     <Box
       sx={{
-        flex: 1,
-        overflowY: "auto",
-        overflowX: "hidden",
-        minHeight: 0,
-        paddingRight: "2px",
         position: "relative",
       }}
     >
@@ -86,7 +81,7 @@ const MeetingCardList = ({
           display="flex"
           justifyContent="center"
           mt={isMobile ? 1.5 : 2}
-          pb={isMobile ? 1 : 2}
+          pb={isMobile ? 3 : 2}
         >
           <Pagination
             count={totalPages}

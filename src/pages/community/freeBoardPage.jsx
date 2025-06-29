@@ -169,14 +169,7 @@ const FreeBoardPage = () => {
         }}
       >
         {/* 헤더 고정 */}
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            background: "transparent",
-          }}
-        >
+        <div>
           <FreeBoardHeader
             sortOption={sortOption}
             setSortOption={setSortOption}
@@ -198,15 +191,11 @@ const FreeBoardPage = () => {
             size={10}
           />
         </div>
-        {/* 카드 영역 스크롤 */}
+        {/* 카드 영역 */}
         <div
           ref={cardAreaRef}
           style={{
-            flex: 1,
-            overflowY: "auto",
-            overflowX: "hidden",
-            minHeight: 0,
-            paddingRight: "2px",
+            width: "100%",
             position: "relative",
           }}
         >

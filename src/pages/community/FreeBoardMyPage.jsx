@@ -102,10 +102,10 @@ const FreeBoardMyPage = () => {
         backgroundColor: "transparent",
         borderRadius: "20px",
         padding: isMobile
-          ? "clamp(0.8rem, 3vw, 1rem)"
+          ? "clamp(0.8rem, 3vw, 1rem) clamp(0.8rem, 3vw, 1rem) clamp(3rem, 8vw, 4rem) clamp(0.8rem, 3vw, 1rem)"
           : "clamp(1rem, 4vw, 1.5rem)",
         position: "relative",
-        height: "calc(100vh - 40px)",
+        height: "auto",
       }}
     >
       <div
@@ -116,7 +116,7 @@ const FreeBoardMyPage = () => {
           display: "flex",
           flexDirection: "column",
           gap: isMobile ? "1rem" : "1.2rem",
-          height: "100%",
+          height: "auto",
           position: "relative",
         }}
       >
@@ -139,8 +139,6 @@ const FreeBoardMyPage = () => {
             color: "#aaa",
             fontSize: isMobile ? "1rem" : "1.1rem",
             p: isMobile ? 2 : 3,
-            overflowY: "auto",
-            maxHeight: "calc(100vh - 180px)",
           }}
         >
           {loading ? (

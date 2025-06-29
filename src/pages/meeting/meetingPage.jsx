@@ -33,10 +33,10 @@ const MeetingPage = () => {
         backgroundColor: "transparent",
         borderRadius: "20px",
         padding: isMobile
-          ? "clamp(0.8rem, 3vw, 1rem)"
+          ? "clamp(0.8rem, 3vw, 1rem) clamp(0.8rem, 3vw, 1rem) clamp(3rem, 8vw, 4rem) clamp(0.8rem, 3vw, 1rem)"
           : "clamp(1rem, 4vw, 1.5rem)",
         position: "relative",
-        height: "calc(100vh - 40px)",
+        height: "auto",
       }}
     >
       <div
@@ -47,7 +47,7 @@ const MeetingPage = () => {
           display: "flex",
           flexDirection: "column",
           gap: isMobile ? "1rem" : "1.2rem",
-          height: "100%",
+          height: "auto",
         }}
       >
         <MeetingBoardHeader
