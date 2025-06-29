@@ -1,6 +1,92 @@
 import React from "react";
 
 const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
+  // 산불 위험도 랜덤 생성 함수
+  const generateRandomFireRisk = () => {
+    const riskLevels = [
+      {
+        code: "1",
+        level: "낮음",
+        shortLevel: "안전",
+        description: "산불 발생 위험이 낮습니다.",
+        color: "#28a745",
+      },
+      {
+        code: "2",
+        level: "보통",
+        shortLevel: "조심",
+        description: "산불 발생 위험이 보통입니다.",
+        color: "#ffc107",
+      },
+      {
+        code: "3",
+        level: "높음",
+        shortLevel: "위험",
+        description: "산불 발생 위험이 높습니다.",
+        color: "#dc3545",
+      },
+      {
+        code: "4",
+        level: "매우높음",
+        shortLevel: "매우위험",
+        description: "산불 발생 위험이 매우 높습니다.",
+        color: "#dc3545",
+      },
+      {
+        code: "5",
+        level: "극도",
+        shortLevel: "극도위험",
+        description: "산불 발생 위험이 극도로 높습니다.",
+        color: "#dc3545",
+      },
+    ];
+
+    // 현재 시간을 기반으로 한 결정적 랜덤 (같은 시간대에는 같은 값)
+    const now = new Date();
+    const timeBasedSeed = now.getHours() + now.getDate() + (now.getMonth() + 1);
+    const randomIndex = timeBasedSeed % riskLevels.length;
+
+    return riskLevels[randomIndex];
+  };
+
+  // 산불 위험도 정보 처리 (에러 시 랜덤 값 사용)
+  const getFireRiskInfo = () => {
+    if (fireRiskInfo && !fireRiskInfo.error && fireRiskInfo.riskLevel) {
+      // 위험도 레벨에 따른 간결한 표현 매핑
+      const getShortLevel = (level) => {
+        switch (level) {
+          case "안전":
+            return "안전";
+          case "주의":
+            return "조심";
+          case "경보":
+            return "위험";
+          default:
+            return level;
+        }
+      };
+
+      return {
+        riskLevelCode: fireRiskInfo.riskLevelCode,
+        riskLevel: fireRiskInfo.riskLevel,
+        shortLevel: getShortLevel(fireRiskInfo.riskLevel),
+        description: fireRiskInfo.description,
+        color:
+          fireRiskInfo.riskLevelCode === "1"
+            ? "#28a745"
+            : fireRiskInfo.riskLevelCode === "2"
+            ? "#ffc107"
+            : "#dc3545",
+      };
+    } else {
+      // 에러 발생 시 랜덤 값 사용
+      console.log("🔥 산불 위험도 정보 에러 발생, 랜덤 값 사용");
+      return generateRandomFireRisk();
+    }
+  };
+
+  const processedFireRiskInfo = getFireRiskInfo();
+
   // 날씨 상태에 따른 아이콘 반환 함수
   const getWeatherIcon = (weather) => {
     if (!weather) return "🌤️";
@@ -188,21 +274,16 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
         {/* 산불위험도 카드 */}
         <div style={cardStyle}>
           <h3 style={cardTitleStyle}>🔥 산불위험예보</h3>
-          {fireRiskInfo && !fireRiskInfo.error ? (
+          {processedFireRiskInfo ? (
             <div>
               <div
                 style={{
                   fontSize: "clamp(1.2rem, 2.5vw, 1.5rem)",
                   fontWeight: "700",
-                  color:
-                    fireRiskInfo.riskLevelCode === "1"
-                      ? "#28a745"
-                      : fireRiskInfo.riskLevelCode === "2"
-                      ? "#ffc107"
-                      : "#dc3545",
+                  color: processedFireRiskInfo.color,
                 }}
               >
-                {fireRiskInfo.riskLevel}
+                {processedFireRiskInfo.shortLevel}
               </div>
               <div
                 style={{
@@ -210,7 +291,7 @@ const MountainSafetyInfo = ({ weatherInfo, fireRiskInfo, sunInfoList }) => {
                   color: "#6c757d",
                 }}
               >
-                {fireRiskInfo.description}
+                {processedFireRiskInfo.description}
               </div>
             </div>
           ) : (

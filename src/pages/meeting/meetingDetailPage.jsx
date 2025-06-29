@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import MeetingMemberStatusBox from "widgets/meeting/status/MeetingMemberStatusBox";
 import SoftBadge from "shared/ui/SoftBadge";
+import NicknameWithBadge from "widgets/user/NicknameWithBadge";
 import useMeetingDeadline from "../../hooks/useMeetingDeadline";
 
 const MeetingDetailPage = () => {
@@ -236,6 +237,25 @@ const MeetingDetailPage = () => {
             }}
           >
             📍 집결지: {meeting.gatherLocation}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            mb={isMobile ? 1.5 : 2}
+            sx={{
+              fontSize: isMobile ? "0.95rem" : "1.02rem",
+              lineHeight: 1.4,
+            }}
+          >
+            👤 개설자:{" "}
+            <NicknameWithBadge
+              userId={meeting.hostUserId}
+              style={{
+                fontSize: isMobile ? "0.95rem" : "1.02rem",
+                color: "#4c7559",
+                fontWeight: 600,
+              }}
+            />
           </Typography>
         </Box>
 
