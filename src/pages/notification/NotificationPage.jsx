@@ -89,6 +89,7 @@ const NotificationPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [markingAllAsRead, setMarkingAllAsRead] = useState(false);
 
   /* ------------------------- 목록 조회 ------------------------- */
   const fetchNotifications = async (page = 0) => {
@@ -147,6 +148,31 @@ const NotificationPage = () => {
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (err) {
       console.error("❌ 읽음 처리 실패:", err);
+    }
+  };
+
+  /* ------------------------- 모든 알림 읽음 처리 ------------------------- */
+  const markAllAsRead = async () => {
+    if (unreadCount === 0) return;
+
+    setMarkingAllAsRead(true);
+
+    try {
+      const token = getToken();
+      await axiosInstance.put(
+        `${BASE}/read-all`,
+        {},
+        { headers: { "X-AUTH-TOKEN": token } }
+      );
+
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+      console.log("✅ 모든 알림 읽음 처리 완료");
+    } catch (err) {
+      console.error("❌ 모든 알림 읽음 처리 실패:", err);
+      alert("모든 알림 읽음 처리에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setMarkingAllAsRead(false);
     }
   };
 
@@ -220,9 +246,21 @@ const NotificationPage = () => {
       {/* 헤더 */}
       <div style={headerStyle}>
         <h1 style={titleStyle}>📱 알림</h1>
-        {unreadCount > 0 && (
-          <div style={badgeStyle}>{unreadCount}개의 읽지 않은 알림</div>
-        )}
+        <div style={headerRightStyle}>
+          {unreadCount > 0 && (
+            <div style={badgeStyle}>{unreadCount}개의 읽지 않은 알림</div>
+          )}
+          <button
+            onClick={markAllAsRead}
+            disabled={unreadCount === 0 || markingAllAsRead}
+            style={{
+              ...markAllReadButtonStyle,
+              opacity: unreadCount > 0 && !markingAllAsRead ? 1 : 0.5,
+            }}
+          >
+            {markingAllAsRead ? "처리 중..." : "한 번에 읽기"}
+          </button>
+        </div>
       </div>
 
       {/* 목록 */}
@@ -370,6 +408,25 @@ const pageBtn = {
   cursor: "pointer",
 };
 const pageInfo = { fontWeight: 600, color: "#666" };
+
+const headerRightStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: 16,
+};
+
+const markAllReadButtonStyle = {
+  background: "#43b95e",
+  color: "#fff",
+  outline: "none",
+  padding: "0.5rem 1rem",
+  borderRadius: 16,
+  fontSize: "clamp(0.8rem,1.3vw,0.9rem)",
+  fontWeight: 600,
+  border: "none",
+  cursor: "pointer",
+  transition: "background-color 0.2s ease",
+};
 
 /* ➜ 전역 keyframes 한 번만 삽입 */
 if (!document.getElementById("notification-spin-keyframe")) {

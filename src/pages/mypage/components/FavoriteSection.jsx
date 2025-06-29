@@ -8,6 +8,8 @@ const FavoriteSection = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [removingId, setRemovingId] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [hoveredButton, setHoveredButton] = useState(null);
 
   // 즐겨찾기 데이터 조회
   useEffect(() => {
@@ -19,7 +21,7 @@ const FavoriteSection = ({ userId }) => {
 
       try {
         console.log("⭐ 즐겨찾기 조회 시작:", userId);
-        
+
         const token = getToken();
         if (!token) {
           setError("로그인이 필요합니다.");
@@ -34,12 +36,12 @@ const FavoriteSection = ({ userId }) => {
           }),
           axiosInstance.get(`/user-service/${userId}/favorites/count`, {
             headers: { "X-AUTH-TOKEN": token },
-          })
+          }),
         ]);
 
         console.log("✅ 즐겨찾기 API 응답:", {
           ids: idsResponse.status,
-          count: countResponse.status
+          count: countResponse.status,
         });
 
         // ✅ axios는 .data로 접근
@@ -47,7 +49,10 @@ const FavoriteSection = ({ userId }) => {
         const count = countResponse.data.count || 0;
 
         setFavoriteCount(count);
-        console.log("📊 즐겨찾기 통계:", { count, mountainIds: mountainIds.length });
+        console.log("📊 즐겨찾기 통계:", {
+          count,
+          mountainIds: mountainIds.length,
+        });
 
         // 산 상세 정보 조회
         if (mountainIds.length > 0) {
@@ -55,18 +60,21 @@ const FavoriteSection = ({ userId }) => {
         } else {
           setFavoriteMountains([]);
         }
-
       } catch (error) {
         console.error("❌ 즐겨찾기 조회 오류:", error);
-        
+
         if (error.response) {
-          console.error('응답 오류:', error.response.status, error.response.data);
+          console.error(
+            "응답 오류:",
+            error.response.status,
+            error.response.data
+          );
           setError(`즐겨찾기 조회 실패: ${error.response.status}`);
         } else if (error.request) {
-          console.error('요청 오류:', error.request);
-          setError('서버에 연결할 수 없습니다.');
+          console.error("요청 오류:", error.request);
+          setError("서버에 연결할 수 없습니다.");
         } else {
-          console.error('설정 오류:', error.message);
+          console.error("설정 오류:", error.message);
           setError(`오류: ${error.message}`);
         }
       } finally {
@@ -85,46 +93,54 @@ const FavoriteSection = ({ userId }) => {
       const mountainPromises = mountainIds.map(async (mountainId) => {
         try {
           console.log(`🔍 1단계: mountainId로 기본 정보 조회 - ${mountainId}`);
-          
+
           // ✅ 1단계: mountainId로 기본 산 정보 조회
-          const basicResponse = await axiosInstance.get(`/mountain-service/${mountainId}`);
+          const basicResponse = await axiosInstance.get(
+            `/mountain-service/${mountainId}`
+          );
           const basicMountain = basicResponse.data;
-          
+
           if (!basicMountain || !basicMountain.name) {
             console.log(`❌ 기본 정보 없음: ${mountainId}`);
             return null;
           }
-          
+
           console.log(`✅ 1단계 성공: ${basicMountain.name}`);
-          console.log(`🔍 2단계: 실시간 정보 조회 시작 - ${basicMountain.name}`);
-          
+          console.log(
+            `🔍 2단계: 실시간 정보 조회 시작 - ${basicMountain.name}`
+          );
+
           // ✅ 2단계: 산 이름으로 실시간 정보 포함 상세 조회
-          const detailResponse = await axiosInstance.get("/mountain-service/search", {
-            params: { name: basicMountain.name }
-          });
-          
+          const detailResponse = await axiosInstance.get(
+            "/mountain-service/search",
+            {
+              params: { name: basicMountain.name },
+            }
+          );
+
           console.log(`✅ 2단계 성공: ${basicMountain.name} 실시간 정보 포함`);
-          console.log('실시간 정보:', {
+          console.log("실시간 정보:", {
             sunInfo: !!detailResponse.data.sunInfo,
-            fireRiskInfo: !!detailResponse.data.fireRiskInfo
+            fireRiskInfo: !!detailResponse.data.fireRiskInfo,
           });
-          
+
           // ✅ 기본 정보 + 실시간 정보 결합
           return {
             ...basicMountain,
             sunInfo: detailResponse.data.sunInfo,
             fireRiskInfo: detailResponse.data.fireRiskInfo,
             description: detailResponse.data.description,
-            weatherInfo: detailResponse.data.weatherInfo
+            weatherInfo: detailResponse.data.weatherInfo,
           };
-          
         } catch (error) {
           console.error(`❌ 산 정보 조회 실패: ${mountainId}`, error);
-          
+
           // ✅ fallback: 기본 정보만이라도 조회
           try {
             console.log(`🔄 fallback: 기본 정보만 조회 - ${mountainId}`);
-            const fallbackResponse = await axiosInstance.get(`/mountain-service/${mountainId}`);
+            const fallbackResponse = await axiosInstance.get(
+              `/mountain-service/${mountainId}`
+            );
             return fallbackResponse.data;
           } catch (fallbackError) {
             console.error(`❌ fallback도 실패: ${mountainId}`, fallbackError);
@@ -135,11 +151,14 @@ const FavoriteSection = ({ userId }) => {
 
       const mountains = await Promise.all(mountainPromises);
       const validMountains = mountains.filter((mountain) => mountain !== null);
-      
+
       console.log("✅ 산 정보 조회 완료:", validMountains.length, "개");
-      console.log("실시간 정보 포함된 산:", validMountains.filter(m => m.sunInfo || m.fireRiskInfo).length, "개");
+      console.log(
+        "실시간 정보 포함된 산:",
+        validMountains.filter((m) => m.sunInfo || m.fireRiskInfo).length,
+        "개"
+      );
       setFavoriteMountains(validMountains);
-      
     } catch (error) {
       console.error("❌ 산 정보 배치 조회 오류:", error);
     }
@@ -147,7 +166,9 @@ const FavoriteSection = ({ userId }) => {
 
   // ✅ 즐겨찾기 삭제 - axios 방식으로 수정
   const handleRemoveFavorite = async (mountainId, mountainName) => {
-    if (!window.confirm(`'${mountainName}'을(를) 즐겨찾기에서 삭제하시겠습니까?`)) {
+    if (
+      !window.confirm(`'${mountainName}'을(를) 즐겨찾기에서 삭제하시겠습니까?`)
+    ) {
       return;
     }
 
@@ -155,11 +176,18 @@ const FavoriteSection = ({ userId }) => {
     try {
       const token = getToken();
 
-      console.log("🗑️ 즐겨찾기 삭제 시도:", { userId, mountainId, mountainName });
-
-      await axiosInstance.delete(`/user-service/${userId}/favorites/${mountainId}`, {
-        headers: { "X-AUTH-TOKEN": token },
+      console.log("🗑️ 즐겨찾기 삭제 시도:", {
+        userId,
+        mountainId,
+        mountainName,
       });
+
+      await axiosInstance.delete(
+        `/user-service/${userId}/favorites/${mountainId}`,
+        {
+          headers: { "X-AUTH-TOKEN": token },
+        }
+      );
 
       console.log("✅ 즐겨찾기 삭제 성공");
 
@@ -169,12 +197,11 @@ const FavoriteSection = ({ userId }) => {
       );
       setFavoriteCount((prev) => prev - 1);
       alert("즐겨찾기에서 삭제되었습니다.");
-
     } catch (error) {
       console.error("❌ 즐겨찾기 삭제 오류:", error);
-      
+
       if (error.response) {
-        console.error('삭제 실패:', error.response.status, error.response.data);
+        console.error("삭제 실패:", error.response.status, error.response.data);
         alert(`즐겨찾기 삭제 실패: ${error.response.status}`);
       } else {
         alert("즐겨찾기 삭제 중 오류가 발생했습니다.");
@@ -187,16 +214,22 @@ const FavoriteSection = ({ userId }) => {
   // ✅ 산 상세 페이지로 이동 (산 이름 클릭용)
   const handleMountainClick = (mountainName) => {
     console.log("🔍 산 상세 페이지로 이동:", mountainName);
-    window.location.href = `/mountain/detail/${encodeURIComponent(mountainName)}`;
+    window.location.href = `/mountain/detail/${encodeURIComponent(
+      mountainName
+    )}`;
   };
 
   // ✅ 산불위험도에 따른 색상 반환
   const getFireRiskColor = (riskCode) => {
-    switch(riskCode) {
-      case '1': return '#d4edda'; // 안전 - 초록
-      case '2': return '#fff3cd'; // 주의 - 노랑
-      case '3': return '#f8d7da'; // 경보 - 빨강
-      default: return '#e2e3e5';
+    switch (riskCode) {
+      case "1":
+        return "#d4edda"; // 안전 - 초록
+      case "2":
+        return "#fff3cd"; // 주의 - 노랑
+      case "3":
+        return "#f8d7da"; // 경보 - 빨강
+      default:
+        return "#e2e3e5";
     }
   };
 
@@ -217,7 +250,7 @@ const FavoriteSection = ({ userId }) => {
         <h2 style={sectionTitleStyle}>⭐ 즐겨찾기 관리</h2>
         <div style={errorStyle}>
           <span>❌ {error}</span>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             style={{
               marginTop: "1rem",
@@ -226,7 +259,7 @@ const FavoriteSection = ({ userId }) => {
               color: "white",
               border: "none",
               borderRadius: "0.3rem",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             🔄 다시 시도
@@ -238,21 +271,6 @@ const FavoriteSection = ({ userId }) => {
 
   return (
     <section style={sectionStyle}>
-      {/* 디버깅 정보 (개발용) */}
-      <div style={{
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        background: 'rgba(0,0,0,0.7)',
-        color: 'white',
-        padding: '5px',
-        fontSize: '10px',
-        borderRadius: '3px',
-        zIndex: 1000
-      }}>
-        즐겨찾기: {favoriteCount}개 | 표시: {favoriteMountains.length}개
-      </div>
-
       <div style={headerStyle}>
         <h2 style={sectionTitleStyle}>⭐ 즐겨찾기 관리</h2>
         <div style={countBadgeStyle}>총 {favoriteCount}개의 산</div>
@@ -261,61 +279,159 @@ const FavoriteSection = ({ userId }) => {
       {favoriteMountains.length > 0 ? (
         <div style={favoritesListStyle}>
           {favoriteMountains.map((mountain) => (
-            <div key={mountain.id} style={favoriteItemStyle}>
+            <div
+              key={mountain.id}
+              style={{
+                ...favoriteItemStyle,
+                transform:
+                  hoveredCard === mountain.id
+                    ? "translateY(-2px)"
+                    : "translateY(0)",
+                boxShadow:
+                  hoveredCard === mountain.id
+                    ? "0 4px 16px rgba(76, 117, 89, 0.15)"
+                    : "0 2px 8px rgba(0,0,0,0.06)",
+                borderColor:
+                  hoveredCard === mountain.id ? "#4c7559" : "#e8f5e8",
+              }}
+              onMouseEnter={() => setHoveredCard(mountain.id)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
               {/* ✅ 산 정보 - 클릭 가능 */}
-              <div 
-                style={mountainInfoClickableStyle}
-                onClick={() => handleMountainClick(mountain.name)}
+              <div
+                style={{
+                  ...mountainInfoClickableStyle,
+                  backgroundColor: "transparent",
+                  cursor: "default",
+                }}
               >
-                <h3 style={mountainNameClickableStyle}>{mountain.name}</h3>
-                
+                <h3
+                  style={{
+                    ...mountainNameClickableStyle,
+                    color: hoveredCard === mountain.id ? "#4c7559" : "#2c3e50",
+                  }}
+                >
+                  {mountain.name}
+                </h3>
+
                 <div style={mountainDetailsStyle}>
-                  <span style={detailItemStyle}>📍 {mountain.location}</span>
-                  <span style={detailItemStyle}>⛰️ {mountain.elevation}m</span>
-                  
+                  <span
+                    style={{
+                      ...detailItemStyle,
+                      backgroundColor:
+                        hoveredCard === mountain.id ? "#e9ecef" : "#f8f9fa",
+                      transform:
+                        hoveredCard === mountain.id
+                          ? "scale(1.02)"
+                          : "scale(1)",
+                    }}
+                  >
+                    📍 {mountain.location}
+                  </span>
+                  <span
+                    style={{
+                      ...detailItemStyle,
+                      backgroundColor:
+                        hoveredCard === mountain.id ? "#e9ecef" : "#f8f9fa",
+                      transform:
+                        hoveredCard === mountain.id
+                          ? "scale(1.02)"
+                          : "scale(1)",
+                    }}
+                  >
+                    ⛰️ {mountain.elevation}m
+                  </span>
+
                   {/* ✅ 산불위험도 정보 추가 */}
                   {mountain.fireRiskInfo && !mountain.fireRiskInfo.error && (
-                    <span style={{
-                      ...detailItemStyle,
-                      backgroundColor: getFireRiskColor(mountain.fireRiskInfo.riskLevelCode),
-                      fontWeight: '600'
-                    }}>
+                    <span
+                      style={{
+                        ...detailItemStyle,
+                        backgroundColor: getFireRiskColor(
+                          mountain.fireRiskInfo.riskLevelCode
+                        ),
+                        fontWeight: "600",
+                        transform:
+                          hoveredCard === mountain.id
+                            ? "scale(1.02)"
+                            : "scale(1)",
+                      }}
+                    >
                       🔥 {mountain.fireRiskInfo.riskLevel}
-                    </span>
-                  )}
-                  
-                  {/* ✅ 일출/일몰 정보 추가 */}
-                  {mountain.sunInfo && (
-                    <span style={sunInfoStyle}>
-                      🌅 {mountain.sunInfo.sunriseTime} 🌇 {mountain.sunInfo.sunsetTime}
                     </span>
                   )}
                 </div>
               </div>
-{/*               
-              {mountain.sunInfo && (
-  <span style={sunInfoStyle}>
-    <img src="/images/sunrise.png" alt="일출" style={sunIconStyle} />
-    {mountain.sunInfo.sunriseTime}
-    <img src="/images/sunset.png" alt="일몰" style={sunIconStyle} />
-    {mountain.sunInfo.sunsetTime}
-  </span>
-)} */}
 
-              {/* ✅ 삭제 버튼만 유지 */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation(); // 클릭 이벤트 버블링 방지
-                  handleRemoveFavorite(mountain.id, mountain.name);
-                }}
-                disabled={removingId === mountain.id}
-                style={{
-                  ...removeButtonStyle,
-                  opacity: removingId === mountain.id ? 0.6 : 1,
-                }}
+              {/* 버튼 영역 */}
+              <div
+                style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}
               >
-                {removingId === mountain.id ? "⏳" : "🗑️"}
-              </button>
+                {/* 상세보기 버튼 */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // 클릭 이벤트 버블링 방지
+                    handleMountainClick(mountain.name);
+                  }}
+                  onMouseEnter={() => setHoveredButton(`detail-${mountain.id}`)}
+                  onMouseLeave={() => setHoveredButton(null)}
+                  style={{
+                    backgroundColor:
+                      hoveredButton === `detail-${mountain.id}`
+                        ? "#4c7559"
+                        : "#b1ccbd",
+                    color: "#133313",
+                    border: "none",
+                    borderRadius: "0.8rem",
+                    padding:
+                      "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.2rem)",
+                    fontSize: "clamp(0.8rem, 1.4vw, 0.9rem)",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    minWidth: "clamp(4rem, 7vw, 5rem)",
+                    boxShadow:
+                      hoveredButton === `detail-${mountain.id}`
+                        ? "0 4px 8px rgba(76, 117, 89, 0.3)"
+                        : "0 2px 4px rgba(108, 117, 125, 0.2)",
+                    transform:
+                      hoveredButton === `detail-${mountain.id}`
+                        ? "scale(1.05)"
+                        : "scale(1)",
+                  }}
+                >
+                  상세보기
+                </button>
+
+                {/* 삭제 버튼 */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // 클릭 이벤트 버블링 방지
+                    handleRemoveFavorite(mountain.id, mountain.name);
+                  }}
+                  disabled={removingId === mountain.id}
+                  onMouseEnter={() => setHoveredButton(`delete-${mountain.id}`)}
+                  onMouseLeave={() => setHoveredButton(null)}
+                  style={{
+                    ...removeButtonStyle,
+                    opacity: removingId === mountain.id ? 0.6 : 1,
+                    backgroundColor:
+                      hoveredButton === `delete-${mountain.id}`
+                        ? "#ff5252"
+                        : "#ff6b6b",
+                    transform:
+                      hoveredButton === `delete-${mountain.id}`
+                        ? "scale(1.05)"
+                        : "scale(1)",
+                    boxShadow:
+                      hoveredButton === `delete-${mountain.id}`
+                        ? "0 4px 8px rgba(255, 107, 107, 0.3)"
+                        : "0 2px 4px rgba(255, 107, 107, 0.2)",
+                  }}
+                >
+                  {removingId === mountain.id ? "⏳" : "삭제"}
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -348,7 +464,8 @@ const FavoriteSection = ({ userId }) => {
               {Math.round(
                 favoriteMountains.reduce((sum, m) => sum + m.elevation, 0) /
                   favoriteMountains.length
-              )}m
+              )}
+              m
             </span>
           </div>
         </div>
@@ -387,8 +504,8 @@ const sectionTitleStyle = {
 };
 
 const countBadgeStyle = {
-  backgroundColor: "#e3f2fd",
-  color: "#1976d2",
+  backgroundColor: "#d5e9de",
+  color: "#1a471a",
   padding: "clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1rem)",
   borderRadius: "1.5rem",
   fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
@@ -402,14 +519,18 @@ const favoritesListStyle = {
 };
 
 const favoriteItemStyle = {
-  backgroundColor: "#f8f9fa",
-  borderRadius: "0.8rem",
-  padding: "clamp(1rem, 2vw, 1.5rem)",
-  border: "0.1rem solid #e9ecef",
+  backgroundColor: "#ffffff",
+  borderRadius: "1rem",
+  padding: "clamp(1.2rem, 2.5vw, 1.8rem)",
+  border: "1px solid #e8f5e8",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  transition: "background-color 0.2s ease, transform 0.2s ease",
+  transition: "all 0.3s ease",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+  position: "relative",
+  overflow: "hidden",
+  cursor: "default",
 };
 
 const mountainInfoClickableStyle = {
@@ -417,59 +538,51 @@ const mountainInfoClickableStyle = {
   cursor: "pointer",
   display: "flex",
   flexDirection: "column",
-  gap: "clamp(0.3rem, 0.6vw, 0.5rem)",
+  gap: "clamp(0.5rem, 1vw, 0.8rem)",
   padding: "clamp(0.3rem, 0.6vw, 0.5rem)",
-  borderRadius: "0.5rem",
-  transition: "background-color 0.2s ease",
+  borderRadius: "0.8rem",
+  transition: "all 0.2s ease",
 };
 
 const mountainNameClickableStyle = {
-  fontSize: "clamp(1.1rem, 2vw, 1.3rem)",
+  fontSize: "clamp(1.2rem, 2.2vw, 1.4rem)",
   fontWeight: "700",
-  color: "#007bff",
+  color: "#2c3e50",
   margin: 0,
   transition: "color 0.2s ease",
 };
 
 const mountainDetailsStyle = {
   display: "flex",
-  gap: "clamp(0.5rem, 1vw, 0.8rem)",
+  gap: "clamp(0.6rem, 1.2vw, 0.8rem)",
   flexWrap: "wrap",
   alignItems: "center",
 };
 
 const detailItemStyle = {
-  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
-  color: "#6c757d",
-  backgroundColor: "#ffffff",
-  padding: "clamp(0.2rem, 0.4vw, 0.3rem) clamp(0.5rem, 1vw, 0.6rem)",
-  borderRadius: "0.3rem",
-  border: "0.1rem solid #dee2e6",
+  fontSize: "clamp(0.8rem, 1.4vw, 0.9rem)",
+  color: "#5a6c7d",
+  backgroundColor: "#f8f9fa",
+  padding: "clamp(0.3rem, 0.6vw, 0.4rem) clamp(0.6rem, 1.2vw, 0.8rem)",
+  borderRadius: "0.6rem",
+  border: "1px solid #e9ecef",
   whiteSpace: "nowrap",
-};
-
-// ✅ 일출/일몰 정보 스타일
-const sunInfoStyle = {
-  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
-  color: "#856404",
-  backgroundColor: "#fff3cd",
-  padding: "clamp(0.2rem, 0.4vw, 0.3rem) clamp(0.5rem, 1vw, 0.6rem)",
-  borderRadius: "0.3rem",
-  border: "0.1rem solid #ffeaa7",
-  whiteSpace: "nowrap",
+  fontWeight: "500",
+  transition: "all 0.2s ease",
 };
 
 const removeButtonStyle = {
-  backgroundColor: "#dc3545",
+  backgroundColor: "#ff6b6b",
   color: "#ffffff",
   border: "none",
-  borderRadius: "0.5rem",
-  padding: "clamp(0.5rem, 1vw, 0.7rem) clamp(0.8rem, 1.5vw, 1rem)",
-  fontSize: "clamp(0.8rem, 1.3vw, 0.9rem)",
+  borderRadius: "0.8rem",
+  padding: "clamp(0.6rem, 1.2vw, 0.8rem) clamp(1rem, 2vw, 1.2rem)",
+  fontSize: "clamp(0.8rem, 1.4vw, 0.9rem)",
   fontWeight: "600",
   cursor: "pointer",
   transition: "all 0.3s ease",
-  minWidth: "clamp(3rem, 5vw, 4rem)",
+  minWidth: "clamp(3.5rem, 6vw, 4.5rem)",
+  boxShadow: "0 2px 4px rgba(255, 107, 107, 0.2)",
 };
 
 const emptyStateStyle = {
