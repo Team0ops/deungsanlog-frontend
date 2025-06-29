@@ -221,7 +221,7 @@ const ServiceIntroModal = ({ isOpen, onClose }) => {
             }}
           >
             <img
-              src="/src/shared/assets/images/logo_mountain.png"
+              src="/images/logo_mountain.png"
               alt="등산 이야기 로고"
               style={{
                 width: isMobile ? "120px" : "150px",
