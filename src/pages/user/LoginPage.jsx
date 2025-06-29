@@ -135,7 +135,7 @@ const LoginPage = () => {
             }}
           >
             <img
-              src="/src/shared/assets/images/logo_mountain.png"
+              src="/images/logo_mountain.png"
               alt="등산로그 로고"
               style={{
                 width: "clamp(4rem, 8vw, 6rem)",
