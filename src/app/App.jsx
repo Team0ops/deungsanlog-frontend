@@ -5,10 +5,16 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 
+// ✅ Firebase 초기화 (최상단에 추가)
+import 'shared/lib/firebase.js';
+
 // UI 컴포넌트
 import Sidenav from "widgets/Sidenav";
 import SidenavToggleButton from "shared/ui/SidenavToggleButton";
 import ServiceIntroModal from "shared/components/ServiceIntroModal";
+
+// ✅ FCM 알림 매니저 추가
+import NotificationManager from "shared/components/NotificationManager";
 
 // 컨텍스트
 import {
@@ -50,6 +56,7 @@ import MyPage from "pages/mypage/mypage";
 import LoginPage from "pages/user/LoginPage";
 import LogEditPage from "pages/record/LogEditPage";
 import NotificationPage from "pages/notification/NotificationPage";
+
 
 function AppContent() {
   const [controller, dispatch] = useSoftUIController();
@@ -293,6 +300,9 @@ function AppContent() {
         isOpen={showIntroModal}
         onClose={() => setShowIntroModal(false)}
       />
+
+      {/* ✅ FCM 알림 매니저 추가 (최하단에 배치) */}
+      <NotificationManager />
     </div>
   );
 }
