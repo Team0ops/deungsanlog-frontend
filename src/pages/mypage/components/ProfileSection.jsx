@@ -78,29 +78,38 @@ const ProfileSection = ({ userInfo, setUserInfo, isMobile = false }) => {
 
       // 새 파일이 선택된 경우 업로드
       if (selectedFile) {
+        console.log("🖼️ 새 이미지 파일 선택됨:", selectedFile.name);
         const formData = new FormData();
         formData.append("file", selectedFile);
         formData.append("userId", userInfo.id);
 
         try {
+          console.log("📤 이미지 업로드 시작...");
           const uploadResponse = await axiosInstance.post(
             "/user-service/upload-profile-image",
             formData,
             {
               headers: {
                 "X-AUTH-TOKEN": token,
-                // axios는 FormData일 경우 Content-Type을 자동으로 설정해줌!
+                // axiosInstance에서 FormData 감지 시 자동으로 Content-Type 제거
               },
             }
           );
 
           const uploadData = uploadResponse.data;
           profileImgUrl = uploadData.imageUrl;
+          console.log("✅ 이미지 업로드 성공:", profileImgUrl);
         } catch (uploadError) {
-          console.error("이미지 업로드 오류:", uploadError);
+          console.error("❌ 이미지 업로드 오류:", uploadError);
           alert("이미지 업로드에 실패했습니다. 프로필만 수정됩니다.");
         }
       }
+
+      console.log("📝 프로필 정보 업데이트 시작...");
+      console.log("업데이트할 정보:", {
+        nickname: editData.nickname,
+        profileImgUrl,
+      });
 
       // 프로필 정보 업데이트
       const response = await axiosInstance.put(
@@ -117,14 +126,18 @@ const ProfileSection = ({ userInfo, setUserInfo, isMobile = false }) => {
         }
       );
 
+      console.log("✅ 프로필 업데이트 응답:", response.data);
+
       // axios는 성공 시 자동으로 response.data를 반환
       setUserInfo(response.data);
+      console.log("🔄 userInfo 상태 업데이트됨:", response.data);
+
       setIsEditing(false);
       setSelectedFile(null);
       setPreviewUrl("");
       alert("프로필이 성공적으로 수정되었습니다!");
     } catch (error) {
-      console.error("프로필 수정 오류:", error);
+      console.error("❌ 프로필 수정 오류:", error);
       alert("프로필 수정 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);

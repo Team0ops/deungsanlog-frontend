@@ -168,15 +168,47 @@ const FreeBoardPage = () => {
           position: "relative",
         }}
       >
-        {/* 헤더 고정 */}
+        {/* 뒤로가기 버튼 */}
         <div
           style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            background: "transparent",
+            display: "flex",
+            alignItems: "center",
+            marginBottom: isMobile ? "0.5rem" : "0.8rem",
           }}
         >
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              background: "#f4f8f4",
+              border: "none",
+              color: "#27ae60",
+              fontSize: isMobile ? "1rem" : "1.15rem",
+              cursor: "pointer",
+              borderRadius: "50%",
+              width: isMobile ? "40px" : "44px",
+              height: isMobile ? "40px" : "44px",
+              minWidth: isMobile ? "40px" : "44px",
+              minHeight: isMobile ? "40px" : "44px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 600,
+              boxShadow: "0 2px 8px rgba(39,174,96,0.07)",
+              transition: "background 0.15s",
+              marginRight: "auto",
+              padding: 0,
+              gap: "0.3rem",
+            }}
+            aria-label="뒤로가기"
+            onMouseOver={(e) => (e.currentTarget.style.background = "#e6f6ec")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
+          >
+            ‹
+          </button>
+        </div>
+
+        {/* 헤더 고정 */}
+        <div>
           <FreeBoardHeader
             sortOption={sortOption}
             setSortOption={setSortOption}
@@ -198,15 +230,11 @@ const FreeBoardPage = () => {
             size={10}
           />
         </div>
-        {/* 카드 영역 스크롤 */}
+        {/* 카드 영역 */}
         <div
           ref={cardAreaRef}
           style={{
-            flex: 1,
-            overflowY: "auto",
-            overflowX: "hidden",
-            minHeight: 0,
-            paddingRight: "2px",
+            width: "100%",
             position: "relative",
           }}
         >

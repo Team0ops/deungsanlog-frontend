@@ -269,10 +269,10 @@ const MyMeetingPage = () => {
           backgroundColor: "transparent",
           borderRadius: "20px",
           padding: isMobile
-            ? "clamp(0.8rem, 3vw, 1rem)"
+            ? "clamp(0.8rem, 3vw, 1rem) clamp(0.8rem, 3vw, 1rem) clamp(3rem, 8vw, 4rem) clamp(0.8rem, 3vw, 1rem)"
             : "clamp(1rem, 4vw, 1.5rem)",
           position: "relative",
-          height: "calc(100vh - 40px)",
+          height: "auto",
         }}
       >
         <div
@@ -283,9 +283,50 @@ const MyMeetingPage = () => {
             display: "flex",
             flexDirection: "column",
             gap: isMobile ? "1rem" : "1.2rem",
-            height: "100%",
+            height: "auto",
           }}
         >
+          {/* 뒤로가기 버튼 */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: isMobile ? "0.5rem" : "0.8rem",
+            }}
+          >
+            <button
+              onClick={() => navigate(-1)}
+              style={{
+                background: "#f4f8f4",
+                border: "none",
+                color: "#27ae60",
+                fontSize: isMobile ? "1rem" : "1.15rem",
+                cursor: "pointer",
+                borderRadius: "50%",
+                width: isMobile ? "40px" : "44px",
+                height: isMobile ? "40px" : "44px",
+                minWidth: isMobile ? "40px" : "44px",
+                minHeight: isMobile ? "40px" : "44px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 600,
+                boxShadow: "0 2px 8px rgba(39,174,96,0.07)",
+                transition: "background 0.15s",
+                marginRight: "auto",
+                padding: 0,
+                gap: "0.3rem",
+              }}
+              aria-label="뒤로가기"
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background = "#e6f6ec")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
+            >
+              ‹
+            </button>
+          </div>
+
           {/* 헤더 */}
           <MyMeetingHeader />
 
@@ -539,11 +580,6 @@ const MyMeetingPage = () => {
           {/* 모임 리스트 */}
           <Box
             sx={{
-              flex: 1,
-              overflowY: "auto",
-              overflowX: "hidden",
-              minHeight: 0,
-              paddingRight: "2px",
               position: "relative",
             }}
           >
@@ -604,7 +640,7 @@ const MyMeetingPage = () => {
               display="flex"
               justifyContent="center"
               mt={isMobile ? 1.5 : 2}
-              pb={isMobile ? 1 : 2}
+              pb={isMobile ? 3 : 2}
             >
               <Pagination
                 count={totalPages}

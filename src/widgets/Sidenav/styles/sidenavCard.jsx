@@ -13,6 +13,7 @@ function card(theme, ownerState) {
     backgroundImage: `url(${backgroundImage})`,
     backgroundPosition: "50%",
     backgroundSize: "cover",
+    backgroundRepeat: "repeat",
     borderRadius: borderRadius.xl,
     boxShadow: "none",
 

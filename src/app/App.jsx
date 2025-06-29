@@ -150,7 +150,7 @@ function AppContent() {
       {hasBackgroundPage && (
         <div
           style={{
-            position: "absolute",
+            position: "fixed",
             top: 0,
             left: 0,
             width: "100%",
@@ -158,8 +158,9 @@ function AppContent() {
             backgroundImage: getBackgroundImage(),
             backgroundSize: "cover",
             backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.4,
+            backgroundRepeat: "repeat",
+            backgroundAttachment: "fixed",
+            opacity: 0.6,
             zIndex: 0,
           }}
         />

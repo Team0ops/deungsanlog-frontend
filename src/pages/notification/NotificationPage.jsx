@@ -163,7 +163,7 @@ const NotificationPage = () => {
     try {
       const token = getToken();
       await axiosInstance.put(
-        `${BASE}/read-all`,
+        `${BASE}/api/notifications/read-all`,
         {},
         { headers: { "X-AUTH-TOKEN": token } }
       );
@@ -183,7 +183,7 @@ const NotificationPage = () => {
   const deleteNotification = async (id) => {
     try {
       const token = getToken();
-      await axiosInstance.delete(`${BASE}/${id}`, {
+      await axiosInstance.delete(`${BASE}/api/notifications/${id}`, {
         headers: { "X-AUTH-TOKEN": token },
       });
       setNotifications((prev) => prev.filter((n) => n.id !== id));
@@ -195,70 +195,72 @@ const NotificationPage = () => {
   /* ------------------------- 클릭 핸들러 ------------------------- */
   const handleNotificationClick = async (notification) => {
     try {
-      if (!notification.isRead) await markAsRead(notification.id); // 1) 읽음
-      await deleteNotification(notification.id); // 2) 삭제
+      console.log("🔔 알림 클릭:", notification);
 
-      // 3) 라우팅
-      if (["comment", "like"].includes(notification.type)) {
-        const postId =
-          notification.postId || extractPostIdFromContent(notification.content);
-        window.location.href = postId
-          ? `/community/post/${postId}`
-          : "/community";
-      } else if (["fire_risk", "weather_alert"].includes(notification.type)) {
-        const mountain =
-          notification.mountainName ||
-          extractMountainNameFromContent(notification.content);
-        window.location.href = mountain
-          ? `/mountain/detail/${encodeURIComponent(mountain)}`
-          : "/mountain";
-      } else if (
-        [
-          "meeting_apply",
-          "meeting_accepted",
-          "meeting_full",
-          "meeting_closed",
-        ].includes(notification.type)
-      ) {
-        // 모임 관련 알림 처리
-        const meetingId = extractMeetingIdFromContent(
-          notification.content,
-          notification
-        );
-        window.location.href = meetingId
-          ? `/meeting/detail/${meetingId}`
-          : "/meeting";
-      } else if (notification.type === "system") {
-        window.location.href = "/";
+      // 1) 읽음 처리
+      if (!notification.isRead) {
+        await markAsRead(notification.id);
+      }
+
+      // 2) 삭제
+      await deleteNotification(notification.id);
+
+      // 3) 라우팅 - 타입별로 분기
+      switch (notification.type) {
+        case "comment":
+        case "like":
+          // 댓글/좋아요 알림
+          if (notification.postId) {
+            console.log("📝 게시글 ID로 이동:", notification.postId);
+            window.location.href = `/community/post/${notification.postId}`;
+          } else {
+            console.log("⚠️ postId 없음, 커뮤니티로 이동");
+            window.location.href = "/community";
+          }
+          break;
+
+        case "fire_risk":
+        case "weather_alert":
+          // 산불/날씨 알림
+          if (notification.mountainName) {
+            window.location.href = `/mountain/detail/${encodeURIComponent(
+              notification.mountainName
+            )}`;
+          } else {
+            window.location.href = "/mountain";
+          }
+          break;
+
+        case "meeting_apply":
+        case "meeting_accepted":
+        case "meeting_full":
+        case "meeting_closed":
+          // 모임 알림
+          if (notification.meetingId) {
+            window.location.href = `/meeting/detail/${notification.meetingId}`;
+          } else {
+            window.location.href = "/meeting";
+          }
+          break;
+
+        case "system":
+          // 시스템 알림
+          window.location.href = "/";
+          break;
+
+        default:
+          // 기본값
+          window.location.href = "/";
+          break;
       }
     } catch (err) {
       console.error("❌ 알림 처리 중 오류:", err);
+      // 에러 발생 시 기본 페이지로 이동
+      window.location.href = "/";
     }
   };
 
   /* ------------------------- 유틸  ------------------------- */
-  const extractPostIdFromContent = (c) =>
-    (c.match(/게시글.*?#(\d+)|postId.*?(\d+)|post.*?(\d+)/i) ?? [])[1] || null;
-
-  const extractMountainNameFromContent = (c) =>
-    (c.match(/\[(.*?)\]|산\s*:\s*(.*?)\s|(\w+산)/) ?? [])[1] || null;
-
-  const extractMeetingIdFromContent = (c, notification) => {
-    // 알림에 meetingId 필드가 있으면 그것을 사용
-    if (notification.meetingId) {
-      return notification.meetingId;
-    }
-
-    // 모임 제목에서 ID를 추출하는 정규식 (필요시 수정)
-    const match = c.match(/\[(.*?)\]/);
-    if (match) {
-      // 모임 제목이 있다면 해당 제목으로 모임을 찾을 수 있도록 처리
-      // 현재는 기본적으로 모임 목록 페이지로 이동
-      return null;
-    }
-    return null;
-  };
-
   const handlePageChange = (p) => {
     if (p >= 0 && p < totalPages) {
       setCurrentPage(p);
