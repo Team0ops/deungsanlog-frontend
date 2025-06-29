@@ -1,0 +1,42 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - release/**
+      - release
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env.production
+        run: echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
+
+      - name: Use production env
+        run: cp .env.production .env
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/**"
+          target: "/home/rocky/frontend-deploy"
+          strip_components: 1

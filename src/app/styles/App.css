@@ -1,42 +1,79 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
+.main-content {
+  flex: 1;
   padding: 2rem;
-  text-align: center;
+  background-color: white;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* 기본 감추기 */
+::-webkit-scrollbar {
+  width: 7px;
+  background: transparent;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+::-webkit-scrollbar-thumb {
+  background-color: rgba(76, 117, 89, 0.3);
+  border-radius: 999px; /* 완전 둥글게 */
+  min-height: 30px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0; /* 위아래 여백 추가 */
+}
+/* 예시: FreeBoardBanner.css */
+.custom-horizontal-scroll::-webkit-scrollbar {
+  height: 7px; /* 가로 스크롤바 굵기 */
+  width: 7px; /* 세로 스크롤바는 기존대로 */
+  background: transparent;
+}
+.custom-horizontal-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(76, 117, 89, 0.3);
+  border-radius: 999px;
+  min-width: 30px;
+  min-height: 30px;
+}
+.custom-horizontal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0;
+}
+@keyframes waveText {
+  0%,
+  100% {
+    transform: translateY(0);
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    transform: translateY(-1.5px); /* 더 부드럽게 */
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+.wave-char {
+  display: inline-block;
+  animation: waveText 1.8s infinite ease-in-out;
+}
+
+.wave-group {
+  display: inline-block;
+}
+@keyframes waveGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
-.card {
-  padding: 2em;
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
-
-.read-the-docs {
-  color: #888;
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
 }
