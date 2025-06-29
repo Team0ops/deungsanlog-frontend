@@ -120,34 +120,56 @@ const LoginPage = () => {
             borderRadius: "clamp(1rem, 2vw, 1.5rem)",
             boxShadow: "0 0.5rem 2rem rgba(0, 0, 0, 0.15)",
             textAlign: "center",
-            width: "clamp(20rem, 90vw, 28rem)",
+            width: "clamp(25rem, 90vw, 35rem)",
             maxWidth: "90vw",
             backdropFilter: "blur(0.625rem)",
           }}
         >
-          <h1
+          {/* 로고 */}
+          <div
             style={{
               marginBottom: "clamp(1.5rem, 4vw, 2rem)",
-              color: "#2c3e50",
-              fontSize: "clamp(1.8rem, 5vw, 2.5rem)",
-              fontWeight: "600",
-              lineHeight: "1.2",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            등산로그
-          </h1>
+            <img
+              src="/src/shared/assets/images/logo_mountain.png"
+              alt="등산로그 로고"
+              style={{
+                width: "clamp(4rem, 8vw, 6rem)",
+                height: "auto",
+                marginBottom: "1rem",
+              }}
+            />
+          </div>
 
           <p
             style={{
-              marginBottom: "clamp(1.5rem, 4vw, 2rem)",
+              marginBottom: "clamp(0.5rem, 2vw, 1rem)",
               color: "#7f8c8d",
               fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
               lineHeight: "1.5",
               margin: "0 auto",
               maxWidth: "80%",
+              whiteSpace: "pre-line",
             }}
           >
-            간편하게 로그인하고 등산 여행을 시작하세요
+            등산 이야기에 오신 것을{"\n"}환영합니다.
+          </p>
+          <p
+            style={{
+              marginBottom: "clamp(4rem, 8vw, 5rem)",
+              color: "#7f8c8d",
+              fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
+              lineHeight: "1.5",
+              margin: "0 auto",
+              maxWidth: "80%",
+              whiteSpace: "pre-line",
+            }}
+          >
+            소셜 로그인으로 간편하게 시작해보세요!
           </p>
 
           {/* 구글 로그인 버튼 */}
