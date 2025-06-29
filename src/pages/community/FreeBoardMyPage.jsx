@@ -6,6 +6,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "shared/lib/axiosInstance";
 import FeedCard from "widgets/community/board/FreeCard";
 import FreeBoardMyHeader from "widgets/community/board/FreeBoardMyHeader";
@@ -23,6 +24,7 @@ const FreeBoardMyPage = () => {
   const [sortOption, setSortOption] = useState("latest");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
 
   const size = 6;
 
@@ -120,6 +122,45 @@ const FreeBoardMyPage = () => {
           position: "relative",
         }}
       >
+        {/* 뒤로가기 버튼 */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: isMobile ? "0.5rem" : "0.8rem",
+          }}
+        >
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              background: "#f4f8f4",
+              border: "none",
+              color: "#27ae60",
+              fontSize: isMobile ? "1rem" : "1.15rem",
+              cursor: "pointer",
+              borderRadius: "50%",
+              width: isMobile ? "40px" : "44px",
+              height: isMobile ? "40px" : "44px",
+              minWidth: isMobile ? "40px" : "44px",
+              minHeight: isMobile ? "40px" : "44px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 600,
+              boxShadow: "0 2px 8px rgba(39,174,96,0.07)",
+              transition: "background 0.15s",
+              marginRight: "auto",
+              padding: 0,
+              gap: "0.3rem",
+            }}
+            aria-label="뒤로가기"
+            onMouseOver={(e) => (e.currentTarget.style.background = "#e6f6ec")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#f4f8f4")}
+          >
+            ‹
+          </button>
+        </div>
+
         {/* 헤더에 sortOption, setSortOption 전달 */}
         <FreeBoardMyHeader
           sortOption={sortOption}
