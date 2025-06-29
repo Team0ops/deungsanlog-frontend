@@ -18,7 +18,7 @@ export const requestNotificationPermission = async () => {
     if ("serviceWorker" in navigator) {
       try {
         const registration = await navigator.serviceWorker.register(
-          "/firebase-messaging-sw.js"
+          "/sw.js"
         );
         console.log("✅ Service Worker 등록 성공:", registration);
       } catch (swError) {
@@ -125,7 +125,7 @@ const registerTokenToServer = async (token) => {
 
     // ✅ 직접 fetch 사용해서 디버깅 (axiosInstance 문제 확인용)
     const response = await fetch(
-      "http://localhost:8080/notification-service/fcm-token",
+      "/notification-service/fcm-token",
       {
         method: "POST",
         headers: {
