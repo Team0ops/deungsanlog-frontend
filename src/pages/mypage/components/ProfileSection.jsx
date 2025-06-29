@@ -16,9 +16,9 @@ const ProfileSection = ({ userInfo, setUserInfo, isMobile = false }) => {
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB 제한
-        alert("파일 크기는 5MB 이하로 선택해주세요.");
+      if (file.size > 500 * 1024 * 1024) {
+        // 500MB 제한
+        alert("파일 크기는 500MB 이하로 선택해주세요.");
         return;
       }
 
@@ -195,7 +195,7 @@ const ProfileSection = ({ userInfo, setUserInfo, isMobile = false }) => {
                 </div>
               )}
               <small style={getHelpTextStyle(isMobile)}>
-                5MB 이하의 이미지 파일을 선택해주세요
+                500MB 이하의 이미지 파일을 선택해주세요
               </small>
             </div>
           )}
