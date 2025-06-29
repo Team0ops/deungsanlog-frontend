@@ -17,7 +17,7 @@ const SidenavToggleButton = ({ miniSidenav, onClick }) => {
           : {
               position: "fixed",
               top: "2rem",
-              left: miniSidenav ? "160px" : "310px",
+              left: miniSidenav ? "140px" : "310px",
             }),
         zIndex: 1300,
         width: "32px",

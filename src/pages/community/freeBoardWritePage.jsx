@@ -21,18 +21,14 @@ const FreeBoardWritePage = () => {
   return (
     <div
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: "100vw",
-        overflowY: "auto", // ✅ 내부 스크롤 가능하도록
-        padding: isMobile ? "1rem 0.8rem 2rem 0.8rem" : "2rem 1rem 3rem 1rem", // ✅ 상하좌우 여백 확보 (하단 여백 추가)
+        minHeight: "100vh",
+        width: "100%",
+        overflowY: "auto",
+        padding: isMobile ? "1rem 0.8rem 2rem 0.8rem" : "2rem 1rem 3rem 1rem",
         display: "flex",
         justifyContent: "center",
-        alignItems: "flex-start", // ✅ 상단 정렬
+        alignItems: "flex-start",
         background: "#f9f9f9",
-        zIndex: 10,
       }}
     >
       {/* userId를 FreeBoardForm에 prop으로 전달 */}
