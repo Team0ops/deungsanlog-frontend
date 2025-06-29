@@ -269,10 +269,10 @@ const MyMeetingPage = () => {
           backgroundColor: "transparent",
           borderRadius: "20px",
           padding: isMobile
-            ? "clamp(0.8rem, 3vw, 1rem)"
+            ? "clamp(0.8rem, 3vw, 1rem) clamp(0.8rem, 3vw, 1rem) clamp(3rem, 8vw, 4rem) clamp(0.8rem, 3vw, 1rem)"
             : "clamp(1rem, 4vw, 1.5rem)",
           position: "relative",
-          height: "calc(100vh - 40px)",
+          height: "auto",
         }}
       >
         <div
@@ -283,7 +283,7 @@ const MyMeetingPage = () => {
             display: "flex",
             flexDirection: "column",
             gap: isMobile ? "1rem" : "1.2rem",
-            height: "100%",
+            height: "auto",
           }}
         >
           {/* 헤더 */}
@@ -539,11 +539,6 @@ const MyMeetingPage = () => {
           {/* 모임 리스트 */}
           <Box
             sx={{
-              flex: 1,
-              overflowY: "auto",
-              overflowX: "hidden",
-              minHeight: 0,
-              paddingRight: "2px",
               position: "relative",
             }}
           >
@@ -604,7 +599,7 @@ const MyMeetingPage = () => {
               display="flex"
               justifyContent="center"
               mt={isMobile ? 1.5 : 2}
-              pb={isMobile ? 1 : 2}
+              pb={isMobile ? 3 : 2}
             >
               <Pagination
                 count={totalPages}
